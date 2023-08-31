@@ -4,3 +4,12 @@ Wiki: https://wiki.seeedstudio.com/Grove-LED_Bar/
 
 Voltage: 3 - 5.5VDC
 Interface: DIO
+
+
+https://github.com/mcauser/micropython-my9221/tree/master
+
+https://github.com/Seeed-Studio/Grove_LED_Bar/tree/master
+
+## read thie one
+https://github.com/zolgear/grove.py/blob/master/grove/grove_ledbar.py
+
