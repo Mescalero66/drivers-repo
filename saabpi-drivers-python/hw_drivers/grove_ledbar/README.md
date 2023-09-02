@@ -11,6 +11,6 @@ Interface: DIO
 
 
 
-## read thie one
+## read this stuff
 https://github.com/zolgear/grove.py/blob/master/grove/grove_ledbar.py
 
