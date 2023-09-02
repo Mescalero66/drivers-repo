@@ -30,10 +30,10 @@ this should be added to /boot/config.txt (then reboot)
 ls /dev/i2c*
 
 ## scan I2C devices
-i2cdetect [bus] -y
+i2cdetect -y [bus]
 
 i.e.
-i2cdetect 1 -y
+i2cdetect -y 1
 would scan I2C bus #1 for devices
 
 ## reboot
