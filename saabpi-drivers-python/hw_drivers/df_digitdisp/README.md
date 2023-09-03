@@ -13,3 +13,10 @@ Interface: I2C (supposedly)
 ## read this stuff
 https://www.dfrobot.com/forum/topic/319680
 https://github.com/CarlWilliamsBristol/pxt-tm1650display
+
+https://github.com/micropython-Chinese-Community/mpy-lib/tree/master/LED/TM1650
+https://github.com/mworkfun/TM1650
+https://github.com/arkhipenko/TM1650
+
+https://github.com/DFRobot/DFRobot_LedDisplayModule
+

@@ -1,27 +1,29 @@
-# The MIT License (MIT)
-# 
-# Python Driver for:
-# DFRobot DFR0645-R DFR0645-G <https://wiki.dfrobot.com/4-Digital%20LED%20Segment%20Display%20Module%20%20SKU:%20DFR0645-G_DFR0645-R>
-# 
-# Credit to stonatm <https://github.com/stonatm/tm1650_micropython>
-# Credit to CarlWilliamsBristol <https://github.com/CarlWilliamsBristol/pxt-tm1650display>
+# stonatm@gmail.com
+# Gravity DFRobot DFR0645-R DFR0645-G
+# TM1650 4 digit 8 segment led display
+# i2c software implementation
+# esp32 micropython driver
 
-import time
-from RPi import Pin, SoftI2C
+import RPi.GPIO as GPIO
+import smbus
+GPIO.setmode(GPIO.BCM)
 
 class TM1650():
 
   def __init__(self, sda_pin, scl_pin):
     self.dbuf = bytearray(4)
     self.tbuf = bytearray(1)
-    self.i2c = SoftI2C(scl=Pin(scl_pin), sda=Pin(sda_pin), freq=100000)
+    GPIO.setup(sda_pin, GPIO.OUT)
+    GPIO.setup(scl_pin, GPIO.OUT)
+    self.i2c = smbus.SMBus(1)
+    #self.i2c = SoftI2C(scl=Pin(scl_pin), sda=Pin(sda_pin), freq=100000)
     self.display_on()
 
   def display_on(self):
-    self.i2c.writeto(0x24, b'0x81')
+    self.i2c.write_byte_data(0x48, 0x24, 0x81)
 
   def display_off(self):
-    self.i2c.writeto(0x24, b'0x80')
+    self.i2c.write_byte_data(0x48, 0x24, 0x80)
 
   def __clear_all(self):
     self.tbuf[0] = 0
@@ -55,7 +57,7 @@ class TM1650():
   def __send_buf(self):
     for i in range(4):
       self.tbuf[0] = self.dbuf[i]
-      self.i2c.writeto(0x34+i, self.tbuf)
+      self.i2c.write_byte_data(0x48, 0x34+i, self.tbuf[0])
 
   def __display_error(self):
     self.__clear_all()
