@@ -24,6 +24,7 @@ dtoverlay=i2c-gpio,bus=8
 this should be added to /boot/config.txt (then reboot)
 
 <https://learn.adafruit.com/raspberry-pi-i2c-clock-stretching-fixes/software-i2c>
+
 <https://github.com/fivdi/i2c-bus/blob/master/doc/raspberry-pi-software-i2c.md>
 
 ## identify I2C buses
