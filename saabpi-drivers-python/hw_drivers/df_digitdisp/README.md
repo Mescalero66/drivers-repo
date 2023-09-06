@@ -19,7 +19,8 @@ Wiki: <https://wiki.dfrobot.com/4-Digital%20LED%20Segment%20Display%20Module%20%
 
 <https://github.com/CarlWilliamsBristol/pxt-tm1650display>
 
-**shout out to the above CarlWilliamsBristol! it would have been absolutely impossible to get this to work without their very detailed explanation**
+**shout out to the above CarlWilliamsBristol!**
+it would have been absolutely impossible to get this to work without their very detailed explanation.
 
 ## read this stuff maybe
 <https://www.dfrobot.com/forum/topic/319680>
