@@ -23,9 +23,7 @@ Wiki: <https://wiki.dfrobot.com/SKU_SEN0546_I2C_Temperature_and_Humidity_Sensor_
 
 ## read this stuff maybe
 
-<https://github.com/DFRobot/DFRobot_I2C_Multiplexer/>
-
-<https://github.com/DFRobot/DFRobot_I2C_Multiplexer/tree/main/raspberrypi>
+<https://github.com/sensylink/CHT8305/blob/master/CHT8305.cpp>
 
 <https://dfimg.dfrobot.com/nobody/wiki/4c8e1057e1c118e5c72f8ff6147575db.pdf>
 
