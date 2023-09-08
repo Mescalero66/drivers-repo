@@ -18,7 +18,7 @@ sudo raspi-config nonint do_i2c 0
 ## install i2Ctools
 sudo apt-get install i2c-tools
 
-## install SoftI2C on I2C bus8, GPIO 23(SDA) and GPIO24(SCL)
+## install SoftI2C on I2C bus8, GPIO 23(SDA) and GPIO24(SCL) (not yet req'd)
 dtoverlay=i2c-gpio,bus=8
 
 this should be added to /boot/config.txt (then reboot)

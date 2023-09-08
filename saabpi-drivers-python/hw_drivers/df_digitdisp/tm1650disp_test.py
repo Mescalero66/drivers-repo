@@ -1,37 +1,43 @@
-# The MIT License (MIT)
+# MIT License
+# Copyright (c) 2023 Mescalero
+# <https://github.com/Mescalero66/saabpi>
 # 
 # Test Code for Python Driver for:
-# DFRobot DFR0645-R DFR0645-G <https://wiki.dfrobot.com/4-Digital%20LED%20Segment%20Display%20Module%20%20SKU:%20DFR0645-G_DFR0645-R>
-# THIS IS NOT AN I2C DEVICE - IT WAS FUCKING ANNOYING TO GET IT TO WORK
-#
-# Shout out to CarlWilliamsBristol <https://github.com/CarlWilliamsBristol/pxt-tm1650display>
+# DFRobot DFR0645-R DFR0645-G
 
 import time
-from tm1650display_ts import Tm1650DisplayClass
+from tm1650disp import tm1650Disp
 import RPi.GPIO as GPIO
 
 # connect to clockPin & dataPin
-clockPin = 6
-dataPin = 5
+d1SDA = 24
+d1SCL = 25
+displayID = 1
 
 # create object
-disp1 = Tm1650DisplayClass(clockPin, dataPin)
+disp1 = tm1650Disp(displayID, d1SCL, d1SDA)
 # disp1.sendStart()
 
 # turn on with brightness (high 0 to low 7)
 disp1.display_on(0)
 
+#display a string
+disp1.show_string("5aab")
+time.sleep(2)
+disp1.show_string("5aabs")
+time.sleep(2)
+
 # set communications speed (baud rate)
 # disp1.setSpeed(100000)
 
 # change brightness
-br = 0
-while br < 8:
-    disp1.display_on(br)
-    brString = 'Br ' + str(br)
-    disp1.show_string(brString)
-    br += 1
-    time.sleep(2)
+#br = 0
+#while br < 8:
+#    disp1.display_on(br)
+#    brString = 'Br ' + str(br)
+#    disp1.show_string(brString)
+#    br += 1
+#    time.sleep(2)
 
 # display number
 int = 125

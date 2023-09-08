@@ -8,9 +8,11 @@ TBC - very early days here
 
 
 
-# Useful Repos
+# Useful Stuff
 
 https://github.com/zolgear/grove.py/tree/master
+
+https://buildmedia.readthedocs.org/media/pdf/smbus2/latest/smbus2.pdf
 
 https://gist.github.com/kungpfui/54784ebc3b3ca72169c1839720b313bf
 

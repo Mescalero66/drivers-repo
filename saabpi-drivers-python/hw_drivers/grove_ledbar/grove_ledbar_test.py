@@ -1,3 +1,6 @@
+# MIT License
+# Copyright (c) 2023 Mescalero
+# <https://github.com/Mescalero66/saabpi>
 
 import time
 from grove_ledbar import GroveLedBar

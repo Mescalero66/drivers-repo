@@ -1,25 +1,27 @@
-# The MIT License (MIT)
+# MIT License
+# <https://github.com/Mescalero66/saabpi>
 # 
 # Python Driver for:
 # DFRobot DFR0576 I2C Multiplexer <https://wiki.dfrobot.com/Gravity__Digital_1-to-8_I2C_Multiplexer_SKU_DFR0576>
 #
 # Shout out to the DFRobot GitHub <https://github.com/DFRobot/DFRobot_I2C_Multiplexer/blob/main/raspberrypi/DFRobot_I2C_Multiplexer.py>
+#
 # Copyright (c) 2010 DFRobot Co.Ltd (http://www.dfrobot.com)
 # License     The MIT License (MIT)
 # Author      PengKaixing(kaixing.peng@dfrobot.com)
 # Maintainer  [qsjhyy](yihuan.huang@dfrobot.com)
-# Version  V1.0.2
-# Date  2022-12-06
-# Url https://github.com/DFRobot/DFRobot_I2C_Multiplexer
+# Version     V1.0.2
+# Date        2022-12-06
+# Url         https://github.com/DFRobot/DFRobot_I2C_Multiplexer
 
 import time
 import sys
-import smbus
+import smbus2
 
-class DFRobot_I2C_Multiplexer:
+class i2cmultiplex:
 
   def __init__(self,addr):
-    self.i2c = smbus.SMBus(1)
+    self.i2c = smbus2.SMBus(1)
     self.addr = addr
   
   def scan(self,port):

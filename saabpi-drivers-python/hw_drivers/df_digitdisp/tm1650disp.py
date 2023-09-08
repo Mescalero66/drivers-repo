@@ -1,4 +1,6 @@
-# The MIT License (MIT)
+# MIT License
+# Copyright (c) 2023 Mescalero
+# <https://github.com/Mescalero66/saabpi>
 # 
 # Python Driver for:
 # DFRobot DFR0645-R DFR0645-G <https://wiki.dfrobot.com/4-Digital%20LED%20Segment%20Display%20Module%20%20SKU:%20DFR0645-G_DFR0645-R>
@@ -19,8 +21,8 @@ characterBytes = [
 ]
 digitAddress = [0x68, 0x6A, 0x6C, 0x6E]
  
-class Tm1650DisplayClass:
-    def __init__(self, clock=1, data=0):
+class tm1650Disp:
+    def __init__(self, ID, clock=1, data=0):
         self.displayDigitsRaw = [0, 0, 0, 0]
         self.pulse_width = (120 / 10000000)
         self.half_pulse_width = (60 / 10000000)
@@ -95,8 +97,8 @@ class Tm1650DisplayClass:
         di = 0
 
         # Ensure the string does not exceed the length of the display
-        if len(s) > 4:
-            s = s[:4]  # Truncate the string if it's too long
+        if len(s) > 5: # if you change this (and line below) to '5', you can send a 5 digit string if 1 digit is a decimal point - i.e. "21.5c"
+            s = s[:5]  # Truncate the string if it's too long
 
         for index in range(len(s)):
             c = ord(s[index])
