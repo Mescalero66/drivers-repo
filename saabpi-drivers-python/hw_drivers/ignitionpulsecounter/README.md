@@ -89,3 +89,5 @@ _**Insert Circuit Diagram**_
 ## read this stuff
 
 <http://abyz.me.uk/rpi/pigpio/python.html>
+
+<https://forums.raspberrypi.com/viewtopic.php?t=201747>
