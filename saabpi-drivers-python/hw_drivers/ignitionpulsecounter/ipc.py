@@ -5,19 +5,31 @@
 import time
 import pigpio
 
-pi = pigpio.pi()
-
 inputPulsePin = 12        #read GPIO 12
 inputPulseEdge = 1        #read rising edges
+last = [None]*32
+cb = []
 
-class ignitionPulseCounter:
-    def __init__(self, ID, inputPulsePin=12, inputPulseEdge=1):
-        if not pi.connected:
-           exit()
-        else:
-            cb = pi.callback(inputPulsePin, inputPulseEdge, ignitionPulseCounter)
-            while True:
-                time.sleep(1)
-                print(cb.tally())
-                cb.reset_tally()
+
+def cbf(GPIO, level, tick):
+   if last[GPIO] is not None:
+      diff = pigpio.tickDiff(last[GPIO], tick)
+      print("d={}".format(diff))
+      RPM = 30000000 / diff
+      print("RPM: ", RPM)
+   last[GPIO] = tick
+
+pi = pigpio.pi()
+
+cb.append(pi.callback(inputPulsePin, pigpio.RISING_EDGE, cbf))
+
+try:
+   while True:
+      time.sleep(60)
+except KeyboardInterrupt:
+   print("\nTidying up")
+   for c in cb:
+      c.cancel()
+
 pi.stop()
+

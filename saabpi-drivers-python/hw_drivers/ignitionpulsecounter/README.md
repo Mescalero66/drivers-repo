@@ -24,7 +24,7 @@
 
 >**Ignition pulse amplifier**
 
->The ignition system is equipped with an ignitionp ulse amplifier (not included on cars without tachometer), to provide more reliable control of the electronic components affected by the ignition (the APC and LH systems), and to reduce the radio interference.
+>The ignition system is equipped with an ignition pulse amplifier (not included on cars without tachometer), to provide more reliable control of the electronic components affected by the ignition (the APC and LH systems), and to reduce the radio interference.
 
 > The ignition pulse amplifier is located in the electrical distribution box, in position D.
 
@@ -44,7 +44,7 @@
 
 >**LH2.4 T16 Lambda (1989 model) (AU-market) Fuel System Operation**
 
->On the basis of the data stored in the control unit and the incoming information from various sensors, the control unit calculates and controls the opening times of the electrically operated fuel injection valves (206). **The control unit receives information onglne speed by sensing the pulses from the ignition system.**
+>On the basis of the data stored in the control unit and the incoming information from various sensors, the control unit calculates and controls the opening times of the electrically operated fuel injection valves (206). **The control unit receives information on engine speed by sensing the pulses from the ignition system.**
 
 **_Page 85_**
 
@@ -56,7 +56,7 @@
 
 >The amplifier receives ignition pulses (via a 3-core shielded cable) from the Hall sensor in ignition distibutor 6.
 
->The pulses are amplified and adapted in amplifier 146. A high-tension pulse is generated in the secondary winding each time a pulse breaks the primary cirrcuit of the ignition coil.
+>The pulses are amplified and adapted in amplifier 146. A high-tension pulse is generated in the secondary winding each time a pulse breaks the primary circuit of the ignition coil.
 
 >The hlgh-tenslon pulse is then supplied to the corresponding spark piug via the distributor.
 
