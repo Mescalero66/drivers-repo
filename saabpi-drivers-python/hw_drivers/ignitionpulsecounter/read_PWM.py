@@ -107,7 +107,7 @@ if __name__ == "__main__":
    import pigpio
    import read_PWM
 
-   PWM_GPIO = 12
+   PWM_GPIO = 16
    RUN_TIME = 60.0
    SAMPLE_TIME = 2.0
 
