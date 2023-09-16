@@ -65,18 +65,15 @@
 >**Timing Service Instrument (TSI)** socket 73 is intended for a special ignition service instrument and has the following terminals:
 
 >       1. Positive supply direct from battery 1
-
 >       2. Earth
-
 >       3. Solenoid (terminal 50) on starter motor 4
-
 >       4. Positive supply (+15) from the ignition switch when the latter is in the start or drive position
-
->       5. **Ignition pulses from ignition system amplifier 146**
-
+**
+>       5. Ignition pulses from ignition system amplifier 146
+**
 >       6. Not used
 
-![TSIpinout](https://github.com/Mescalero66/saabpi/blob/main/hw_drivers/ignitionpulsecounter/refdocs/saab900_TSIsocket73_pinout.jpg?raw=true)
+![TSIpinout](https://github.com/Mescalero66/saabpi/blob/main/hw_drivers/ignitionpulsecounter/refdocs/tsi_pinout.jpg?raw=true)
 _Timing Service Instrument (TSI) Socket 73 Pinout_
 
 

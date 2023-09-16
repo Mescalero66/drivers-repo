@@ -23,9 +23,7 @@ disp1.display_on(0)
 
 #display a string
 disp1.show_string("5aab")
-time.sleep(2)
-disp1.show_string("5aabs")
-time.sleep(2)
+time.sleep(10)
 
 # set communications speed (baud rate)
 # disp1.setSpeed(100000)

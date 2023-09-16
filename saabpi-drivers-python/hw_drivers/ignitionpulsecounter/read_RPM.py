@@ -11,7 +11,7 @@ class reader:
    """
    A class to read speedometer pulses and calculate the RPM.
    """
-   def __init__(self, pi, gpio, pulses_per_rev=0.03333, weighting=0.5, min_RPM=5.0):
+   def __init__(self, pi, gpio, pulses_per_rev=1, weighting=0.3, min_RPM=500.0):
       """
       Instantiate with the Pi and gpio of the RPM signal
       to monitor.
@@ -40,7 +40,7 @@ class reader:
 
       self.min_RPM = min_RPM
 
-      self._watchdog = 200 # Milliseconds.
+      self._watchdog = 1 # Milliseconds.
 
       if weighting < 0.0:
          weighting = 0.0
@@ -72,7 +72,7 @@ class reader:
 
          self._high_tick = tick
 
-      elif level == 2: # Watchdog timeout.
+      elif level == 10: # Watchdog timeout.
 
          if self._period is not None:
             if self._period < 2000000000:
@@ -119,7 +119,7 @@ if __name__ == "__main__":
 
       RPM = p.RPM()
      
-      print("RPM={}".format(int(RPM+0.5)))
+      print("RPM={}".format(int(RPM)))
 
    p.cancel()
 
