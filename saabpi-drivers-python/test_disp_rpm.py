@@ -4,7 +4,7 @@
 #
 # Saabpi Project 2023
 #
-# Display RPM test
+# Display RPM test - It works
 
 import time
 from hw_drivers.df_digitdisp.tm1650disp import tm1650Disp
@@ -21,7 +21,7 @@ disp1 = tm1650Disp(displayID, d1SCL, d1SDA)
 disp1.display_on(0)
 
 RPM_GPIO = 12
-RUN_TIME = 180.0
+RUN_TIME = 600.0
 SAMPLE_TIME = 0.01
 
 pi = pigpio.pi()
