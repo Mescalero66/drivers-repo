@@ -30,12 +30,21 @@ this should be added to /boot/config.txt (then reboot)
 ## identify I2C buses
 ls /dev/i2c*
 
+## START PIGPIO (must be done on every system start up somehow)
+sudo pigpiod
+
 ## scan I2C devices
 i2cdetect -y [bus]
 
 i.e.
 i2cdetect -y 1
 would scan I2C bus #1 for devices
+
+## install pynmeagps - to read NMEA GPS data
+python3 -m pip install --upgrade pynmeagps
+
+## install pyserial
+pip install pyserial
 
 ## reboot
 sudo reboot

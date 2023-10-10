@@ -4,7 +4,7 @@
 #
 # Saabpi Project 2023
 #
-# Display RPM test - It works
+# Display RPM Test
 
 import time
 from hw_drivers.df_digitdisp.tm1650disp import tm1650Disp
