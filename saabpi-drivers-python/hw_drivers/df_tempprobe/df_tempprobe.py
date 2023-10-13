@@ -42,7 +42,7 @@ class tempprobe:
 
     wLength = 0
 	
-    def __init__(self, ID):
+    def __init__(self):
         self.i2c = smbus2.SMBus(1)      # create I2C object for the temp probe
 
     def get_Temp(self):                 # define function get_temp

@@ -8,28 +8,7 @@
 # 
 # Credit to zolgear <https://github.com/zolgear/grove.py>
 
-'''
-This is the code for
-    - 
 
-  Reference to MY9221 data sheet
-
-Examples:
-
-    .. code-block:: python
-
-        import time
-        from grove.grove_ledbar import GroveLedBar
-
-        # connect to pin 5 (slot D5)
-        PIN = 5
-        ledbar = GroveLedBar(PIN)
-
-        while True:
-            for i in range(0, 11):
-                ledbar.level(i)
-                time.sleep(1)
-'''
 import time
 from grove.gpio import GPIO
 

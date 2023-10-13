@@ -14,8 +14,6 @@
 # Date        2022-12-06
 # Url         https://github.com/DFRobot/DFRobot_I2C_Multiplexer
 
-import time
-import sys
 import smbus2
 
 class i2cmultiplex:
