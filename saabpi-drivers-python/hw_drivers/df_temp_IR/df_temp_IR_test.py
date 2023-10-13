@@ -3,7 +3,7 @@
 # <https://github.com/Mescalero66/saabpi>
 # 
 # Test Code for Python Driver for:
-# DFRobot SEN0206 I2C Infrared Temperature Sensor (MLX90614) Chip)
+# DFRobot SEN0206 I2C Infrared Temperature Sensor (MLX90614) Chip
 # <https://wiki.dfrobot.com/IR_Thermometer_Sensor_MLX90614_SKU__SEN0206>
 #
 # Shout outs to: 
