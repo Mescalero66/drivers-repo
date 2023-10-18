@@ -132,32 +132,65 @@ class framebuf:
             fontFile = open("/home/pi/saabpi/hw_drivers/pd_oleddisp/fonts/font-pet-me-128.dat", "rb")
             font = bytearray(fontFile.read())
             for text_index in range(0, len(text)):
-                ind = 0
                 for col in range(8):
                     fontDataPixelValues = font[(ord(text[text_index])-32)*8 + col]
-                    #ind = text_index * 8 + x * 8 + y * 128 + col
                     for i in range(0,7):
                         if fontDataPixelValues & 1 << i != 0:
                             x_coordinate = x + col + text_index * 8
                             y_coordinate = y+i
                             if x_coordinate < WIDTH and y_coordinate < HEIGHT:
                                 self.pixel(x_coordinate, y_coordinate, c)
-        
+
         def bigtext(self, text, x, y, c=1):
             fontFile = open("/home/pi/saabpi/hw_drivers/pd_oleddisp/fonts/font-pet-me-128.dat", "rb")
             font = bytearray(fontFile.read())
             for text_index in range(0, len(text)):
-                ind = 0
                 for col in range(8):
                     fontDataPixelValues = font[(ord(text[text_index])-32)*8 + col]
-                    #ind = text_index * 8 + x * 8 + y * 128 + col
-                    for i in range(0,7):
+                    for i in range(0,8):
                         if fontDataPixelValues & 1 << i != 0:
-                            x_coordinate = x + col + text_index * 16
-                            y_coordinate = y + (i * 2)
-                            if x_coordinate < WIDTH and y_coordinate < HEIGHT:
-                                self.pixel(x_coordinate, y_coordinate, c)
-    
+                            x_coord = x + (col*2) + (text_index * 14)
+                            y_coordinate = y+(i*3)
+                            if x_coord < WIDTH and y_coordinate < HEIGHT:
+                                for iY in range(0,3):
+                                    self.pixel(x_coord, y_coordinate - iY, c)
+                                    self.pixel(x_coord - 1, y_coordinate - iY, c)
+                                    # the font size can't be changed, they said!
+                                    # ha!
+        
+        def temptext(self, text, lbl, key=0, x=83, y=3, c=1):
+            # key = 0 for HIGH, 1 for LOW
+            if key == 0:
+                self.text(lbl,0,0,1)
+                self.text("c",120,16,1)
+                y = 3
+            else:
+                self.text(lbl,0,32,1)
+                self.text("c",120,48,1)
+                y = 35      
+            fontFile = open("/home/pi/saabpi/hw_drivers/pd_oleddisp/fonts/font-pet-me-128.dat", "rb")
+            font = bytearray(fontFile.read())
+            for text_index in range(0, len(text)-2):
+                for col in range(8):
+                    fontDataPixelValues = font[(ord(text[text_index])-32)*8 + col]
+                    for i in range(0,8):
+                        if fontDataPixelValues & 1 << i != 0:
+                            x_coord = x + (col*2) + (text_index * 15)
+                            y_coordinate = y+(i*3)
+                            if x_coord < WIDTH and y_coordinate < HEIGHT:
+                                for iY in range(0,3):
+                                    self.pixel(x_coord, y_coordinate - iY, c)
+                                    self.pixel(x_coord - 1, y_coordinate - iY, c)
+            for text_index in range(len(text)-2, len(text)):
+                for col in range(8):
+                    fontDataPixelValues = font[(ord(text[text_index])-32)*8 + col]
+                    for i in range(0,8):
+                        if fontDataPixelValues & 1 << i != 0:
+                            x_coord = (x-3) + col + (text_index * 8) + ((len(text)-2) * 8)
+                            y_coordinate = y+(i*2) - 1
+                            if x_coord < WIDTH and y_coordinate < HEIGHT:
+                                for iY in range(0,2):
+                                    self.pixel(x_coord, y_coordinate - iY, c)
     
 class pd_OLED(framebuf.FrameBuffer):
     def init_display(self):
@@ -167,8 +200,7 @@ class pd_OLED(framebuf.FrameBuffer):
         self.buffer = bytearray(self.pages * WIDTH)
         for cmd in (
             _SET_DISP,  # display off
-            # address setting
-            _SET_MEM_ADDR,
+            _SET_MEM_ADDR, # address setting
             0x00,  # horizontal
             # resolution and layout
             _SET_DISP_START_LINE,  # start at line 0

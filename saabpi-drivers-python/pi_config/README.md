@@ -43,6 +43,9 @@ would scan I2C bus #1 for devices
 ## install pynmeagps - to read NMEA GPS data
 python3 -m pip install --upgrade pynmeagps
 
+## install libopenjp2 - required for SSD1306 adafruit drivers
+sudo apt-get install libopenjp2-7
+
 ## install pyserial
 pip install pyserial
 

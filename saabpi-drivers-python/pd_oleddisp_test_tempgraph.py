@@ -29,7 +29,11 @@ while True:
     tempAM = round(thermometer.get_amb_temp(), 2)
     display.fill(0)
     # display.hline(0,HEIGHT-1,WIDTH,1); display.vline(0,0,HEIGHT,1) # draw some axes
-    tempIR = round(thermometer.get_obj_temp(), 2)
-    display.bigtext(str(tempIR),95,3,1) # print the distance in the top right
+    tempIR = round(thermometer.get_obj_temp(), 1)
+    tempStr = (str(tempIR))
+    #display.bigtext(tempStr,x=0,y=3,c=1)
+    display.temptext(tempStr, key=0, lbl="Turbo")
+    display.temptext(tempStr, key=1, lbl="1234567890")
+    #display.text(tempStr,x=0,y=32,c=1)
     display.updateGraph2D(distanceGraph, tempIR) # plot the distance
     display.show()
