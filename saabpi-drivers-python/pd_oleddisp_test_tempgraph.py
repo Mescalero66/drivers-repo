@@ -22,18 +22,27 @@ TempI2Cbus = smbus2.SMBus(1)
 
 thermometer = MLX90614(TempI2Cbus, TempI2Caddress)
 display = create_pd_OLED()
-distanceGraph = display.graph2D(height=HEIGHT, minValue=10, maxValue=40)
-display.invert(0)
+#distanceGraph = display.graph2D(height=HEIGHT, minValue=10, maxValue=40)
+topGraph = display.graph2D(originX=0,originY=29,width=79,height=30,minValue=0,maxValue=100,c=1,bars=True)
+botGraph = display.graph2D(originX=0,originY=62,width=79,height=30,minValue=0,maxValue=100,c=1,bars=True)
+#display.invert(0)
 
 while True:
-    tempAM = round(thermometer.get_amb_temp(), 2)
+    #tempAM = round(thermometer.get_amb_temp(), 2)
     display.fill(0)
-    # display.hline(0,HEIGHT-1,WIDTH,1); display.vline(0,0,HEIGHT,1) # draw some axes
+    #display.hline(0,30,127,1)
+    #display.hline(0,63,127,1)
     tempIR = round(thermometer.get_obj_temp(), 1)
     tempStr = (str(tempIR))
     #display.bigtext(tempStr,x=0,y=3,c=1)
-    display.temptext(tempStr, key=0, lbl="Turbo")
-    display.temptext(tempStr, key=1, lbl="1234567890")
-    #display.text(tempStr,x=0,y=32,c=1)
-    display.updateGraph2D(distanceGraph, tempIR) # plot the distance
+    display.temptext(tempStr, key=0, lbl="Exhaust")
+    display.updateGraph2D(topGraph, tempIR)
+    tempIR = round(thermometer.get_obj_temp(), 1) + 65
+    tempStr = (str(tempIR))
+    display.temptext(tempStr, key=1, lbl="Manifold")
+    display.updateGraph2D(botGraph, tempIR)
     display.show()
+    #display.text(tempStr,x=0,y=32,c=1)
+    
+    
+    
