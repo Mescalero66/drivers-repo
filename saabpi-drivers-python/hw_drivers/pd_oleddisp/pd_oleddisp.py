@@ -30,6 +30,7 @@ _SET_DISP_CLK_DIV = 0xD5
 _SET_PRECHARGE = 0xD9
 _SET_VCOM_DESEL = 0xDB
 _SET_CHARGE_PUMP = 0x8D
+ID = 0
 WIDTH = 128
 HEIGHT = 64
 i2c_err_str = 'Cannnot communicate with module at address 0x{:02X}, check wiring'

@@ -16,6 +16,9 @@ Details: <https://github.com/CoreElectronics/CE-PiicoDev-SSD1306-MicroPython-Mod
 
 ## read this stuff
 
+- Commands List (in MicroPython)
+<https://github.com/CoreElectronics/CE-PiicoDev-SSD1306-MicroPython-Module>
+
 - PiicoDev Unified Python Library
 <https://github.com/CoreElectronics/CE-PiicoDev-PyPI>
 

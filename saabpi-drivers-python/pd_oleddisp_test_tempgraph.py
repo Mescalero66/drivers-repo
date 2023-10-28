@@ -12,8 +12,6 @@
 # <https://core-electronics.com.au/guides/raspberry-pi/piicodev-oled-ssd1306-raspberry-pi-guide/>
 
 import smbus2
-from time import sleep
-from math import sin, cos
 from hw_drivers.df_temp_IR.df_temp_ir import MLX90614
 from hw_drivers.pd_oleddisp.pd_oleddisp import *
 

@@ -42,13 +42,24 @@ class tempprobe:
 
     wLength = 0
 	
-    def __init__(self):
+    def __init__(self, ID):
         self.i2c = smbus2.SMBus(1)      # create I2C object for the temp probe
 
     def get_Temp(self):                 # define function get_temp
         self.i2c.write_byte_data(self.CHT8305_Address,self.REG_TEMPERATURE,0x80)
             # to I2C device (0x40), at the TEMP Register, write the 7-bit I2C address and WRITE flag (together 1000000, or 0x80))
         sleep(self.I2C_Delay_time)                              # wait for sensor to measure
+        rTBinary = self.i2c.read_byte(self.CHT8305_Address)     # read the result out of the device (binary byte)
+        rTBitShift = rTBinary << 8                              # bitshift the binary to get a number
+        rTCalc = rTBitShift * 165 / 65535 - 40                  # do the required maths to it
+        return rTCalc                                           # send it back
+    
+    def req_Temp(self):                 # define function ask_temp
+        self.i2c.write_byte_data(self.CHT8305_Address,self.REG_TEMPERATURE,0x80)
+            # to I2C device (0x40), at the TEMP Register, write the 7-bit I2C address and WRITE flag (together 1000000, or 0x80))
+        sleep(self.I2C_Delay_time)                              # wait for sensor to measure
+
+    def read_Temp(self):
         rTBinary = self.i2c.read_byte(self.CHT8305_Address)     # read the result out of the device (binary byte)
         rTBitShift = rTBinary << 8                              # bitshift the binary to get a number
         rTCalc = rTBitShift * 165 / 65535 - 40                  # do the required maths to it
