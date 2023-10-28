@@ -6,7 +6,7 @@
 # DFRobot DFR0645-R DFR0645-G
 
 import time
-from tm1650disp import tm1650Disp
+from tm1650disp import dfDisp
 import RPi.GPIO as GPIO
 
 # connect to clockPin & dataPin
@@ -20,13 +20,13 @@ d4SDA = 5
 d4SCL = 6
 
 # create object
-disp1 = tm1650Disp(1, d1SCL, d1SDA)
+disp1 = dfDisp(1, d1SCL, d1SDA)
 disp1.display_clear()
-disp2 = tm1650Disp(2, d2SCL, d2SDA)
+disp2 = dfDisp(2, d2SCL, d2SDA)
 disp2.display_clear()
-disp3 = tm1650Disp(3, d3SCL, d3SDA)
+disp3 = dfDisp(3, d3SCL, d3SDA)
 disp3.display_clear()
-disp4 = tm1650Disp(4, d4SCL, d4SDA)
+disp4 = dfDisp(4, d4SCL, d4SDA)
 disp4.display_clear()
 # disp1.sendStart()
 

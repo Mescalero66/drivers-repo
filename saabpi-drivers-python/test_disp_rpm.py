@@ -7,7 +7,7 @@
 # Display RPM Test
 
 import time
-from hw_drivers.df_digitdisp.tm1650disp import tm1650Disp
+from hw_drivers.df_digitdisp.tm1650disp import dfDisp
 from hw_drivers.ignitionpulsecounter.read_RPM import reader
 import RPi.GPIO as GPIO
 import pigpio
@@ -17,7 +17,7 @@ d1SDA = 24
 d1SCL = 25
 displayID = 1
 
-disp1 = tm1650Disp(displayID, d1SCL, d1SDA)
+disp1 = dfDisp(displayID, d1SCL, d1SDA)
 disp1.display_on(0)
 
 RPM_GPIO = 12

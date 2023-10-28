@@ -6,7 +6,7 @@ import time
 from grove_ledbar import GroveLedBar
 
 # connect to pin 5 (slot D5)
-PIN = 5
+PIN = 22
 
 # reverse direction
 rev = True

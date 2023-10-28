@@ -21,7 +21,7 @@ characterBytes = [
 ]
 digitAddress = [0x68, 0x6A, 0x6C, 0x6E]
  
-class tm1650Disp:
+class dfDisp:
     def __init__(self, ID, clock=1, data=0):
         self.displayDigitsRaw = [0, 0, 0, 0]
         self.pulse_width = (120 / 10000000)

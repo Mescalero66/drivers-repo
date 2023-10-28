@@ -4,7 +4,7 @@
 # The MIT License (MIT)
 # 
 # Python Driver for:
-# Seeed Grove LED Bar 104030002 <https://www.seeedstudio.com/Grove-LED-Bar.html>`
+# Seeed Grove LED Bar 104030002 <https://www.seeedstudio.com/Grove-LED-Bar.html>
 # 
 # Credit to zolgear <https://github.com/zolgear/grove.py>
 

@@ -6,7 +6,7 @@
 # DFRobot DFR0645-R DFR0645-G
 
 import time
-from tm1650disp import tm1650Disp
+from tm1650disp import dfDisp
 import RPi.GPIO as GPIO
 
 # connect to clockPin & dataPin
@@ -15,7 +15,7 @@ d1SCL = 25
 displayID = 1
 
 # create object
-disp1 = tm1650Disp(displayID, d1SCL, d1SDA)
+disp1 = dfDisp(displayID, d1SCL, d1SDA)
 # disp1.sendStart()
 
 # turn on with brightness (high 0 to low 7)
