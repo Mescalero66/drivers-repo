@@ -4,7 +4,7 @@ from machine import Pin, I2C, SoftI2C
 import network
 from umodbus.tcp import ModbusTCP
 from ahtx0 import *
-from mlx90614 import *
+# from mlx90614 import *
 import DFRobot_I2C_Multiplexer
 import I2C_CHT8305_SEN0546
 
