@@ -12,12 +12,12 @@ import RPi.GPIO as GPIO
 # connect to clockPin & dataPin
 d1SDA = 24
 d1SCL = 25
-d2SDA = 17
+d2SDA = 26
 d2SCL = 27
-d3SDA = 22
-d3SCL = 23
-d4SDA = 5
-d4SCL = 6
+d3SDA = 16
+d3SCL = 17
+d4SDA = 18
+d4SCL = 19
 
 # create object
 disp1 = dfDisp(1, d1SCL, d1SDA)
@@ -30,19 +30,41 @@ disp4 = dfDisp(4, d4SCL, d4SDA)
 disp4.display_clear()
 # disp1.sendStart()
 
-# turn on with brightness (high 0 to low 7)
+# turn on with brightness (highest is 0, then 6 down to 1 lowest)
 disp1.display_on(0)
 disp2.display_on(0)
-disp3.display_on(0)
-disp4.display_on(0)
+disp3.display_on(5)
+disp4.display_on(5)
+
+disp1.show_string("5aab")
+disp2.show_string("5aab")
+disp3.show_string("5aab")
+disp4.show_string("5aab")
+time.sleep(5)
+
+disp1.display_on(2)
+disp2.display_on(2)
+disp3.display_on(1)
+disp4.display_on(1)
+
+disp1.show_string("5aab")
+disp2.show_string("5aab")
+disp3.show_string("5aab")
+disp4.show_string("5aab")
+time.sleep(5)
 
 inta = 1
-while inta < 10:
-    disp1.show_string("Char")
-    disp3.show_string("lie ")
-    disp2.show_string("Cait")
-    disp4.show_string("lin ")
-    time.sleep(30)
+while inta < 50:
+    for i in range(7):
+        disp1.display_on(i)
+        disp1.show_string(str(d1SDA) + "B" + str(i))
+        disp2.display_on(i)
+        disp2.show_string(str(d2SDA) + "B" + str(i))
+        disp3.display_on(i)
+        disp3.show_string(str(d3SDA) + "B" + str(i))
+        disp4.display_on(i)
+        disp4.show_string(str(d4SDA) + "B" + str(i))
+        time.sleep(2)
     int =+ 1
 
 disp1.show_string("5aab")

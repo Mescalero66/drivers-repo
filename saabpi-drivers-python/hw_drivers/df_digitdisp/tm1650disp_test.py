@@ -10,8 +10,8 @@ from tm1650disp import dfDisp
 import RPi.GPIO as GPIO
 
 # connect to clockPin & dataPin
-d1SDA = 24
-d1SCL = 25
+d1SDA = 18
+d1SCL = 19
 displayID = 1
 
 # create object

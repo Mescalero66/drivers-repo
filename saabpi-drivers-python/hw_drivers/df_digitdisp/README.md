@@ -9,7 +9,13 @@ Wiki: <https://wiki.dfrobot.com/4-Digital%20LED%20Segment%20Display%20Module%20%
 - Interface: I2C
     - **not I2C** despite false advertising from DFRobot
     - it uses a very annoying non-addressable digital I/O, and you can only send commands via some hybrid of binary data and pulse width modulation.
-    - **very annoying - do not recommend this product**
+    - **very annoying - do not recommend this product** (they do look good in action though)
+
+## REGARDING BRIGHTNESS
+- The reds are brighter than the greens.
+- For rough brightness equivalents:
+  - Green: MAX=0 MIN=2
+  - Red: MAX=5 MIN=1
 
 ## TM1650 SIGNAL SEQUENCING
 

@@ -12,15 +12,16 @@ from hw_drivers.ignitionpulsecounter.read_RPM import reader
 import RPi.GPIO as GPIO
 import pigpio
 
-# connect to clockPin & dataPin
-d1SDA = 24
-d1SCL = 25
+# connect to display's clockPin & dataPin
+d1SDA = 16
+d1SCL = 17
 displayID = 1
 
 disp1 = dfDisp(displayID, d1SCL, d1SDA)
 disp1.display_on(0)
 
-RPM_GPIO = 12
+# specify GPIO Digital Pin of incoming Pulse signal
+RPM_GPIO = 6
 RUN_TIME = 600.0
 SAMPLE_TIME = 0.01
 

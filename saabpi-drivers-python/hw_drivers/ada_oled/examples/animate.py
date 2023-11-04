@@ -21,13 +21,16 @@
 import math
 import time
 
-import Adafruit_GPIO.SPI as SPI
-import Adafruit_SSD1306
+import RPi.GPIO as GPIO
+from hw_drivers.df_multiplexer.df_multiplexer import i2cmultiplex
 
 from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
 
+mux2addr = 0x74
+mux2 = i2cmultiplex(mux2addr)
+mux2.select_port(0)
 
 # Raspberry Pi pin configuration:
 RST = 24
@@ -44,10 +47,10 @@ SPI_DEVICE = 0
 # SPI_DEVICE = 0
 
 # 128x32 display with hardware I2C:
-disp = Adafruit_SSD1306.SSD1306_128_32(rst=RST)
+#disp = Adafruit_SSD1306.SSD1306_128_32(rst=None)
 
 # 128x64 display with hardware I2C:
-# disp = Adafruit_SSD1306.SSD1306_128_64(rst=RST)
+disp = SSD1306_128_64(rst=None)
 
 # 128x32 display with hardware SPI:
 # disp = Adafruit_SSD1306.SSD1306_128_32(rst=RST, dc=DC, spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE, max_speed_hz=8000000))

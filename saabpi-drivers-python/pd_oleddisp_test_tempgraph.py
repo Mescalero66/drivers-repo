@@ -7,9 +7,6 @@
 # PiicoDev OLED SSD1306 Display
 # <https://core-electronics.com.au/piicodev-oled-display-module-128x64-ssd1306.html>
 #
-# Shout outs to: 
-# <https://github.com/CoreElectronics/CE-PiicoDev-PyPI/tree/main>
-# <https://core-electronics.com.au/guides/raspberry-pi/piicodev-oled-ssd1306-raspberry-pi-guide/>
 
 import smbus2
 from hw_drivers.df_temp_IR.df_temp_ir import MLX90614
