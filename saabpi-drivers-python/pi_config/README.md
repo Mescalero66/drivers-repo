@@ -44,6 +44,7 @@ would scan I2C bus #1 for devices
 python3 -m pip install --upgrade pynmeagps --break-system-packages
 
 ## intall Pillow
+sudo python3 -m pip install --upgrade pip --break-system-packages
 sudo python3 -m pip install --upgrade Pillow --break-system-packages
 
 ## adafruit SSD1306 Drivers
