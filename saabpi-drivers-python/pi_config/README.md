@@ -7,7 +7,7 @@ sudo apt update && sudo apt full-upgrade --yes && sudo reboot
 ## install  Git, Pip
 sudo apt install git python3-dev python3-pip --yes
 
-## clone grove.py repo
+## clone grove.py repo (not necessary??)
 git clone https://github.com/Seeed-Studio/grove.py
 cd grove.py
 sudo pip3 install .
@@ -41,7 +41,7 @@ i2cdetect -y 1
 would scan I2C bus #1 for devices
 
 ## install pynmeagps - to read NMEA GPS data
-python3 -m pip install --upgrade pynmeagps
+python3 -m pip install --upgrade pynmeagps --break-system-packages
 
 ## install libopenjp2 - required for SSD1306 adafruit drivers
 sudo apt-get install libopenjp2-7
