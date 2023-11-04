@@ -7,10 +7,10 @@ sudo apt update && sudo apt full-upgrade --yes && sudo reboot
 ## install  Git, Pip
 sudo apt install git python3-dev python3-pip --yes
 
-## clone grove.py repo (not necessary??)
+## clone grove.py repo 
 git clone https://github.com/Seeed-Studio/grove.py
 cd grove.py
-sudo pip3 install .
+sudo pip3 install . --break-system-packages
 
 ## enable I2C interface
 sudo raspi-config nonint do_i2c 0
@@ -43,8 +43,11 @@ would scan I2C bus #1 for devices
 ## install pynmeagps - to read NMEA GPS data
 python3 -m pip install --upgrade pynmeagps --break-system-packages
 
-## install libopenjp2 - required for SSD1306 adafruit drivers
-sudo apt-get install libopenjp2-7
+## intall Pillow
+sudo python3 -m pip install --upgrade Pillow --break-system-packages
+
+## adafruit SSD1306 Drivers
+sudo pip install Adafruit-SSD1306 --break-system-packages
 
 ## install pyserial
 pip install pyserial

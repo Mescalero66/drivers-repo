@@ -162,12 +162,12 @@ class framebuf:
         def temptext(self, text, lbl, key=0, x=83, y=3, c=1):
             # key = 0 for TOP ROW, 1 for BOTTOM ROW
             if key == 0:
-                self.text(lbl,0,0,1)
-                self.text("c",120,22,1)
+            #    self.text(lbl,0,0,1)
+            #    self.text("c",120,22,1)
                 y = 10
             else:
-                self.text(lbl,0,33,1)
-                self.text("c",120,55,1)
+            #    self.text(lbl,0,33,1)
+            #    self.text("c",120,55,1)
                 y = 43      
             fontFile = open("/home/pi/saabpi/hw_drivers/pd_oleddisp/fonts/font-pet-me-128.dat", "rb")
             font = bytearray(fontFile.read())

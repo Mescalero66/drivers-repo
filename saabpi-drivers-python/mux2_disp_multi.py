@@ -76,6 +76,7 @@ while True:                                 # start the loop
                 try:
                     mux1.select_port(i)
                     tempprobes[i].req_Temp()
+                    print(str(time.time()) + ",Requested Temp,#" + str(i))
                 except:
                     pass
             for i in range(oledCount):
@@ -83,16 +84,26 @@ while True:                                 # start the loop
                 mux1.select_port(i*2)
                 try:
                     TempA = round(tempprobes[(i*2)].read_Temp(), 1)
-                    display[i].temptext(str(TempA), oledTT[i], 0)
+                    print(str(time.time()) + ",Received Temp Top,#" + str(i))
+                    #display[i].temptext(str(TempA), oledTT[i], 0)
+                    display[i].bigtext(str(TempA), x=83, y=10, c=1)
+                    print(str(time.time()) + ",Updated Top Num,#" + str(i))
                     display[i].updateGraph2D(oledTGs[i], TempA)
+                    print(str(time.time()) + ",Updated Top Graph,#" + str(i))
                     mux1.select_port((i*2)+1)
                     TempB = round(tempprobes[(i*2)+1].read_Temp(), 1)
-                    display[i].temptext(str(TempB), oledBT[i], 1)
+                    print(str(time.time()) + ",Received Temp Bot,#" + str(i))
+                    #display[i].temptext(str(TempB), oledBT[i], 1)
+                    display[i].bigtext(str(TempB), x=83, y=43, c=1)
+                    print(str(time.time()) + ",Updated Bot Num,#" + str(i))
                     display[i].updateGraph2D(oledBGs[i], TempB)
+                    print(str(time.time()) + ",Updated Bot Graph,#" + str(i))
                 except:
                     pass
                 display[i].show()
+                print(str(time.time()) + ",Show Display,#" + str(i))
                 display[i].fill(0)
+                print(str(time.time()) + ",Fill Display,#" + str(i))
     except KeyboardInterrupt:                               
         for i in range(oledCount):
             mux2.select_port(i)
