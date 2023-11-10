@@ -7,10 +7,14 @@
         ".vscode\\Pico-W-Stub"
     ],
     "python.analysis.extraPaths": [
-        ".vscode\\Pico-W-Stub\\stubs"
+        ".vscode\\Pico-W-Stub\\stubs",
+        ".vscode\\Pico-W-Stub"
     ],
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
-    "python.formatting.provider": "none"
+    "python.formatting.provider": "none",
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportMissingModuleSource": "none"
+    }
 }

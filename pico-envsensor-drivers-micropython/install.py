@@ -1,2 +1,8 @@
+import network
 import mip
-mip.install('github:brainelectronics/micropython-modbus')
+
+nic = network.WIZNET5K()
+nic.active(True)
+nic.ifconfig("dhcp")
+nic.isconnected()
+mip.install("github:brainelectronics/micropython-modbus")

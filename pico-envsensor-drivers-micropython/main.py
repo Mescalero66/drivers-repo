@@ -3,25 +3,37 @@ import machine
 from machine import Pin, I2C, SoftI2C
 import network
 from umodbus.tcp import ModbusTCP
-from ahtx0 import *
-# from mlx90614 import *
 import DFRobot_I2C_Multiplexer
 import I2C_CHT8305_SEN0546
 
 
 I2CMultiAddr = 0x70  # I2C Multiplexer addr
 
-I2CMulti = DFRobot_I2C_Multiplexer.DFRobot_I2C_Multiplexer(0, I2CMultiAddr, 9, 8)
-for Port in range(0, 8):  # Scan I2C devices on each port
-    print("Port:%s" % Port)
-    addr = I2CMulti.scan(Port)
-    if len(addr):
-        print("i2c addr:%s" % addr)
 
+ip_address = "192.168.1.237"
+network_mask = "255.255.255.0"
+gateway_address = "192.168.1.1"
+dns_server = "8.8.8.8"
+try:
+    f = open("network_address.txt", "r")
+    ip_address = f.readline().rstrip("\r\n")
+    network_mask = f.readline().rstrip("\r\n")
+    gateway_address = f.readline().rstrip("\r\n")
+    dns_server = f.readline().rstrip("\r\n")
+    print("Network config: ")
+    print(ip_address)
+    print(network_mask)
+    print(gateway_address)
+    print(dns_server)
+except OSError:  # open failed
+    # handle the file open case
+    print(
+        "failed loading network config from network_address.txt file. Using default config"
+    )
 
 nic = network.WIZNET5K()
 nic.active(True)
-nic.ifconfig("dhcp")
+nic.ifconfig((ip_address, network_mask, gateway_address, dns_server))
 nic.isconnected()
 
 
@@ -51,6 +63,8 @@ def my_reg_get_cb(reg_type, address, val):
 
 local_ip = nic.ifconfig()[0]
 tcp_port = 502  # port to listen for requests/providing data
+
+print("Setting up Modbus")
 
 client = ModbusTCP()
 
@@ -109,29 +123,107 @@ register_definitions = {
             "val": 0,
             "on_get_cb": my_reg_get_cb,
         },
+        "TEMPERATURE_5": {
+            "register": 18,
+            "len": 1,
+            "val": 0,
+            "on_get_cb": my_reg_get_cb,
+        },
+        "HUMIDITY_5": {
+            "register": 19,
+            "len": 1,
+            "val": 0,
+            "on_get_cb": my_reg_get_cb,
+        },
+        "TEMPERATURE_6": {
+            "register": 20,
+            "len": 1,
+            "val": 0,
+            "on_get_cb": my_reg_get_cb,
+        },
+        "HUMIDITY_6": {
+            "register": 21,
+            "len": 1,
+            "val": 0,
+            "on_get_cb": my_reg_get_cb,
+        },
+        "TEMPERATURE_7": {
+            "register": 22,
+            "len": 1,
+            "val": 0,
+            "on_get_cb": my_reg_get_cb,
+        },
+        "HUMIDITY_7": {
+            "register": 23,
+            "len": 1,
+            "val": 0,
+            "on_get_cb": my_reg_get_cb,
+        },
+        "TEMPERATURE_8": {
+            "register": 24,
+            "len": 1,
+            "val": 0,
+            "on_get_cb": my_reg_get_cb,
+        },
+        "HUMIDITY_8": {
+            "register": 25,
+            "len": 1,
+            "val": 0,
+            "on_get_cb": my_reg_get_cb,
+        },
     }
 }
+
+channel = 1
+clock_pin = 3
+data_pin = 2
 
 # use the defined values of each register type provided by register_definitions
 client.setup_registers(registers=register_definitions)
 
+print("Registering sensors")
+I2CMulti = DFRobot_I2C_Multiplexer.DFRobot_I2C_Multiplexer(
+    channel, I2CMultiAddr, clock_pin, data_pin
+)
+for Port in range(0, 8):  # Scan I2C devices on each port
+    try:
+        print("Port:%s" % Port)
+        addr = I2CMulti.scan(Port)
+        if len(addr):
+            print("i2c addr:%s" % addr)
+    except OSError as ex:
+        print("Failed scanning sensor on channel ", Port, " : {}".format(ex))
+
 sensors = []
-for i in range(4):
-    I2CMulti.selectPort(i)
-    sensors.append(I2C_CHT8305_SEN0546.I2C_CHT8305_SEN0546(0, 9, 8))
+for i in range(8):
+    try:
+        I2CMulti.selectPort(i)
+        sensors.append(
+            I2C_CHT8305_SEN0546.I2C_CHT8305_SEN0546(channel, clock_pin, data_pin)
+        )
+    except OSError as ex:
+        print("Failed registering sensor on channel ", i, " : {}".format(ex))
 
 
+print("Starting main loop")
 lastReadTime = time.time()
 while True:
     try:
         result = client.process()
         now = time.time()
         if (now - lastReadTime) > 2:
-            for i in range(4):
-                I2CMulti.selectPort(i)
-                Temperature, Humidity = sensors[i].get_CHT8305_TEMPERATURE_HUMIDITY()
-                client.set_hreg(address=10 + (i * 2), value=int(Temperature * 10))
-                client.set_hreg(address=11 + (i * 2), value=int(Humidity * 10))
+            for i in range(8):
+                try:
+                    I2CMulti.selectPort(i)
+                    Temperature, Humidity = sensors[
+                        i
+                    ].get_CHT8305_TEMPERATURE_HUMIDITY()
+                    client.set_hreg(address=10 + (i * 2), value=int(Temperature * 10))
+                    client.set_hreg(address=11 + (i * 2), value=int(Humidity * 10))
+                except Exception as e:
+                    print("Failed reading sensor on channel ", i, " : {}".format(e))
+                except OSError as ex:
+                    print("Failed reading sensor on channel ", i, " : {}".format(ex))
             lastReadTime = now
 
         time.sleep_ms(100)
