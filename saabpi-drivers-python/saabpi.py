@@ -59,10 +59,21 @@ digitDisp.append(dfDisp(2, d2SCL, d2SDA))
 digitDisp.append(dfDisp(3, d3SCL, d3SDA))
 digitDisp.append(dfDisp(4, d4SCL, d4SDA))
 
+digitDisp[0].display_on(0)
+digitDisp[1].display_on(0)
+digitDisp[2].display_on(5)
+digitDisp[3].display_on(5)
 # turn on each digit display (at brightness level 0 (highest))
 for i in range(digitDispNo):
-    digitDisp[i].display_on(0)
     digitDisp[i].display_clear()
+
+hour = int(time.strftime("%H"))
+if (hour > 18) or (hour < 7):
+    digitDisp[0].display_on(2)
+    digitDisp[1].display_on(2)
+    digitDisp[2].display_on(1)
+    digitDisp[3].display_on(1)
+    LEDBarBrightness = 130
 
 # display the legends on the digit displays
 digitDisp[0].show_string("5pd")        
