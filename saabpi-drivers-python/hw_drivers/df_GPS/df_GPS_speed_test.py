@@ -15,10 +15,11 @@ baud = 9600
 timeout = 3
 
 # create object
-USBkph = USBGPS(serialport, baud, timeout)
+GPS = USBGPS(serialport, baud, timeout)
 
 #get speed reading
 for i in range(0, 100):
-    print(USBkph.GetGPSkph())
+    GPSdata = GPS.GetGPS()
+    print(GPSdata[0])
     i += 1
     time.sleep(0.5)

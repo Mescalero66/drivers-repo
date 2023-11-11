@@ -18,7 +18,8 @@ ledbar = GroveLedBar(PIN, rev)
 ledbar.level(0)
 
 # set level and brightness
-ledbar.level(10,128)
+ledbar.level(10,255)
+time.sleep(10)
 
 # auto climbing test in both level and brightness
 while True:

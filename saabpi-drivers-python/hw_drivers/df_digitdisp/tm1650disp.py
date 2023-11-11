@@ -97,8 +97,8 @@ class dfDisp:
         di = 0
 
         # Ensure the string does not exceed the length of the display
-        if len(s) > 4: # if you change this (and line below) to '5', you can send a 5 digit string if 1 digit is a decimal point - i.e. "21.5c"
-            s = s[:4]  # Truncate the string if it's too long
+        if len(s) > 5: # if you change this (and line below) to '5', you can send a 5 digit string if 1 digit is a decimal point - i.e. "21.5c"
+            s = s[:5]  # Truncate the string if it's too long
         if len(s) < 4:
             s = " " + s
 
