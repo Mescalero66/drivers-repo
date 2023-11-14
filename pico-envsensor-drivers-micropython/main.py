@@ -31,6 +31,9 @@ except OSError:  # open failed
         "failed loading network config from network_address.txt file. Using default config"
     )
 
+
+time.sleep_ms(2500)
+
 nic = network.WIZNET5K()
 nic.active(True)
 nic.ifconfig((ip_address, network_mask, gateway_address, dns_server))
