@@ -33,8 +33,8 @@ class USBGPS:
                 latNS = parsed_data.NS
                 lon = parsed_data.lon
                 lonEW = parsed_data.EW
-                latStr = ((str(round(lat, 5))) + " " + latNS)
-                lonStr = ((str(round(lon, 5))) + " " + lonEW)
+                latStr = ((str(format(lat, '.5f'))) + " " + latNS)
+                lonStr = ((str(format(lon, '.5f'))) + " " + lonEW)
                 heading = parsed_data.cog
                 return spd, latStr, lonStr, heading, alt
             else:
