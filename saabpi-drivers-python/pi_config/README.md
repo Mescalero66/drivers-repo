@@ -51,7 +51,7 @@ sudo python3 -m pip install --upgrade Pillow --break-system-packages
 sudo pip install Adafruit-SSD1306 --break-system-packages
 
 ## install pyserial
-pip install pyserial --break-system-packages
+sudo pip3 install pyserial --break-system-packages
 
 ## reboot
 sudo reboot
