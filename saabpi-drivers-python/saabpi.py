@@ -18,7 +18,7 @@ from hw_drivers.df_GPS.df_GPS_speed import USBGPS
 import pigpio
 import smbus2
 
-time.sleep(2)
+time.sleep(3)
 
 digitDispNo = 4
 # DIO PINS FOR EACH DIGIT DISPLAY
@@ -137,8 +137,8 @@ IRThermo = MLX90614(I2CBus, 0x5A)
 GPSserialport = '/dev/ttyACM0'
 GPSbaud = 9600
 GPStimeout = 3
-GPSlat = "Saab 900 Turbo"
-GPSlon = "Acquiring GPS....."
+GPSlat = "Saab 900"
+GPSlon = "   Turbo"
 
 # create GPS Object
 GPSobject = USBGPS(GPSserialport, GPSbaud, GPStimeout)
@@ -168,6 +168,7 @@ def GetTempDisplay(threadID):
                 mux1.select_port(7)
                 tempRes[5] = round(IRThermo.get_obj_temp(), 1)
                 tempRes[6] = round(IRThermo.get_amb_temp(), 1)
+                time.sleep(0.2)                                 # inserted here
                 mux1.select_port(4)
                 tempRes[7] = int(tempprobes[4].read_Humi())
                 
@@ -278,13 +279,14 @@ def GetGPSData(threadID):
 # main section to start all the threads
 
 if __name__ == "__main__":
-    time.sleep(3)
     threadReadRPM = threading.Thread(target=ReadSaabRPM, args=(1,), daemon=False)
     threadReadRPM.start()
     #print("rpm thread started")
+    time.sleep(5)
     threadTempDisp = threading.Thread(target=GetTempDisplay, args=(2,), daemon=False)
     threadTempDisp.start()
     #print("temp thread started")
+    time.sleep(2)
     threadGPS = threading.Thread(target=GetGPSData, args=(3,), daemon=False)
     threadGPS.start()
     #print("GPS thread started")

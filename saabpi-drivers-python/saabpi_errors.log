@@ -1,6 +1,0 @@
-Traceback (most recent call last):
-  File "/home/pi/saabpi/saabpi.py", line 17, in <module>
-    from hw_drivers.df_GPS.df_GPS_speed import USBGPS
-  File "/home/pi/saabpi/hw_drivers/df_GPS/df_GPS_speed.py", line 7, in <module>
-    import Serial
-ModuleNotFoundError: No module named 'Serial'
