@@ -165,8 +165,27 @@ class I2C_CHT8305_SEN0546:
         # print("ReadBuf_CHT8305_Temp_Reg[3]: ", hex(ReadBuf_CHT8305_Temp_Reg[3]), "| ", ReadBuf_CHT8305_Temp_Reg[3])
         Temperature_raw = ReadBuf_CHT8305_Temp_Reg[0] << 8 | ReadBuf_CHT8305_Temp_Reg[1]
         Temperature = (Temperature_raw * 165 / 65535) - 40
-        print("Temperature: ", Temperature)
+        # print("Temperature: ", Temperature)
         Humidity_prep = ReadBuf_CHT8305_Temp_Reg[2] << 8 | ReadBuf_CHT8305_Temp_Reg[3]
         Humidity = (Humidity_prep / 65535) * 100
-        print("Humidity: ", Humidity)
+        # print("Humidity: ", Humidity)
+        return Temperature, Humidity
+
+    def req_CHT8305_TEMPERATURE_HUMIDITY(self):
+        com_CHT8305_T_Reg = bytearray(4)
+        com_CHT8305_H_Reg = bytearray(4)
+        com_CHT8305_T_Reg[0] = self.REG_TEMPERATURE
+        com_CHT8305_H_Reg[0] = self.REG_HUMIDITY
+        self.i2c.writeto_mem(
+            self.CHT8305_Address, self.REG_TEMPERATURE, com_CHT8305_T_Reg
+        )
+
+    def read_CHT8305_TEMPERATURE_HUMIDITY(self):
+        ReadBuf_CHT8305_Temp_Reg = bytes(self.wLength)
+        ReadBuf_CHT8305_Hum_Reg = bytes(self.wLength)
+        ReadBuf_CHT8305_Temp_Reg = self.i2c.readfrom(self.CHT8305_Address, 4)
+        Temperature_raw = ReadBuf_CHT8305_Temp_Reg[0] << 8 | ReadBuf_CHT8305_Temp_Reg[1]
+        Temperature = (Temperature_raw * 165 / 65535) - 40
+        Humidity_prep = ReadBuf_CHT8305_Temp_Reg[2] << 8 | ReadBuf_CHT8305_Temp_Reg[3]
+        Humidity = (Humidity_prep / 65535) * 100
         return Temperature, Humidity
