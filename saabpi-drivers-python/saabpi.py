@@ -5,7 +5,7 @@
 #
 # Saabpi Project 2023
 #
-# (at some point i'll come back and comment this properly - maybe)
+# (at some point i'll come back and comment this properly)
 
 import time
 import threading
