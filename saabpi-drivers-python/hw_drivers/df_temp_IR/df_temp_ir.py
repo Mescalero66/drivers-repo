@@ -1,6 +1,7 @@
 # MIT License
 # Copyright (c) 2023 Mescalero
 # <https://github.com/Mescalero66/saabpi>
+# Project v1.0 - Released 20231209
 # 
 # Python Driver for:
 # DFRobot SEN0206 I2C Infrared Temperature Sensor (MLX90614) Chip

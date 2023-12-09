@@ -1,4 +1,7 @@
-#!/usr/bin/env python
+# MIT License
+# Copyright (c) 2023 Mescalero
+# <https://github.com/Mescalero66/saabpi>
+# Project v1.0 - Released 20231209
 
 # low_high.py
 # 2015-11-05

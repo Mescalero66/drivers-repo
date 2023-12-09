@@ -1,6 +1,7 @@
 # MIT License
 # Copyright (c) 2023 Mescalero
 # <https://github.com/Mescalero66/saabpi>
+# Project v1.0 - Released 20231209
 # 
 # Test Program for for:
 # Seeeed Grove 3-Axis Compass (I2C)

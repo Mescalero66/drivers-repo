@@ -1,7 +1,7 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#
-# The MIT License (MIT)
+# MIT License
+# Copyright (c) 2023 Mescalero
+# <https://github.com/Mescalero66/saabpi>
+# Project v1.0 - Released 20231209
 # 
 # Python Driver for:
 # Seeed Grove LED Bar 104030002 <https://www.seeedstudio.com/Grove-LED-Bar.html>

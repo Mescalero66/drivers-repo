@@ -1,5 +1,6 @@
 # MIT License
 # <https://github.com/Mescalero66/saabpi>
+# Project v1.0 - Released 20231209
 # 
 # Python Driver for:
 # DFRobot DFR0576 I2C Multiplexer <https://wiki.dfrobot.com/Gravity__Digital_1-to-8_I2C_Multiplexer_SKU_DFR0576>
