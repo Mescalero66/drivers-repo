@@ -45,7 +45,7 @@ SAMPLE_TIME = 0.02
 
 # OLED Temp Reading Labels
 oledTT = ["Head", "Intercooler", "Turbo", "Outside"]
-oledBT = ["Block", "Exhaust", "Radiator", "Not Used"]
+oledBT = ["Block", "Exhaust", "Battery", "Not Used"]
 
 # OLED display dimensions
 oledWidth = 128
@@ -118,12 +118,12 @@ for i in range(tempprobeCount):             # for each array slot
 oledTGs = [0,0,0]                         # an array to hold the graphs for the "top half" of the OLEDs
 oledBGs = [0,0,0]                         # an array to hold the graphs for the "bottom half" of the OLEDs
 
-oledTGs[0] = graph2D(originX=0,originY=29,width=61,height=30,minValue=40,maxValue=120,c=1,bars=False)       # create a graph for the Cylinder Head
-oledBGs[0] = graph2D(originX=0,originY=62,width=61,height=30,minValue=40,maxValue=120,c=1,bars=False)       # create a graph for the Engline Block
-oledTGs[1] = graph2D(originX=0,originY=29,width=61,height=30,minValue=30,maxValue=100,c=1,bars=False)       # create a graph for the Intercooler
-oledBGs[1] = graph2D(originX=0,originY=62,width=61,height=30,minValue=30,maxValue=100,c=1,bars=False)       # create a graph for the Exhaust
-oledTGs[2] = graph2D(originX=0,originY=29,width=61,height=30,minValue=80,maxValue=200,c=1,bars=False)       # create a graph for the Turbo
-oledBGs[2] = graph2D(originX=0,originY=62,width=61,height=30,minValue=40,maxValue=120,c=1,bars=False)       # create a graph for the Radiator
+oledTGs[0] = graph2D(originX=0,originY=29,width=61,height=30,minValue=20,maxValue=120,c=1,bars=True)       # create a graph for the Cylinder Head
+oledBGs[0] = graph2D(originX=0,originY=62,width=61,height=30,minValue=20,maxValue=120,c=1,bars=True)       # create a graph for the Engline Block
+oledTGs[1] = graph2D(originX=0,originY=29,width=61,height=30,minValue=20,maxValue=120,c=1,bars=True)       # create a graph for the Intercooler
+oledBGs[1] = graph2D(originX=0,originY=62,width=61,height=30,minValue=20,maxValue=120,c=1,bars=True)       # create a graph for the Exhaust
+oledTGs[2] = graph2D(originX=0,originY=29,width=61,height=30,minValue=20,maxValue=200,c=1,bars=True)       # create a graph for the Turbo
+oledBGs[2] = graph2D(originX=0,originY=62,width=61,height=30,minValue=20,maxValue=100,c=1,bars=True)       # create a graph for the Battery
 
 # set up PIGPIO
 pi = pigpio.pi()                            # create the necessary PIGPIO objects
@@ -234,7 +234,7 @@ def GetTempDisplay(threadID):
 
                 tempTD = str(tempRes[4])[2:]
                 tempTV = str(tempRes[4])[:-2]
-                tempHUM = (str(tempRes[7]) + "%")
+                tempHUM = (str(tempRes[7]) + "%H")
                 draw[3].rectangle([0,0,127,63], fill=0)
                 draw[3].text((0,0), text=oledTT[3], font=fontLbl, fill=255, align="left", anchor="la")              # write the label for the top half
                 draw[3].text((116,-2), text=tempTV, font=fontTemp, fill=255, align="right", anchor="ra")          # write the value for the top half

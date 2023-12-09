@@ -28,7 +28,7 @@ class USBGPS:
                 alt = parsed_data.alt 
             if (message == "GPRMC"):
                 spd_knots = parsed_data.spd
-                spd = spd_knots * 1.852
+                spd = float(spd_knots) * 1.852
                 lat = parsed_data.lat
                 latNS = parsed_data.NS
                 lon = parsed_data.lon
