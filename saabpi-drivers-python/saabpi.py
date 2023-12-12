@@ -124,12 +124,12 @@ oledTGs = [0,0,0]                           # an array to hold the graphs for th
 oledBGs = [0,0,0]                           # an array to hold the graphs for the "bottom half" of the OLEDs
 globalBars = True
 
-oledTGs[0] = graph2D(originX=0,originY=32,width=62,height=31,minValue=2,maxValue=12,c=1,bars=globalBars)       # create a graph for the Cylinder Head
-oledBGs[0] = graph2D(originX=0,originY=64,width=62,height=31,minValue=2,maxValue=12,c=1,bars=globalBars)       # create a graph for the Engline Block
-oledTGs[1] = graph2D(originX=0,originY=32,width=62,height=31,minValue=2,maxValue=12,c=1,bars=globalBars)       # create a graph for the Intercooler
-oledBGs[1] = graph2D(originX=0,originY=64,width=62,height=31,minValue=2,maxValue=12,c=1,bars=globalBars)       # create a graph for the Exhaust
-oledTGs[2] = graph2D(originX=0,originY=32,width=62,height=31,minValue=2,maxValue=12,c=1,bars=globalBars)       # create a graph for the Battery
-oledBGs[2] = graph2D(originX=0,originY=64,width=62,height=31,minValue=5,maxValue=25,c=1,bars=globalBars)       # create a graph for the Turbo
+oledTGs[0] = graph2D(originX=0,originY=32,width=62,height=31,minValue=20,maxValue=120,c=1,bars=globalBars)       # create a graph for the Cylinder Head
+oledBGs[0] = graph2D(originX=0,originY=64,width=62,height=31,minValue=20,maxValue=120,c=1,bars=globalBars)       # create a graph for the Engline Block
+oledTGs[1] = graph2D(originX=0,originY=32,width=62,height=31,minValue=20,maxValue=120,c=1,bars=globalBars)       # create a graph for the Intercooler
+oledBGs[1] = graph2D(originX=0,originY=64,width=62,height=31,minValue=20,maxValue=120,c=1,bars=globalBars)       # create a graph for the Exhaust
+oledTGs[2] = graph2D(originX=0,originY=32,width=62,height=31,minValue=20,maxValue=120,c=1,bars=globalBars)       # create a graph for the Battery
+oledBGs[2] = graph2D(originX=0,originY=64,width=62,height=31,minValue=50,maxValue=250,c=1,bars=globalBars)       # create a graph for the Turbo
 
 # set up PIGPIO
 pi = pigpio.pi()                            # create the necessary PIGPIO objects
@@ -212,7 +212,7 @@ def GetTempDisplay(threadID):
                 draw[1].line(oledTGs[1].coords, 1, 1)                                                               # now draw the graph
                 oledBGs[1].updateGraph2D(oledBGs[1], tempRes[3])                                                    # update the bottom graph
                 draw[1].line(oledBGs[1].coords, 1, 1)                                                               # and draw it
-                draw[1].rectangle([0,0,47,16], fill=0)
+                draw[1].rectangle([0,0,46,16], fill=0)
                 draw[1].text((0,3), text=oledTT[1], font=fontLbl, fill=255, align="left", anchor="la")              # write the label for the top half
                 #draw[1].text((0,4), text=oledTTV[1], font=fontLbl, fill=255, direction="ttb", anchor="la")         # write the label for the top half
                 draw[1].text((114,1), text=tempTV, font=fontTemp, fill=255, align="right", anchor="ra")             # write the value for the top half
@@ -236,12 +236,12 @@ def GetTempDisplay(threadID):
                 draw[2].line(oledTGs[2].coords, 1, 1)                                                               # now draw the graph
                 oledBGs[2].updateGraph2D(oledBGs[2], tempRes[5])                                                    # update the bottom graph
                 draw[2].line(oledBGs[2].coords, 1, 1)                                                               # and draw it
-                draw[2].rectangle([0,0,41,16], fill=0)
+                draw[2].rectangle([0,0,44,16], fill=0)
                 draw[2].text((0,3), text=oledTT[2], font=fontLbl, fill=255, align="left", anchor="la")              # write the label for the top half
                 #draw[2].text((0,4), text=oledTTV[2], font=fontLbl, fill=255, direction="ttb", anchor="la")         # write the label for the top half
                 draw[2].text((114,1), text=tempTV, font=fontTemp, fill=255, align="right", anchor="ra")             # write the value for the top half
                 draw[2].text((126,2), text=tempTD, font=fontDec, fill=255, align="right", anchor="ra")              # write the decimal for the top half
-                draw[2].rectangle([0,51,37,63], fill=0)
+                draw[2].rectangle([0,51,36,63], fill=0)
                 draw[2].text((0,63), text=oledBT[2], font=fontLbl, fill=255, align="left", anchor="ls")             # write the label for the bottom half
                 #draw[2].text((0,63), text=oledBTV[2], font=fontLbl, fill=255, direction="ttb", anchor="ls")        # write the label for the bottom half
                 draw[2].text((114,38), text=tempBV, font=fontTemp, fill=255, align="right", anchor="ra")            # write the value for the bottom half
