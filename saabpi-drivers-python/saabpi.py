@@ -181,10 +181,10 @@ def GetTempDisplay(threadID):
                 tempBV = str(tempRes[1])[:-2]
 
                 draw[0].rectangle([0,0,127,63], fill=0)
-                draw[0].text((0,20), text=oledTT[0], font=fontLbl, fill=255, align="left", anchor="la")              # write the label for the top half
+                draw[0].text((0,4), text=oledTT[0], font=fontLbl, fill=255, align="left", anchor="la")              # write the label for the top half
                 draw[0].text((114,0), text=tempTV, font=fontTemp, fill=255, align="right", anchor="ra")          # write the value for the top half
                 draw[0].text((126,0), text=tempTD, font=fontDec, fill=255, align="right", anchor="ra")            # write the decimal for the top half
-                draw[0].text((0,51), text=oledBT[0], font=fontLbl, fill=255, align="left", anchor="la")             # write the label for the bottom half
+                draw[0].text((0,51), text=oledBT[0], font=fontLbl, fill=255, align="left", anchor="ls")             # write the label for the bottom half
                 draw[0].text((114,32), text=tempBV, font=fontTemp, fill=255, align="right", anchor="ra")          # write the value for the bottom half
                 draw[0].text((126,32), text=tempBD, font=fontDec, fill=255, align="right", anchor="ra")           # write the decimal for the bottom half
                 oledTGs[0].updateGraph2D(oledTGs[0], tempRes[0])                                                         # update the top graph with the temp value
@@ -201,10 +201,10 @@ def GetTempDisplay(threadID):
                 tempBV = str(tempRes[3])[:-2]
 
                 draw[1].rectangle([0,0,127,63], fill=0)
-                draw[1].text((0,20), text=oledTT[1], font=fontLbl, fill=255, align="left", anchor="la")              # write the label for the top half
+                draw[1].text((0,4), text=oledTT[1], font=fontLbl, fill=255, align="left", anchor="la")              # write the label for the top half
                 draw[1].text((114,0), text=tempTV, font=fontTemp, fill=255, align="right", anchor="ra")          # write the value for the top half
                 draw[1].text((126,0), text=tempTD, font=fontDec, fill=255, align="right", anchor="ra")            # write the decimal for the top half
-                draw[1].text((0,51), text=oledBT[1], font=fontLbl, fill=255, align="left", anchor="la")             # write the label for the bottom half
+                draw[1].text((0,51), text=oledBT[1], font=fontLbl, fill=255, align="left", anchor="ls")             # write the label for the bottom half
                 draw[1].text((114,32), text=tempBV, font=fontTemp, fill=255, align="right", anchor="ra")          # write the value for the bottom half
                 draw[1].text((126,32), text=tempBD, font=fontDec, fill=255, align="right", anchor="ra")           # write the decimal for the bottom half
                 oledTGs[1].updateGraph2D(oledTGs[1], tempRes[2])                                                         # update the top graph with the temp value
@@ -221,10 +221,10 @@ def GetTempDisplay(threadID):
                 tempBV = str(tempRes[5])[:-2]
 
                 draw[2].rectangle([0,0,127,63], fill=0)
-                draw[2].text((0,20), text=oledTT[2], font=fontLbl, fill=255, align="left", anchor="la")              # write the label for the top half
+                draw[2].text((0,4), text=oledTT[2], font=fontLbl, fill=255, align="left", anchor="la")              # write the label for the top half
                 draw[2].text((114,0), text=tempTV, font=fontTemp, fill=255, align="right", anchor="ra")            # write the value for the top half
                 draw[2].text((126,0), text=tempTD, font=fontDec, fill=255, align="right", anchor="ra")              # write the decimal for the top half
-                draw[2].text((0,51), text=oledBT[2], font=fontLbl, fill=255, align="left", anchor="la")             # write the label for the bottom half
+                draw[2].text((0,51), text=oledBT[2], font=fontLbl, fill=255, align="left", anchor="ls")             # write the label for the bottom half
                 draw[2].text((114,32), text=tempBV, font=fontTemp, fill=255, align="right", anchor="ra")            # write the value for the bottom half
                 draw[2].text((126,32), text=tempBD, font=fontDec, fill=255, align="right", anchor="ra")             # write the decimal for the bottom half
                 oledTGs[2].updateGraph2D(oledTGs[2], tempRes[5])                                                    # update the top graph with the temp value
@@ -239,10 +239,10 @@ def GetTempDisplay(threadID):
                 tempTV = str(tempRes[4])[:-2]
                 tempHUM = (str(tempRes[7]) + "%H")
                 draw[3].rectangle([0,0,127,63], fill=0)
-                draw[3].text((0,20), text=oledTT[3], font=fontLbl, fill=255, align="left", anchor="la")              # write the label for the top half
-                draw[3].text((114,0), text=tempTV, font=fontTemp, fill=255, align="right", anchor="ra")          # write the value for the top half
-                draw[3].text((126,0), text=tempTD, font=fontDec, fill=255, align="right", anchor="ra")            # write the decimal for the top half 
-                draw[3].text((32,10), text=tempHUM, font=fontHum, fill=255, align="left", anchor="la")              # write the humidity value
+                draw[3].text((0,4), text=oledTT[3], font=fontLbl, fill=255, align="left", anchor="la")              # write the label for the top half
+                draw[3].text((112,0), text=tempTV, font=fontTemp, fill=255, align="right", anchor="ra")          # write the value for the top half
+                draw[3].text((124,0), text=tempTD, font=fontDec, fill=255, align="right", anchor="ra")            # write the decimal for the top half 
+                draw[3].text((0,14), text=tempHUM, font=fontHum, fill=255, align="left", anchor="la")              # write the humidity value
                 global GPSlat
                 draw[3].text((125,30), text=GPSlat, font=fontCoord, fill=255, align="right", anchor="ra")           # write the latitude
                 global GPSlon
