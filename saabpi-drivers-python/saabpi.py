@@ -47,8 +47,10 @@ RPM_GPIO = 6
 SAMPLE_TIME = 0.02
 
 # OLED Temp Reading Labels
-oledTT = ["Head", "Intercooler", "Battery", "Outside"]
+oledTT = ["Head", "I/Cooler", "Battery", "Outside"]
 oledBT = ["Block", "Exhaust", "Turbo", "Not Used"]
+#oledTTV = ["C/H", "I/C", "Bat", "Outside"]
+#oledBTV = ["E/B", "Exh", "Tbo", "Not Used"]
 
 # OLED display dimensions
 oledWidth = 128
@@ -103,10 +105,10 @@ draw = [0,0,0,0]                            # an array to put the images to be w
 for i in range(oledCount):
     mux2.select_port(i)                     
     oled[i] = SSD1306_128_64(rst=None)
-    oled[i].begin()                     # initialize graphics library for selected display module
-    oled[i].clear()                     # clear display buffer
+    oled[i].begin()                                      # initialize graphics library for selected display module
+    oled[i].clear()                                      # clear display buffer
     image[i] = Image.new('1', (oledWidth, oledHeight))   # create graphics library image buffer
-    draw[i] = ImageDraw.Draw(image[i])                         # put a drawing module object in the array for this OLED
+    draw[i] = ImageDraw.Draw(image[i])                   # put a drawing module object in the array for this OLED
 
 tempRes = [0,0,0,0,0,0,0,0]                 # an array to store the temperature results when they come back
 mux1addr = 0x70                             # Sensor MUX has an I2C address of 0x70
@@ -118,15 +120,16 @@ for i in range(tempprobeCount):             # for each array slot
     mux1.select_port(i)                     # select that port of the mux
     tempprobes.append(tempprobe(i))         # create a tempprobe object with that ID, and append to the array
 
-oledTGs = [0,0,0]                         # an array to hold the graphs for the "top half" of the OLEDs
-oledBGs = [0,0,0]                         # an array to hold the graphs for the "bottom half" of the OLEDs
+oledTGs = [0,0,0]                           # an array to hold the graphs for the "top half" of the OLEDs
+oledBGs = [0,0,0]                           # an array to hold the graphs for the "bottom half" of the OLEDs
+globalBars = True
 
-oledTGs[0] = graph2D(originX=0,originY=31,width=61,height=30,minValue=20,maxValue=120,c=1,bars=False)       # create a graph for the Cylinder Head
-oledBGs[0] = graph2D(originX=0,originY=63,width=61,height=30,minValue=20,maxValue=120,c=1,bars=False)       # create a graph for the Engline Block
-oledTGs[1] = graph2D(originX=0,originY=31,width=61,height=30,minValue=20,maxValue=120,c=1,bars=False)       # create a graph for the Intercooler
-oledBGs[1] = graph2D(originX=0,originY=63,width=61,height=30,minValue=20,maxValue=120,c=1,bars=False)       # create a graph for the Exhaust
-oledTGs[2] = graph2D(originX=0,originY=63,width=61,height=30,minValue=20,maxValue=100,c=1,bars=False)       # create a graph for the Battery
-oledBGs[2] = graph2D(originX=0,originY=31,width=61,height=30,minValue=50,maxValue=250,c=1,bars=False)       # create a graph for the Turbo
+oledTGs[0] = graph2D(originX=0,originY=32,width=62,height=31,minValue=20,maxValue=120,c=1,bars=globalBars)       # create a graph for the Cylinder Head
+oledBGs[0] = graph2D(originX=0,originY=64,width=62,height=31,minValue=20,maxValue=120,c=1,bars=globalBars)       # create a graph for the Engline Block
+oledTGs[1] = graph2D(originX=0,originY=32,width=62,height=31,minValue=20,maxValue=120,c=1,bars=globalBars)       # create a graph for the Intercooler
+oledBGs[1] = graph2D(originX=0,originY=64,width=62,height=31,minValue=20,maxValue=120,c=1,bars=globalBars)       # create a graph for the Exhaust
+oledTGs[2] = graph2D(originX=0,originY=32,width=62,height=31,minValue=20,maxValue=120,c=1,bars=globalBars)       # create a graph for the Battery
+oledBGs[2] = graph2D(originX=0,originY=64,width=62,height=31,minValue=50,maxValue=250,c=1,bars=globalBars)       # create a graph for the Turbo
 
 # set up PIGPIO
 pi = pigpio.pi()                            # create the necessary PIGPIO objects
@@ -180,39 +183,47 @@ def GetTempDisplay(threadID):
                 tempBD = str(tempRes[1])[-2:]
                 tempBV = str(tempRes[1])[:-2]
 
-                draw[0].rectangle([0,0,127,63], fill=0)
-                draw[0].text((0,4), text=oledTT[0], font=fontLbl, fill=255, align="left", anchor="la")              # write the label for the top half
-                draw[0].text((114,0), text=tempTV, font=fontTemp, fill=255, align="right", anchor="ra")          # write the value for the top half
-                draw[0].text((126,1), text=tempTD, font=fontDec, fill=255, align="right", anchor="ra")            # write the decimal for the top half
-                draw[0].text((0,63), text=oledBT[0], font=fontLbl, fill=255, align="left", anchor="ls")             # write the label for the bottom half
-                draw[0].text((114,36), text=tempBV, font=fontTemp, fill=255, align="right", anchor="ra")          # write the value for the bottom half
-                draw[0].text((126,37), text=tempBD, font=fontDec, fill=255, align="right", anchor="ra")           # write the decimal for the bottom half
-                oledTGs[0].updateGraph2D(oledTGs[0], tempRes[0])                                                         # update the top graph with the temp value
+                draw[0].rectangle([0,0,127,63], fill=0)                                                             # black out the screen
+                oledTGs[0].updateGraph2D(oledTGs[0], tempRes[0])                                                    # update the top graph with the temp value
                 draw[0].line(oledTGs[0].coords, 1, 1)                                                               # now draw the graph
-                oledBGs[0].updateGraph2D(oledBGs[0], tempRes[1])                                                         # update the bottom graph
+                oledBGs[0].updateGraph2D(oledBGs[0], tempRes[1])                                                    # update the bottom graph
                 draw[0].line(oledBGs[0].coords, 1, 1)                                                               # and draw it
+                draw[0].rectangle([0,0,55,12], fill=0)
+                draw[0].text((0,3), text=oledTT[0], font=fontLbl, fill=255, align="left", anchor="la")              # write the label for the top half
+                #draw[0].text((0,4), text=oledTTV[0], font=fontLbl, fill=255, direction="ttb", anchor="la")         # write the label for the top half
+                draw[0].text((114,1), text=tempTV, font=fontTemp, fill=255, align="right", anchor="ra")             # write the value for the top half
+                draw[0].text((126,2), text=tempTD, font=fontDec, fill=255, align="right", anchor="ra")              # write the decimal for the top half
+                draw[0].rectangle([0,51,55,63], fill=0)
+                draw[0].text((0,63), text=oledBT[0], font=fontLbl, fill=255, align="left", anchor="ls")             # write the label for the bottom half
+                #draw[0].text((0,63), text=oledBTV[0], font=fontLbl, fill=255, direction="ttb", anchor="ls")        # write the label for the bottom half
+                draw[0].text((114,38), text=tempBV, font=fontTemp, fill=255, align="right", anchor="ra")            # write the value for the bottom half
+                draw[0].text((126,39), text=tempBD, font=fontDec, fill=255, align="right", anchor="ra")             # write the decimal for the bottom half            
                 mux2.select_port(0)
-                oled[0].image(image[0])                                                                          # get the drawn image in the array
-                oled[0].display()                                                                                # and display it
+                oled[0].image(image[0])                                                                             # get the drawn image in the array
+                oled[0].display()                                                                                   # and display it
 
                 tempTD = str(tempRes[2])[-2:]
                 tempTV = str(tempRes[2])[:-2]
                 tempBD = str(tempRes[3])[-2:]
                 tempBV = str(tempRes[3])[:-2]
 
-                draw[1].rectangle([0,0,127,63], fill=0)
-                draw[1].text((0,4), text=oledTT[1], font=fontLbl, fill=255, align="left", anchor="la")              # write the label for the top half
-                draw[1].text((114,0), text=tempTV, font=fontTemp, fill=255, align="right", anchor="ra")          # write the value for the top half
-                draw[1].text((126,1), text=tempTD, font=fontDec, fill=255, align="right", anchor="ra")            # write the decimal for the top half
-                draw[1].text((0,63), text=oledBT[1], font=fontLbl, fill=255, align="left", anchor="ls")             # write the label for the bottom half
-                draw[1].text((114,36), text=tempBV, font=fontTemp, fill=255, align="right", anchor="ra")          # write the value for the bottom half
-                draw[1].text((126,37), text=tempBD, font=fontDec, fill=255, align="right", anchor="ra")           # write the decimal for the bottom half
-                oledTGs[1].updateGraph2D(oledTGs[1], tempRes[2])                                                         # update the top graph with the temp value
+                draw[1].rectangle([0,0,127,63], fill=0)                                                             # black out the screen
+                oledTGs[1].updateGraph2D(oledTGs[1], tempRes[2])                                                    # update the top graph with the temp value
                 draw[1].line(oledTGs[1].coords, 1, 1)                                                               # now draw the graph
-                oledBGs[1].updateGraph2D(oledBGs[1], tempRes[3])                                                         # update the bottom graph
+                oledBGs[1].updateGraph2D(oledBGs[1], tempRes[3])                                                    # update the bottom graph
                 draw[1].line(oledBGs[1].coords, 1, 1)                                                               # and draw it
+                draw[1].rectangle([0,0,55,12], fill=0)
+                draw[1].text((0,3), text=oledTT[1], font=fontLbl, fill=255, align="left", anchor="la")              # write the label for the top half
+                #draw[1].text((0,4), text=oledTTV[1], font=fontLbl, fill=255, direction="ttb", anchor="la")         # write the label for the top half
+                draw[1].text((114,1), text=tempTV, font=fontTemp, fill=255, align="right", anchor="ra")             # write the value for the top half
+                draw[1].text((126,2), text=tempTD, font=fontDec, fill=255, align="right", anchor="ra")              # write the decimal for the top half
+                draw[1].rectangle([0,51,55,63], fill=0)
+                draw[1].text((0,63), text=oledBT[1], font=fontLbl, fill=255, align="left", anchor="ls")             # write the label for the bottom half
+                #draw[1].text((0,63), text=oledBTV[1], font=fontLbl, fill=255, direction="ttb", anchor="ls")        # write the label for the bottom half
+                draw[1].text((114,38), text=tempBV, font=fontTemp, fill=255, align="right", anchor="ra")            # write the value for the bottom half
+                draw[1].text((126,39), text=tempBD, font=fontDec, fill=255, align="right", anchor="ra")             # write the decimal for the bottom half
                 mux2.select_port(1)
-                oled[1].image(image[1])                                                                          # get the drawn image in the array
+                oled[1].image(image[1])                                                                             # get the drawn image in the array
                 oled[1].display()
 
                 tempTD = str(tempRes[6])[-2:]
@@ -220,17 +231,21 @@ def GetTempDisplay(threadID):
                 tempBD = str(tempRes[5])[-2:]
                 tempBV = str(tempRes[5])[:-2]
 
-                draw[2].rectangle([0,0,127,63], fill=0)
-                draw[2].text((0,4), text=oledTT[2], font=fontLbl, fill=255, align="left", anchor="la")              # write the label for the top half
-                draw[2].text((114,0), text=tempTV, font=fontTemp, fill=255, align="right", anchor="ra")            # write the value for the top half
-                draw[2].text((126,1), text=tempTD, font=fontDec, fill=255, align="right", anchor="ra")              # write the decimal for the top half
-                draw[2].text((0,63), text=oledBT[2], font=fontLbl, fill=255, align="left", anchor="ls")             # write the label for the bottom half
-                draw[2].text((114,36), text=tempBV, font=fontTemp, fill=255, align="right", anchor="ra")            # write the value for the bottom half
-                draw[2].text((126,37), text=tempBD, font=fontDec, fill=255, align="right", anchor="ra")             # write the decimal for the bottom half
-                oledTGs[2].updateGraph2D(oledTGs[2], tempRes[5])                                                    # update the top graph with the temp value
+                draw[2].rectangle([0,0,127,63], fill=0)                                                             # black out the screen
+                oledTGs[2].updateGraph2D(oledTGs[2], tempRes[6])                                                    # update the top graph with the temp value
                 draw[2].line(oledTGs[2].coords, 1, 1)                                                               # now draw the graph
-                oledBGs[2].updateGraph2D(oledBGs[2], tempRes[6])                                                    # update the bottom graph
+                oledBGs[2].updateGraph2D(oledBGs[2], tempRes[5])                                                    # update the bottom graph
                 draw[2].line(oledBGs[2].coords, 1, 1)                                                               # and draw it
+                draw[2].rectangle([0,0,55,12], fill=0)
+                draw[2].text((0,3), text=oledTT[2], font=fontLbl, fill=255, align="left", anchor="la")              # write the label for the top half
+                #draw[2].text((0,4), text=oledTTV[2], font=fontLbl, fill=255, direction="ttb", anchor="la")         # write the label for the top half
+                draw[2].text((114,1), text=tempTV, font=fontTemp, fill=255, align="right", anchor="ra")             # write the value for the top half
+                draw[2].text((126,2), text=tempTD, font=fontDec, fill=255, align="right", anchor="ra")              # write the decimal for the top half
+                draw[2].rectangle([0,51,55,63], fill=0)
+                draw[2].text((0,63), text=oledBT[2], font=fontLbl, fill=255, align="left", anchor="ls")             # write the label for the bottom half
+                #draw[2].text((0,63), text=oledBTV[2], font=fontLbl, fill=255, direction="ttb", anchor="ls")        # write the label for the bottom half
+                draw[2].text((114,38), text=tempBV, font=fontTemp, fill=255, align="right", anchor="ra")            # write the value for the bottom half
+                draw[2].text((126,39), text=tempBD, font=fontDec, fill=255, align="right", anchor="ra")             # write the decimal for the bottom half
                 mux2.select_port(2)
                 oled[2].image(image[2])                                                                             # get the drawn image in the array
                 oled[2].display()
@@ -239,14 +254,14 @@ def GetTempDisplay(threadID):
                 tempTV = str(tempRes[4])[:-2]
                 tempHUM = (str(tempRes[7]) + "%H")
                 draw[3].rectangle([0,0,127,63], fill=0)
-                draw[3].text((0,4), text=oledTT[3], font=fontLbl, fill=255, align="left", anchor="la")              # write the label for the top half
-                draw[3].text((112,4), text=tempTV, font=fontTemp, fill=255, align="right", anchor="ra")          # write the value for the top half
-                draw[3].text((124,4), text=tempTD, font=fontDec, fill=255, align="right", anchor="ra")            # write the decimal for the top half 
-                draw[3].text((0,16), text=tempHUM, font=fontHum, fill=255, align="left", anchor="la")              # write the humidity value
+                draw[3].text((0,3), text=oledTT[3], font=fontLbl, fill=255, align="left", anchor="la")              # write the label for the top half
+                draw[3].text((112,2), text=tempTV, font=fontTemp, fill=255, align="right", anchor="ra")             # write the value for the top half
+                draw[3].text((124,3), text=tempTD, font=fontDec, fill=255, align="right", anchor="ra")              # write the decimal for the top half 
+                draw[3].text((0,17), text=tempHUM, font=fontHum, fill=255, align="left", anchor="la")               # write the humidity value
                 global GPSlat
-                draw[3].text((123,32), text=GPSlat, font=fontCoord, fill=255, align="right", anchor="ra")           # write the latitude
+                draw[3].text((120,32), text=GPSlat, font=fontCoord, fill=255, align="right", anchor="ra")           # write the latitude
                 global GPSlon
-                draw[3].text((123,48), text=GPSlon, font=fontCoord, fill=255, align="right", anchor="ra")           # write the longitude
+                draw[3].text((120,48), text=GPSlon, font=fontCoord, fill=255, align="right", anchor="ra")           # write the longitude
                 mux2.select_port(3)
                 oled[3].image(image[3])                                                                             # get the drawn image in the array
                 oled[3].display()
