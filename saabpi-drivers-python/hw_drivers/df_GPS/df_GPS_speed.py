@@ -1,7 +1,7 @@
 # MIT License
-# Copyright (c) 2023 Mescalero
+# Copyright (c) 2024 Mescalero
 # <https://github.com/Mescalero66/saabpi>
-# Project v1.0 - Released 20231209
+# Project v1.1 - Released 20240224
 #
 # Python Driver to Read Speed from DFRobot USB GPS
 
@@ -23,13 +23,13 @@ class USBGPS:
             nmr = NMEAReader(stream)
             (raw_data, parsed_data) = nmr.read()
             parsed_string = str(parsed_data)
-            #print(parsed_string)
             message = parsed_string[6:11]
             if (message == "GPGGA"):   
                 alt = parsed_data.alt 
             if (message == "GPRMC"):
                 spd_knots = parsed_data.spd
-                spd = float(spd_knots) * 1.852
+                if spd_knots != "":
+                    spd = float(spd_knots) * 1.852
                 lat = parsed_data.lat
                 latNS = parsed_data.NS
                 lon = parsed_data.lon

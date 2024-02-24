@@ -1,7 +1,7 @@
 # MIT License
-# Copyright (c) 2023 Mescalero
+# Copyright (c) 2024 Mescalero
 # <https://github.com/Mescalero66/saabpi>
-# Project v1.0 - Released 20231209
+# Project v1.1 - Released 20240224
 # 
 # Python Driver for:
 # PiicoDev OLED SSD1306 Display

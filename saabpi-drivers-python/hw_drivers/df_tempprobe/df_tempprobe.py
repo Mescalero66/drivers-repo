@@ -1,7 +1,7 @@
 # MIT License
-# Copyright (c) 2023 Mescalero
+# Copyright (c) 2024 Mescalero
 # <https://github.com/Mescalero66/saabpi>
-# Project v1.0 - Released 20231209
+# Project v1.1 - Released 20240224
 # 
 # Python Driver for:
 # DFRobot SEN0546 I2C Temperature & Humidity Sensor (Sensylink CHT8305C Chip)

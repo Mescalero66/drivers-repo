@@ -1,7 +1,7 @@
 # MIT License
-# Copyright (c) 2023 Mescalero
+# Copyright (c) 2024 Mescalero
 # <https://github.com/Mescalero66/saabpi>
-# Project v1.0 - Released 20231209
+# Project v1.1 - Released 20240224
 # 
 # Python Driver for:
 # DFRobot DFR0645-R DFR0645-G <https://wiki.dfrobot.com/4-Digital%20LED%20Segment%20Display%20Module%20%20SKU:%20DFR0645-G_DFR0645-R>

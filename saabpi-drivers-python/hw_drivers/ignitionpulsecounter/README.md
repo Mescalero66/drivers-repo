@@ -1,6 +1,6 @@
 # Ignition Pulse Reader for Saab 900 Turbo (1986-1990)
 
-#### MIT License - Copyright (c) 2023 Mescalero - <https://github.com/Mescalero66/saabpi>
+#### MIT License - Copyright (c) 2024 Mescalero - <https://github.com/Mescalero66/saabpi>
 
 ## Saab 900 Official Service Manual (1986-87)
 ### Chapter 3 - Electrical System

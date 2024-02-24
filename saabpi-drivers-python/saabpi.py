@@ -1,7 +1,7 @@
 # MIT License
-# Copyright (c) 2023 Mescalero
+# Copyright (c) 2024 Mescalero
 # <https://github.com/Mescalero66/saabpi>
-# Project v1.0 - Released 20231209
+# Project v1.1 - Released 20240224
 #
 # Saabpi Project 2023
 #
@@ -78,13 +78,15 @@ digitDisp[3].display_on(5)
 for i in range(digitDispNo):
     digitDisp[i].display_clear()
 
-hour = int(time.strftime("%H"))
-if (hour > 18) or (hour < 7):
-    digitDisp[0].display_on(2)
-    digitDisp[1].display_on(2)
-    digitDisp[2].display_on(1)
-    digitDisp[3].display_on(1)
-    LEDBarBrightness = 130
+# adjust brightness of displays according to time of day
+
+#hour = int(time.strftime("%H"))
+#if (hour > 18) or (hour < 7):
+#    digitDisp[0].display_on(2)
+#    digitDisp[1].display_on(2)
+#    digitDisp[2].display_on(1)
+#    digitDisp[3].display_on(1)
+#    LEDBarBrightness = 130
 
 # display the legends on the digit displays
 digitDisp[0].show_string("5pd")        
@@ -124,12 +126,12 @@ oledTGs = [0,0,0]                           # an array to hold the graphs for th
 oledBGs = [0,0,0]                           # an array to hold the graphs for the "bottom half" of the OLEDs
 globalBars = True
 
-oledTGs[0] = graph2D(originX=0,originY=32,width=62,height=31,minValue=50,maxValue=150,c=1,bars=globalBars)       # create a graph for the Cylinder Head
-oledBGs[0] = graph2D(originX=0,originY=64,width=62,height=31,minValue=50,maxValue=150,c=1,bars=globalBars)       # create a graph for the Engline Block
-oledTGs[1] = graph2D(originX=0,originY=32,width=62,height=31,minValue=50,maxValue=150,c=1,bars=globalBars)       # create a graph for the Intercooler
-oledBGs[1] = graph2D(originX=0,originY=64,width=62,height=31,minValue=50,maxValue=150,c=1,bars=globalBars)       # create a graph for the Exhaust
-oledTGs[2] = graph2D(originX=0,originY=32,width=62,height=31,minValue=50,maxValue=150,c=1,bars=globalBars)       # create a graph for the Battery
-oledBGs[2] = graph2D(originX=0,originY=64,width=62,height=31,minValue=50,maxValue=250,c=1,bars=globalBars)       # create a graph for the Turbo
+oledTGs[0] = graph2D(originX=0,originY=32,width=62,height=31,minValue=20,maxValue=120,c=1,bars=globalBars)       # create a graph for the Cylinder Head
+oledBGs[0] = graph2D(originX=0,originY=64,width=62,height=31,minValue=20,maxValue=120,c=1,bars=globalBars)       # create a graph for the Engline Block
+oledTGs[1] = graph2D(originX=0,originY=32,width=62,height=31,minValue=20,maxValue=120,c=1,bars=globalBars)       # create a graph for the Intercooler
+oledBGs[1] = graph2D(originX=0,originY=64,width=62,height=31,minValue=20,maxValue=120,c=1,bars=globalBars)       # create a graph for the Exhaust
+oledTGs[2] = graph2D(originX=0,originY=32,width=62,height=31,minValue=20,maxValue=120,c=1,bars=globalBars)       # create a graph for the Battery
+oledBGs[2] = graph2D(originX=0,originY=64,width=62,height=31,minValue=150,maxValue=300,c=1,bars=globalBars)       # create a graph for the Turbo
 
 # set up PIGPIO
 pi = pigpio.pi()                            # create the necessary PIGPIO objects
@@ -272,27 +274,32 @@ def GetTempDisplay(threadID):
 
 def GetGPSData(threadID):
     while True:
-        GPSdata = GPSobject.GetGPS()
-        GPSspeed = round(GPSdata[0],1)
-        GPSlatcoords = GPSdata[1]
-        GPSloncoords = GPSdata[2]
+        try:
+            GPSdata = GPSobject.GetGPS()
+            GPSspeed = round(GPSdata[0],1)
+            GPSlatcoords = GPSdata[1]
+            GPSloncoords = GPSdata[2]
 
-        if (GPSspeed != 0):
-            digitDisp[0].show_integer(int(GPSspeed))
+            if (GPSspeed != 0):
+                digitDisp[0].show_integer(int(GPSspeed))
 
-        if (GPSdata[3] != ""):
-            GPSheading = str.rjust((str(int(GPSdata[3]))), 3,)
-            digitDisp[2].show_string(GPSheading + "*")
-        
-        if (GPSdata[4] != 0):
-            GPSalt = GPSdata[4]
-            digitDisp[3].show_integer(int(GPSalt))
-        
-        if (GPSdata[1] != ""):
-            global GPSlat
-            GPSlat = GPSlatcoords
-            global GPSlon
-            GPSlon = GPSloncoords
+            if (GPSdata[3] != ""):
+                GPSheading = str.rjust((str(int(GPSdata[3]))), 3,)
+                digitDisp[2].show_string(GPSheading + "*")
+            
+            if (GPSdata[4] != 0):
+                GPSalt = GPSdata[4]
+                digitDisp[3].show_integer(int(GPSalt))
+            
+            if (GPSdata[1] != ""):
+                global GPSlat
+                GPSlat = GPSlatcoords
+                global GPSlon
+                GPSlon = GPSloncoords
+        except KeyboardInterrupt:
+            break
+            print(str(time.time()) + "an error happened")
+            #pass
 
 # main section to start all the threads
 

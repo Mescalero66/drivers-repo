@@ -1,0 +1,13 @@
+Exception in thread Thread-4 (GetGPSData):
+Traceback (most recent call last):
+  File "/usr/lib/python3.11/threading.py", line 1038, in _bootstrap_inner
+    self.run()
+  File "/usr/lib/python3.11/threading.py", line 975, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/pi/saabpi/saabpi.py", line 275, in GetGPSData
+    GPSdata = GPSobject.GetGPS()
+              ^^^^^^^^^^^^^^^^^^
+  File "/home/pi/saabpi/hw_drivers/df_GPS/df_GPS_speed.py", line 32, in GetGPS
+    spd = float(spd_knots) * 1.852
+          ^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: ''
