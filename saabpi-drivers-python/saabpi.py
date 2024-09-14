@@ -145,8 +145,10 @@ IRThermo = MLX90614(I2CBus, 0x5A)
 GPSserialport = '/dev/ttyACM0'
 GPSbaud = 9600
 GPStimeout = 3
-GPSlat = "Saab 900"
+GPSheading = "101"
+GPSlat = "     900"
 GPSlon = "   Turbo"
+
 
 # create GPS Object
 GPSobject = USBGPS(GPSserialport, GPSbaud, GPStimeout)
@@ -172,11 +174,11 @@ def GetTempDisplay(threadID):
                 time.sleep(0.25)                                # wait a quarter of a second
                 for i in range(tempprobeCount):                 # then, for each temperature probe
                     mux1.select_port(i)                         # select its mux channel
-                    tempRes[i] = round(tempprobes[i].read_Temp(), 1) + 100    # and read the temperature from its register, and put it in the corresponding tempRes
+                    tempRes[i] = round(tempprobes[i].read_Temp(), 1)    # and read the temperature from its register, and put it in the corresponding tempRes
                 mux1.select_port(7)
-                tempRes[5] = round(IRThermo.get_obj_temp(), 1) + 200  # get IR temp from IR thermometer
-                #tempRes[6] = round(IRThermo.get_amb_temp(), 1)  # get ambient temp from IR thermometer
-                time.sleep(0.2)                                # inserted here
+                tempRes[5] = round(IRThermo.get_obj_temp(), 1)  # get IR temp from IR thermometer
+                #tempRes[6] = round(IRThermo.get_amb_temp(), 1) # get ambient temp from IR thermometer
+                time.sleep(0.2)                                 # inserted here
                 #mux1.select_port(4)                            # select 'Outside' temperature sensor channel
                 #tempRes[7] = int(tempprobes[4].read_Humi())    # read humidity from 'Outside' temperature sensor
                 
@@ -253,14 +255,25 @@ def GetTempDisplay(threadID):
                 oled[2].image(image[2])                                                                             # get the drawn image in the array
                 oled[2].display()
 
-                tempTD = str(tempRes[4])[-2:]
-                tempTV = str(tempRes[4])[:-2]
-                tempHUM = (str(tempRes[7]) + "%H")
-                draw[3].rectangle([0,0,127,63], fill=0)
-                draw[3].text((0,3), text=oledTT[3], font=fontLbl, fill=255, align="left", anchor="la")              # write the label for the top half
-                draw[3].text((112,2), text=tempTV, font=fontTemp, fill=255, align="right", anchor="ra")             # write the value for the top half
-                draw[3].text((124,3), text=tempTD, font=fontDec, fill=255, align="right", anchor="ra")              # write the decimal for the top half 
-                draw[3].text((0,17), text=tempHUM, font=fontHum, fill=255, align="left", anchor="la")               # write the humidity value
+                draw[3].rectangle([0,0,127,63], fill=0)                                                             # black out the screen
+                # THE BLOCK BELOW PREVIOUSLY GRABBED TO AMBIENT TEMP AND HUMIDTY AND DISPLAYED IT.
+                # IT HAS BEEN REMOVED IN ORDER TO IMPLEMENT THE COMPASS
+                #tempTD = str(tempRes[4])[-2:]
+                #tempTV = str(tempRes[4])[:-2]
+                #tempHUM = (str(tempRes[7]) + "%H")
+                
+                #draw[3].text((0,3), text=oledTT[3], font=fontLbl, fill=255, align="left", anchor="la")              # write the label for the top half
+                #draw[3].text((112,2), text=tempTV, font=fontTemp, fill=255, align="right", anchor="ra")             # write the value for the top half
+                #draw[3].text((124,3), text=tempTD, font=fontDec, fill=255, align="right", anchor="ra")              # write the decimal for the top half 
+                #draw[3].text((0,17), text=tempHUM, font=fontHum, fill=255, align="left", anchor="la")               # write the humidity value
+                # END OF AMBIENT TEMP AND HUMIDTY CODE BLOCK
+
+                #START OF COMPASS CODE BLOCK
+                #global GPSheading
+                draw[3].text((64,1), text=GPSheading, font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+
+                #START OF COMPASS CODE BLOCK
+
                 global GPSlat
                 draw[3].text((120,32), text=GPSlat, font=fontCoord, fill=255, align="right", anchor="ra")           # write the latitude
                 global GPSlon
@@ -274,6 +287,7 @@ def GetTempDisplay(threadID):
             #pass       
 
 def GetGPSData(threadID):
+    GPSnoheading = 0
     while True:
         try:
             GPSdata = GPSobject.GetGPS()
@@ -285,8 +299,16 @@ def GetGPSData(threadID):
                 digitDisp[0].show_integer(int(GPSspeed))
 
             if (GPSdata[3] != ""):
+                global GPSheading
                 GPSheading = str.rjust((str(int(GPSdata[3]))), 3,)
                 digitDisp[2].show_string(GPSheading + "*")
+            else:
+                GPSnoheading = GPSnoheading + 1
+                #global GPSheading
+                GPSheading = str(GPSnoheading)
+                digitDisp[2].show_string(GPSheading + "*")
+                if (GPSnoheading >= 0):
+                    GPSnoheading = 0           
             
             if (GPSdata[4] != 0):
                 GPSalt = GPSdata[4]

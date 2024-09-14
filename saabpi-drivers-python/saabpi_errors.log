@@ -1,0 +1,4 @@
+  File "/home/pi/saabpi/saabpi.py", line 302
+    global GPSheading
+    ^^^^^^^^^^^^^^^^^
+SyntaxError: name 'GPSheading' is used prior to global declaration
