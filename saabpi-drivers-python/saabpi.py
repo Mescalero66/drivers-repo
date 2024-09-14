@@ -270,7 +270,43 @@ def GetTempDisplay(threadID):
 
                 #START OF COMPASS CODE BLOCK
                 #global GPSheading
-                draw[3].text((64,1), text=GPSheading, font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                if(GPSheading <=23):
+                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                elif(GPSheading <=45):
+                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                elif(GPSheading <=67):
+                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                elif(GPSheading <=90):
+                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                elif(GPSheading <=113):
+                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                elif(GPSheading <=135):
+                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                elif(GPSheading <=157):
+                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                elif(GPSheading <=180):
+                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                elif(GPSheading <=203):
+                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                elif(GPSheading <=225):
+                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                elif(GPSheading <=247):
+                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                elif(GPSheading <=270):
+                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                elif(GPSheading <=293):
+                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                elif(GPSheading <=315):
+                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                elif(GPSheading <=337):
+                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                elif(GPSheading <=360):
+                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                elif(GPSheading >360):
+                    draw[3].text((64,1), text="Magnets!", font=fontDec, fill=255, align="center", anchor="ma") # something's gone wrong
+                else:
+                    draw[3].text((64,1), text="Finding True North...", font=fontDec, fill=255, align="center", anchor="ma") # No Signal
+
 
                 #START OF COMPASS CODE BLOCK
 
