@@ -59,6 +59,7 @@ oledHeight = 64
 fontTemp = ImageFont.truetype("DejaVuSansMono.ttf", 28)
 fontDec = ImageFont.truetype("DejaVuSans.ttf", 13)
 fontTurbo = ImageFont.truetype("DejaVuSansMono.ttf", 32)
+fontComp = ImageFont.truetype("DejaVuSansMono.ttf", 25)
 fontLbl = ImageFont.truetype("DejaVuSans.ttf", 11)
 fontHum = ImageFont.truetype("DejaVuSans.ttf", 15)
 fontCoord = ImageFont.truetype("DejaVuSansMono.ttf", 17)
@@ -271,37 +272,39 @@ def GetTempDisplay(threadID):
                 #START OF COMPASS CODE BLOCK
                 #global GPSheading
                 if(GPSheading <=23):
-                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                    draw[3].text((64,1), text=" - N - ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING N
                 elif(GPSheading <=45):
-                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                    draw[3].text((64,1), text=" N - NE ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING NNE
                 elif(GPSheading <=67):
-                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                    draw[3].text((64,1), text=" - NE - ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING NE
                 elif(GPSheading <=90):
-                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                    draw[3].text((64,1), text=" NE - E ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING ENE
                 elif(GPSheading <=113):
-                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                    draw[3].text((64,1), text=" - E - ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING E
                 elif(GPSheading <=135):
-                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                    draw[3].text((64,1), text=" E - SE ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING ESE
                 elif(GPSheading <=157):
-                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                    draw[3].text((64,1), text=" - SE - ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING SE
                 elif(GPSheading <=180):
-                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                    draw[3].text((64,1), text=" SE - S ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING SSE
                 elif(GPSheading <=203):
-                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                    draw[3].text((64,1), text=" - S - ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING S
                 elif(GPSheading <=225):
-                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                    draw[3].text((64,1), text=" S - SW ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING SSW
                 elif(GPSheading <=247):
-                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                    draw[3].text((64,1), text=" - SW - ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING SW
                 elif(GPSheading <=270):
-                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                    draw[3].text((64,1), text=" SW - W ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING WSW
                 elif(GPSheading <=293):
-                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                    draw[3].text((64,1), text=" - W - ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING W
                 elif(GPSheading <=315):
-                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                    draw[3].text((64,1), text=" W - NW ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING WNW
                 elif(GPSheading <=337):
-                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                    draw[3].text((64,1), text=" - NW - ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING NW
                 elif(GPSheading <=360):
-                    draw[3].text((64,1), text="ABCDEFG", font=fontTemp, fill=255, align="center", anchor="ma")           # WRITE THE COMPASS
+                    draw[3].text((64,1), text=" NW - N ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING NNW
+                elif(GPSheading <=360):
+                    draw[3].text((64,1), text=" - N - ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING N AGAIN
                 elif(GPSheading >360):
                     draw[3].text((64,1), text="Magnets!", font=fontDec, fill=255, align="center", anchor="ma") # something's gone wrong
                 else:
