@@ -146,8 +146,8 @@ IRThermo = MLX90614(I2CBus, 0x5A)
 GPSserialport = '/dev/ttyACM0'
 GPSbaud = 9600
 GPStimeout = 3
-GPSheading = "101"
-GPSlat = "     900"
+GPSheading = 0
+GPSlat = "Saab 900"
 GPSlon = "   Turbo"
 
 
@@ -270,48 +270,49 @@ def GetTempDisplay(threadID):
                 # END OF AMBIENT TEMP AND HUMIDTY CODE BLOCK
 
                 #START OF COMPASS CODE BLOCK
-                #global GPSheading
-                if(GPSheading <=23):
+                #global GPSheading                                                                                  # for testing porpoises
+                #GPSheading = GPSheading + 10                                                                       # for testing porpoises
+
+                if(GPSheading <=11):
                     draw[3].text((64,1), text=" - N - ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING N
-                elif(GPSheading <=45):
+                elif(GPSheading <=34):
                     draw[3].text((64,1), text=" N - NE ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING NNE
-                elif(GPSheading <=67):
+                elif(GPSheading <=56):
                     draw[3].text((64,1), text=" - NE - ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING NE
-                elif(GPSheading <=90):
+                elif(GPSheading <=79):
                     draw[3].text((64,1), text=" NE - E ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING ENE
-                elif(GPSheading <=113):
+                elif(GPSheading <=101):
                     draw[3].text((64,1), text=" - E - ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING E
-                elif(GPSheading <=135):
+                elif(GPSheading <=124):
                     draw[3].text((64,1), text=" E - SE ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING ESE
-                elif(GPSheading <=157):
+                elif(GPSheading <=146):
                     draw[3].text((64,1), text=" - SE - ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING SE
-                elif(GPSheading <=180):
+                elif(GPSheading <=169):
                     draw[3].text((64,1), text=" SE - S ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING SSE
-                elif(GPSheading <=203):
+                elif(GPSheading <=191):
                     draw[3].text((64,1), text=" - S - ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING S
-                elif(GPSheading <=225):
+                elif(GPSheading <=214):
                     draw[3].text((64,1), text=" S - SW ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING SSW
-                elif(GPSheading <=247):
+                elif(GPSheading <=236):
                     draw[3].text((64,1), text=" - SW - ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING SW
-                elif(GPSheading <=270):
+                elif(GPSheading <=259):
                     draw[3].text((64,1), text=" SW - W ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING WSW
-                elif(GPSheading <=293):
+                elif(GPSheading <=281):
                     draw[3].text((64,1), text=" - W - ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING W
-                elif(GPSheading <=315):
+                elif(GPSheading <=304):
                     draw[3].text((64,1), text=" W - NW ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING WNW
-                elif(GPSheading <=337):
+                elif(GPSheading <=326):
                     draw[3].text((64,1), text=" - NW - ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING NW
-                elif(GPSheading <=360):
+                elif(GPSheading <=349):
                     draw[3].text((64,1), text=" NW - N ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING NNW
                 elif(GPSheading <=360):
                     draw[3].text((64,1), text=" - N - ", font=fontComp, fill=255, align="center", anchor="ma")           # COMPASS POINTING N AGAIN
                 elif(GPSheading >360):
-                    draw[3].text((64,1), text="Magnets!", font=fontDec, fill=255, align="center", anchor="ma") # something's gone wrong
+                    draw[3].text((64,1), text="Magnets?!?!", font=fontDec, fill=255, align="center", anchor="ma")        # something's gone wrong
                 else:
-                    draw[3].text((64,1), text="Finding True North...", font=fontDec, fill=255, align="center", anchor="ma") # No Signal
+                    draw[3].text((64,1), text="Finding North...", font=fontDec, fill=255, align="center", anchor="ma") # No Signal
 
-
-                #START OF COMPASS CODE BLOCK
+                #END OF COMPASS CODE BLOCK
 
                 global GPSlat
                 draw[3].text((120,32), text=GPSlat, font=fontCoord, fill=255, align="right", anchor="ra")           # write the latitude
@@ -326,7 +327,6 @@ def GetTempDisplay(threadID):
             #pass       
 
 def GetGPSData(threadID):
-    GPSnoheading = 0
     while True:
         try:
             GPSdata = GPSobject.GetGPS()
@@ -339,15 +339,9 @@ def GetGPSData(threadID):
 
             if (GPSdata[3] != ""):
                 global GPSheading
-                GPSheading = str.rjust((str(int(GPSdata[3]))), 3,)
-                digitDisp[2].show_string(GPSheading + "*")
-            else:
-                GPSnoheading = GPSnoheading + 1
-                #global GPSheading
-                GPSheading = str(GPSnoheading)
-                digitDisp[2].show_string(GPSheading + "*")
-                if (GPSnoheading >= 0):
-                    GPSnoheading = 0           
+                GPSheading = int(GPSdata[3])
+                GPSheadstr = str.rjust((str(int(GPSheading))), 3,)
+                digitDisp[2].show_string(GPSheadstr + "*")       
             
             if (GPSdata[4] != 0):
                 GPSalt = GPSdata[4]
