@@ -212,7 +212,7 @@ def GetTempDisplay(threadID):
                 draw[1].rectangle([0,0,127,63], fill=0)                                                             # black out the screen
                 oledTGs[1].updateGraph2D(oledTGs[1], tempRes[2])                                                    # update the top graph with the temp value
                 draw[1].line(oledTGs[1].coords, 1, 1)                                                               # now draw the graph
-                oledBGs[1].updateGraph2D(oledBGs[1], tempRes[3])         ''                                           # update the bottom graph
+                oledBGs[1].updateGraph2D(oledBGs[1], tempRes[3])                                                    # update the bottom graph
                 draw[1].line(oledBGs[1].coords, 1, 1)                                                               # and draw it
                 draw[1].rectangle([0,10,46,16], fill=0)
                 draw[1].text((0,10), text=oledTT[1], font=fontLbl, fill=255, align="left", anchor="la")              # write the label for the top half
