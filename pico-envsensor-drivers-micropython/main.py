@@ -5,7 +5,7 @@ import network
 from umodbus.tcp import ModbusTCP
 import DFRobot_I2C_Multiplexer
 import I2C_CHT8305_SEN0546
-import DFRobot_ENS160
+import ENS160
 
 I2CMultiAddr = 0x70  # I2C Multiplexer addr
 
@@ -145,37 +145,37 @@ register_definitions = {
             "on_get_cb": my_reg_get_cb,
         },
         "AQS1_ECO2": {
-            "register": 30,
-            "len": 1,
-            "val": 0,
-            "on_get_cb": my_reg_get_cb,
-        },
-        "AQS1_TVOC": {
-            "register": 31,
-            "len": 1,
-            "val": 0,
-            "on_get_cb": my_reg_get_cb,
-        },
-        "AQS1_AQI": {
             "register": 32,
             "len": 1,
             "val": 0,
             "on_get_cb": my_reg_get_cb,
         },
-        "AQS2_ECO2": {
+        "AQS1_TVOC": {
             "register": 33,
             "len": 1,
             "val": 0,
             "on_get_cb": my_reg_get_cb,
         },
-        "AQS2_TVOC": {
+        "AQS1_AQI": {
             "register": 34,
             "len": 1,
             "val": 0,
             "on_get_cb": my_reg_get_cb,
         },
-        "AQS2_AQI": {
+        "AQS2_ECO2": {
             "register": 35,
+            "len": 1,
+            "val": 0,
+            "on_get_cb": my_reg_get_cb,
+        },
+        "AQS2_TVOC": {
+            "register": 36,
+            "len": 1,
+            "val": 0,
+            "on_get_cb": my_reg_get_cb,
+        },
+        "AQS2_AQI": {
+            "register": 37,
             "len": 1,
             "val": 0,
             "on_get_cb": my_reg_get_cb,
@@ -194,6 +194,7 @@ print("Registering sensors")
 I2CMulti = DFRobot_I2C_Multiplexer.DFRobot_I2C_Multiplexer(
     channel, I2CMultiAddr, clock_pin, data_pin
 )
+I2CMulti.selectPort(0)
 for Port in range(0, 8):  # Scan I2C devices on each port
     try:
         print("Port:%s" % Port)
@@ -203,24 +204,39 @@ for Port in range(0, 8):  # Scan I2C devices on each port
     except OSError as ex:
         print("Failed scanning sensor device on channel ", Port, " : {}".format(ex))
 
-sensors = []
-for i in range(5):
+THsensors = []
+AQsensors = []
+for i in range(8):
     try:
         I2CMulti.selectPort(i)
-        sensors.append(
-            I2C_CHT8305_SEN0546.I2C_CHT8305_SEN0546(channel, clock_pin, data_pin)
-        )
+        THsensors.append(I2C_CHT8305_SEN0546.I2C_CHT8305_SEN0546(channel, clock_pin, data_pin))
+        print("Registered THS on Port: ", i)
     except OSError as ex:
-        print("Failed registering Temp sensor on channel ", i, " : {}".format(ex))
+        THsensors.append(i)
+        print("Failed registering Device on channel ", i, " : {}".format(ex))
 
-for i in range(6,8):
+for i in range(8):
     try:
         I2CMulti.selectPort(i)
-        sensors.append(
-            DFRobot_ENS160.AQS_ENS160(channel, clock_pin, data_pin)
-        )
+        AQsensors.append(ENS160.ENS160(channel, clock_pin, data_pin))
+        print("Registered AQS on Port: ", i)
     except OSError as ex:
+        AQsensors.append(i)
         print("Failed registering AQ sensor on channel ", i, " : {}".format(ex))
+
+#I2CMulti.selectPort(6)
+#try:
+#    AQsensors.append(ENS160.ENS160(channel, clock_pin, data_pin))
+#    print("Registered AQS on Port: ", 6)
+#except OSError as ex:
+#    print("Failed registering AQ sensor on channel ", 6, " : {}".format(ex))
+#
+#I2CMulti.selectPort(7)
+#try:   
+#    AQsensors.append(ENS160.ENS160(channel, clock_pin, data_pin))
+#    print("Registered AQS on Port: ", 7)
+#except OSError as ex:
+#    print("Failed registering AQ sensor on channel ", 7, " : {}".format(ex))
 
 print("Starting main loop")
 lastReadTime = time.time()
@@ -229,40 +245,46 @@ while True:
         result = client.process()
         now = time.time()
         if (now - lastReadTime) > 2:
-            for i in range(5):
+            for i in range(8):
                 try:
                     I2CMulti.selectPort(i)
-                    Temperature, Humidity = sensors[
+                    Temperature, Humidity = THsensors[
                         i
                     ].get_CHT8305_TEMPERATURE_HUMIDITY()
                     client.set_hreg(address=10 + (i * 2), value=int(Temperature * 10))
                     client.set_hreg(address=11 + (i * 2), value=int(Humidity * 10))
+                    print("Port: ", i, "Temp: ", Temperature, "Humi: ", Humidity)
                 except Exception as e:
-                    print("Failed reading Temp sensor on channel ", i, " : {}".format(e))
+                    print("Failed reading Temp Sensor on channel ", i, " : {}".format(e))
                 except OSError as ex:
-                    print("Failed reading Temp sensor on channel ", i, " : {}".format(ex))
-            for i in range(6,8):
+                    print("Failed reading Temp Sensor on channel ", i, " : {}".format(ex))
+            for i in range(8):
                 try:
                     I2CMulti.selectPort(i)
-                    ECO2 = sensors[i].getECO2()
-                    TVOC = sensors[i].getTVOC()
-                    AQI = sensors[i].getAQI()
-                    client.set_hreg(address=30 + ((i-6) * 2), value=int(ECO2))
-                    client.set_hreg(address=31 + ((i-6) * 2), value=int(TVOC))
-                    client.set_hreg(address=32 + ((i-6) * 2), value=int(AQI))
+                    aqi, tvoc, eco2, temp, rh, eco2_rating, tvoc_rating = AQsensors[i].read_air_quality()
+                    print(f"AQI: {aqi}")
+                    print(f"TVOC: {tvoc} ppb")
+                    print(f"TVOC Rating: {tvoc_rating}")
+                    print(f"eCO2: {eco2} ppm")
+                    print(f"Temperature (ENS160): {temp} °F")
+                    print(f"Humidity (ENS160): {rh} %")
+                    print(f"eCO2 Rating: {eco2_rating}")
+                    client.set_hreg(address=20 + (i * 2), value=int(eco2))
+                    client.set_hreg(address=21 + (i * 2), value=int(tvoc))
+                    client.set_hreg(address=22 + (i * 2), value=int(aqi))
                 except Exception as e:
-                    print("Failed reading AQ sensor on channel ", i, " : {}".format(e))
+                    print("Failed reading AQ Sensor on channel ", i, " : {}".format(e))
                 except OSError as ex:
-                    print("Failed reading AQ sensor on channel ", i, " : {}".format(ex))
+                    print("Failed reading AQ Sensor on channel ", i, " : {}".format(ex))
             lastReadTime = now
         if (now - lastReadTime) > 120:
-            Temperature = client.get_hreg(10)
-            Humidity = client.get_hreg(11)
+            Temperature = int(client.get_hreg(10) / 10)
+            Humidity = int(client.get_hreg(11) / 10)
             for i in range(6,8):
                 try:
                     I2CMulti.selectPort(i)
-                    sensors[i].calibrate_temp(Temperature)
-                    sensors[i].calibrate_hum(Humidity)
+                    AQsensors[i].calibrate_Temperature(Temperature)
+                    AQsensors[i].calibrate_Humidity(Humidity)
                 except Exception as e:
                     print("Failed calibrating AQ sensor on channel ", i, " : {}".format(e))
                 except OSError as ex:
