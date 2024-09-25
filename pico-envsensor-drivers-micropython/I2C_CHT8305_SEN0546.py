@@ -62,7 +62,7 @@ class I2C_CHT8305_SEN0546:
         self.i2c = machine.I2C(
             id=ID, scl=machine.Pin(SCL), sda=machine.Pin(SDA), freq=400000
         )
-        print("Scanning i2c bus")
+        print("Scanning i2c bus for Temp Sensors")
         devices = self.i2c.scan()
         if len(devices) == 0:
             print("No i2c device !")
