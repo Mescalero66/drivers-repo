@@ -1,13 +1,14 @@
 import time
 import machine
 from machine import Pin, I2C, SoftI2C
+import random
 import network
 from umodbus.tcp import ModbusTCP
 import DFRobot_I2C_Multiplexer
 import I2C_CHT8305_SEN0546
 import ENS160
 
-I2CMultiAddr = 0x70  # I2C Multiplexer addr
+I2CMultiAddr = 0x70  # I2C Multiplexer address
 
 ip_address = "192.168.1.237"
 network_mask = "255.255.255.0"
@@ -144,6 +145,18 @@ register_definitions = {
             "val": 0,
             "on_get_cb": my_reg_get_cb,
         },
+        "HEARTBEAT": {
+            "register": 26,
+            "len": 1,
+            "val": 0,
+            "on_get_cb": my_reg_get_cb,
+        },
+        "MACHINE_RESET": {
+            "register": 28,
+            "len": 1,
+            "val": 0,
+            "on_get_cb": my_reg_get_cb,
+        },
         "AQS1_ECO2": {
             "register": 32,
             "len": 1,
@@ -179,7 +192,7 @@ register_definitions = {
             "len": 1,
             "val": 0,
             "on_get_cb": my_reg_get_cb,
-        },
+        }
     }
 }
 
@@ -240,10 +253,18 @@ for i in range(8):
 
 print("Starting main loop")
 lastReadTime = time.time()
+calibrateTime = time.time()
+resetTime = time.time()
 while True:
     try:
         result = client.process()
         now = time.time()
+        if (now - lastReadTime) > 1:
+            Heartbeat = client.get_hreg(address=26)
+            Heartbeat = Heartbeat + random.randint(0,10)
+            client.set_hreg(address=26, value=int(Heartbeat))
+            if int(Heartbeat) >= 99:
+                client.set_hreg(address=26, value=int(0))
         if (now - lastReadTime) > 2:
             for i in range(8):
                 try:
@@ -256,30 +277,40 @@ while True:
                     print("Port: ", i, "Temp: ", Temperature, "Humi: ", Humidity)
                 except Exception as e:
                     print("Failed reading Temp Sensor on channel ", i, " : {}".format(e))
-                except OSError as ex:
-                    print("Failed reading Temp Sensor on channel ", i, " : {}".format(ex))
+                #except OSError as ex:
+                    #print("Failed reading Temp Sensor on channel ", i, " : {}".format(ex))
             for i in range(8):
                 try:
                     I2CMulti.selectPort(i)
                     aqi, tvoc, eco2, temp, rh, eco2_rating, tvoc_rating = AQsensors[i].read_air_quality()
-                    print(f"AQI: {aqi}")
-                    print(f"TVOC: {tvoc} ppb")
-                    print(f"TVOC Rating: {tvoc_rating}")
-                    print(f"eCO2: {eco2} ppm")
-                    print(f"Temperature (ENS160): {temp} °F")
-                    print(f"Humidity (ENS160): {rh} %")
-                    print(f"eCO2 Rating: {eco2_rating}")
+                    #print(f"AQI: {aqi}")
+                    #print(f"TVOC: {tvoc} ppb")
+                    #print(f"TVOC Rating: {tvoc_rating}")
+                    #print(f"eCO2: {eco2} ppm")
+                    #print(f"Temperature (ENS160): {temp} °F")
+                    #print(f"Humidity (ENS160): {rh} %")
+                    #print(f"eCO2 Rating: {eco2_rating}")
                     client.set_hreg(address=20 + (i * 2), value=int(eco2))
                     client.set_hreg(address=21 + (i * 2), value=int(tvoc))
                     client.set_hreg(address=22 + (i * 2), value=int(aqi))
                 except Exception as e:
                     print("Failed reading AQ Sensor on channel ", i, " : {}".format(e))
-                except OSError as ex:
-                    print("Failed reading AQ Sensor on channel ", i, " : {}".format(ex))
+                #except OSError as ex:
+                    #print("Failed reading AQ Sensor on channel ", i, " : {}".format(ex))
             lastReadTime = now
-        if (now - lastReadTime) > 120:
+        if (now - resetTime) > 5:
+            resetInstruct = int(client.get_hreg(28))
+            if resetInstruct == 6:
+                print("I've been told that I have to reboot")
+                client.set_hreg(address=26, value=11)
+                #time.sleep_ms(1000)
+                machine.reset()
+            resetTime = now
+        if (now - calibrateTime) > 30:
             Temperature = int(client.get_hreg(10) / 10)
+            print("Calibrating Temperature with: ", Temperature)
             Humidity = int(client.get_hreg(11) / 10)
+            print("Calibrating Humidity with: ", Humidity)
             for i in range(6,8):
                 try:
                     I2CMulti.selectPort(i)
@@ -287,8 +318,9 @@ while True:
                     AQsensors[i].calibrate_Humidity(Humidity)
                 except Exception as e:
                     print("Failed calibrating AQ sensor on channel ", i, " : {}".format(e))
-                except OSError as ex:
-                    print("Failed calibrating AQ sensor on channel ", i, " : {}".format(ex))
+                #except OSError as ex:
+                    #print("Failed calibrating AQ sensor on channel ", i, " : {}".format(ex))
+            calibrateTime = now
         time.sleep_ms(100)
 
     except KeyboardInterrupt:
