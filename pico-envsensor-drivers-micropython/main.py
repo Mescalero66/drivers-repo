@@ -218,7 +218,9 @@ data_pin = 2
 client.setup_registers(registers=register_definitions)
 
 print("Registering sensors....")
-time.sleep_ms(3000)
+
+time.sleep_ms(3000) # attempt to resolve the device not properly starting up and getting hung up
+
 I2CMulti = DFRobot_I2C_Multiplexer.DFRobot_I2C_Multiplexer(
     channel, I2CMultiAddr, clock_pin, data_pin
 )
@@ -336,7 +338,6 @@ while True:
             resetTime = now
             GW4 = int(client.get_hreg(48))
             if GW4 != 0:
-                #print("Are you sure you want to fuck with the IP Address??")
                 IP1 = int(client.get_hreg(41))
                 IP2 = int(client.get_hreg(42))
                 IP3 = int(client.get_hreg(43))
