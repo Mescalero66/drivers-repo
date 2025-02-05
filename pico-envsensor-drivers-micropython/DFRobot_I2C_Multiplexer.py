@@ -20,7 +20,7 @@ class DFRobot_I2C_Multiplexer:
     """
 
     def __init__(self, ID, I2CMultiAddr, SCL, SDA):
-        self.i2c = I2C(id=ID, scl=Pin(SCL), sda=Pin(SDA), freq=10000)
+        self.i2c = I2C(id=ID, scl=Pin(SCL), sda=Pin(SDA), freq=100000)
         self.addr = I2CMultiAddr
 
     def scan(self, port):
