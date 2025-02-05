@@ -30,12 +30,13 @@ except OSError:  # open failed
         "failed loading network config from network_address.txt file. Using default config"
     )
 
+print("PowerTec Enviro Sensor - v202502051439")
+
 print("Network Config: ")
 print(ip_address)
 print(network_mask)
 print(gateway_address)
 print(dns_server)
-
 
 time.sleep_ms(3000)
 
@@ -60,12 +61,16 @@ tcp_port = 502  # port to listen for requests/providing data
 
 print("Setting up Modbus")
 
+time.sleep_ms(500)
+
 client = ModbusTCP()
 
 # check whether client has been bound to an IP and a port
 if not client.get_bound_status():
     print("Binding client to ", local_ip, ":", tcp_port)
     client.bind(local_ip=local_ip, local_port=tcp_port)
+
+time.sleep_ms(500)
 
 register_definitions = {
     "HREGS": {
@@ -212,7 +217,8 @@ data_pin = 2
 # use the defined values of each register type provided by register_definitions
 client.setup_registers(registers=register_definitions)
 
-print("Registering sensors")
+print("Registering sensors....")
+time.sleep_ms(3000)
 I2CMulti = DFRobot_I2C_Multiplexer.DFRobot_I2C_Multiplexer(
     channel, I2CMultiAddr, clock_pin, data_pin
 )
@@ -259,7 +265,7 @@ THsensorsFP = THsensorsLP - THsensorsCt
 AQsensorsFP = AQsensorsLP - AQsensorsCt
 #print("AQ First: ", AQsensorsFP, " - AQ Ct: ", AQsensorsCt, " - AQ Last: ", AQsensorsLP -1)
 
-print("Starting Main Loop")
+print("Starting Main Loop.....")
 lastReadTime = time.time()
 calibrateTime = time.time()
 resetTime = time.time()
