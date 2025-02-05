@@ -20,9 +20,9 @@ The modbus configuration of this device is as follows:
 | 13 | Humidity 2 (%) | 23 |  | 33 | AQS 1 TVOC (ppb) |
 | 14 | Temperature 3 (°C) | 24 |  | 34 | AQS 1 Air Quality Index |
 | 15 | Humidity 3 (%) | 25 |  | 35 | AQS2 C02 (ppm) |
-| 16 | Temperature 4 (°C) | 26 | System Heartbeat | 36 | AQS2 TVOC (ppb) |
+| 16 | Temperature 4 (°C) | 26 |  | 36 | AQS2 TVOC (ppb) |
 | 17 | Humidity 4 (%) | 27 |  | 37 | AQS2 Air Quality Index |
-| 18 | Temperature 5 (°C) | 28 | System Reset (6) | 38 |  |
+| 18 | Temperature 5 (°C) | 28 |  | 38 |  |
 | 19 | Humidity 5 (%) | 29 |  | 39 |  |
 
 
