@@ -51,15 +51,6 @@ def blink():
 def my_reg_get_cb(reg_type, address, val):
     blink()
 
-# network connections shall be made here, check the MicroPython port specific
-# documentation for connecting to or creating a network
-
-# TCP Client/Slave setup
-# set IP address of this MicroPython device explicitly
-# local_ip = '192.168.4.1'  # IP address
-# or get it from the system after a connection to the network has been made
-
-
 local_ip = nic.ifconfig()[0]
 tcp_port = 502  # port to listen for requests/providing data
 
@@ -221,20 +212,6 @@ THsensorsFP = THsensorsLP - THsensorsCt
 #print("TH First: ", THsensorsFP, " - TH Ct: ", THsensorsCt, " - TH Last: ", THsensorsLP -1)
 AQsensorsFP = AQsensorsLP - AQsensorsCt
 #print("AQ First: ", AQsensorsFP, " - AQ Ct: ", AQsensorsCt, " - AQ Last: ", AQsensorsLP -1)
-
-#I2CMulti.selectPort(6)
-#try:
-#    AQsensors.append(ENS160.ENS160(channel, clock_pin, data_pin))
-#    print("Registered AQS on Port: ", 6)
-#except OSError as ex:
-#    print("Failed registering AQ sensor on channel ", 6, " : {}".format(ex))
-#
-#I2CMulti.selectPort(7)
-#try:   
-#    AQsensors.append(ENS160.ENS160(channel, clock_pin, data_pin))
-#    print("Registered AQS on Port: ", 7)
-#except OSError as ex:
-#    print("Failed registering AQ sensor on channel ", 7, " : {}".format(ex))
 
 print("Starting Main Loop")
 lastReadTime = time.time()
