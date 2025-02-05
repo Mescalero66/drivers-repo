@@ -22,16 +22,20 @@ try:
     network_mask = f.readline().rstrip("\r\n")
     gateway_address = f.readline().rstrip("\r\n")
     dns_server = f.readline().rstrip("\r\n")
-    print("Network config: ")
-    print(ip_address)
-    print(network_mask)
-    print(gateway_address)
-    print(dns_server)
+    f.close()
 except OSError:  # open failed
     # handle the file open case
+    f.close()
     print(
         "failed loading network config from network_address.txt file. Using default config"
     )
+
+print("Network Config: ")
+print(ip_address)
+print(network_mask)
+print(gateway_address)
+print(dns_server)
+
 
 time.sleep_ms(3000)
 
@@ -153,6 +157,48 @@ register_definitions = {
         },
         "AQS2_AQI": {
             "register": 37,
+            "len": 1,
+            "val": 0,
+        },
+        ## IP Address
+        "IP1": {
+            "register": 41,
+            "len": 1,
+            "val": 0,
+        },
+        "IP2": {
+            "register": 42,
+            "len": 1,
+            "val": 0,
+        },
+        "IP3": {
+            "register": 43,
+            "len": 1,
+            "val": 0,
+        },
+        "IP4": {
+            "register": 44,
+            "len": 1,
+            "val": 0,
+        },
+        ## Default Gateway
+        "GW1": {
+            "register": 45,
+            "len": 1,
+            "val": 0,
+        },
+        "GW2": {
+            "register": 46,
+            "len": 1,
+            "val": 0,
+        },
+        "GW3": {
+            "register": 47,
+            "len": 1,
+            "val": 0,
+        },
+        "GW4": {
+            "register": 48,
             "len": 1,
             "val": 0,
         }
@@ -282,6 +328,39 @@ while True:
                 calibrateTime = now
         if (now - resetTime) > 300:
             resetTime = now
+            GW4 = int(client.get_hreg(48))
+            if GW4 != 0:
+                #print("Are you sure you want to fuck with the IP Address??")
+                IP1 = int(client.get_hreg(41))
+                IP2 = int(client.get_hreg(42))
+                IP3 = int(client.get_hreg(43))
+                IP4 = int(client.get_hreg(44))
+                GW1 = int(client.get_hreg(45))
+                GW2 = int(client.get_hreg(46))
+                GW3 = int(client.get_hreg(47))
+                newIP = str(IP1) + "." + str(IP2) + "." + str(IP3) + "." + str(IP4)
+                newGW = str(GW1) + "." + str(GW2) + "." + str(GW3) + "." + str(GW4)
+                #print("New IP: ", newIP)
+                #print("New GW: ", newGW)
+                #time.sleep_ms(5000)
+                f = open("network_address.txt", "r")
+                ip_address = f.readline().rstrip("\r\n")
+                network_mask = f.readline().rstrip("\r\n")
+                gateway_address = f.readline().rstrip("\r\n")
+                dns_server = f.readline().rstrip("\r\n")
+                f.close()
+                #print("read existing file")
+                newNC = str(newIP) + "\n" + str(network_mask) + "\n" + str(newGW) + "\n" + str(dns_server) + "\n"
+                try:
+                    f = open("network_address.txt", "w")
+                    f.write(newNC)
+                    #print("wrote a thing")
+                    f.close()
+                except OSError:
+                    print("Error: couldn't write a thing") 
+                print("Network Config Updated from Modbus")
+                time.sleep_ms(5000)
+                machine.reset()
             Temperature = int(client.get_hreg(10) / 10)
             if Temperature == 0:
                 machine.reset()        
