@@ -161,7 +161,7 @@ def ReadSaabRPM(threadID):
             LEDBar.level(((RPM/500)-1), LEDBarBrightness)
             time.sleep(SAMPLE_TIME)
         except Exception as ex:
-            #logging.exception("Error occurred in GetGPSData thread")                                           # log exception info
+            #logging.exception("Error occurred in ReadSaabRPM thread")                                           # log exception info
             pass 
         except KeyboardInterrupt:
             break
