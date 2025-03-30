@@ -127,12 +127,12 @@ oledTGs = [0,0,0]                           # an array to hold the graphs for th
 oledBGs = [0,0,0]                           # an array to hold the graphs for the "bottom half" of the OLEDs
 globalBars = True
 
-oledTGs[0] = graph2D(originX=0,originY=32,width=62,height=31,minValue=112,maxValue=113,c=1,bars=False)       # create a graph for the Cylinder Head (20-140)
-oledBGs[0] = graph2D(originX=0,originY=64,width=62,height=31,minValue=112,maxValue=113,c=1,bars=False)       # create a graph for the Engline Block
-oledTGs[1] = graph2D(originX=0,originY=32,width=62,height=31,minValue=112,maxValue=113,c=1,bars=False)       # create a graph for the Intercooler
-oledBGs[1] = graph2D(originX=0,originY=64,width=62,height=31,minValue=112,maxValue=113,c=1,bars=False)       # create a graph for the Exhaust
+oledTGs[0] = graph2D(originX=0,originY=32,width=62,height=31,minValue=50,maxValue=150,c=1,bars=False)       # create a graph for the Cylinder Head (20-140)
+oledBGs[0] = graph2D(originX=0,originY=64,width=62,height=31,minValue=50,maxValue=150,c=1,bars=False)       # create a graph for the Engline Block
+oledTGs[1] = graph2D(originX=0,originY=32,width=62,height=31,minValue=20,maxValue=100,c=1,bars=False)       # create a graph for the Intercooler
+oledBGs[1] = graph2D(originX=0,originY=64,width=62,height=31,minValue=50,maxValue=150,c=1,bars=False)       # create a graph for the Exhaust
 #oledTGs[2] = graph2D(originX=0,originY=32,width=62,height=31,minValue=20,maxValue=120,c=1,bars=globalBars)       # create a graph for the Battery
-oledBGs[2] = graph2D(originX=0,originY=64,width=128,height=31,minValue=212,maxValue=213,c=1,bars=True)      # create a graph for the Turbo (150-320)
+oledBGs[2] = graph2D(originX=0,originY=64,width=128,height=31,minValue=150,maxValue=320,c=1,bars=True)      # create a graph for the Turbo (150-320)
 
 # set up PIGPIO
 pi = pigpio.pi()                            # create the necessary PIGPIO objects

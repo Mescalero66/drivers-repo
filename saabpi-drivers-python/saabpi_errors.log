@@ -1,4 +1,13 @@
-  File "/home/pi/saabpi/saabpi.py", line 302
-    global GPSheading
-    ^^^^^^^^^^^^^^^^^
-SyntaxError: name 'GPSheading' is used prior to global declaration
+Exception in thread Thread-4 (GetGPSData):
+Traceback (most recent call last):
+  File "/usr/lib/python3.11/threading.py", line 1038, in _bootstrap_inner
+    self.run()
+  File "/usr/lib/python3.11/threading.py", line 975, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/pi/saabpi/saabpi.py", line 332, in GetGPSData
+    GPSdata = GPSobject.GetGPS()
+              ^^^^^^^^^^^^^^^^^^
+  File "/home/pi/saabpi/hw_drivers/df_GPS/df_GPS_speed.py", line 37, in GetGPS
+    latStr = ((str(format(lat, '.5f'))) + " " + latNS)
+                   ^^^^^^^^^^^^^^^^^^
+ValueError: Unknown format code 'f' for object of type 'str'
