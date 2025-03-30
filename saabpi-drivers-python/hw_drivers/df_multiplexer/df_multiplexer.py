@@ -54,8 +54,13 @@ class i2cmultiplex:
     '''    
     if(port > 8):
       return
-    data = (1<<port) & 0xFF
-    self.i2c.write_byte(self.addr,data)
+    try:
+      data = (1<<port) & 0xFF
+      self.i2c.write_byte(self.addr,data)
+    except:
+      print("internal mux port select error.")
+      # self.selectPort(port)
+      pass    
     
   def writeto_mem(self,port,addr,reg,buf):
     '''!

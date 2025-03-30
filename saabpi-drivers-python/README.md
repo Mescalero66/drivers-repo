@@ -1,10 +1,9 @@
 MIT License
-Copyright (c) 2024 Mescalero
+Copyright (c) 2023-2025 Mescalero
 <https://github.com/Mescalero66/saabpi>
-# Saabpi Project v1.1 - Released 20240224
+# Saabpi v1.2 - Released 20250330
 
 # saabpi
-TBC - very early days here
 
 ![Pin Out](https://www.raspberrypi.com/documentation/computers/images/GPIO-Pinout-Diagram-2.png)
 
