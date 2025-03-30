@@ -1,5 +1,5 @@
 # MIT License
-# Copyright (c) 2024 Mescalero
+# Copyright (c) 2023-2025 Mescalero
 # <https://github.com/Mescalero66/saabpi>
 # Project v1.1
 #
