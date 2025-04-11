@@ -1,4 +1,4 @@
-# PowerTec Environment Sensor System
+# PowerTec Environment Sensor System [I2C]
 
 Repository for the PowerTec Environment Sensor System
 
