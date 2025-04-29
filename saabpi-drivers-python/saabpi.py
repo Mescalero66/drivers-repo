@@ -1,7 +1,8 @@
-#MIT License
-#Copyright (c) 2023-2025 Mescalero
-#<https://github.com/Mescalero66/saabpi>
-# Saabpi v1.2 [20250330]
+# MIT License
+# Copyright (c) 2023-2025 Mescalero
+# <https://github.com/Mescalero66/saabpi>
+# Project v1.2
+# Saabpi Project
 
 import time
 import threading
@@ -71,8 +72,13 @@ digitDisp.append(dfDisp(4, d4SCL, d4SDA))
 
 digitDisp[0].display_on(0)
 digitDisp[1].display_on(0)
+<<<<<<< HEAD
+digitDisp[2].display_on(0)
+digitDisp[3].display_on(0)
+=======
 digitDisp[2].display_on(2)
 digitDisp[3].display_on(2)
+>>>>>>> f42542a79fb2fe60ff1cfa4a8a1a3c6da93cd3cc
 # turn on each digit display (at brightness level 0 (highest))
 for i in range(digitDispNo):
     digitDisp[i].display_clear()
@@ -130,7 +136,11 @@ globalBars = True
 #oledTGs[1] = graph2D(originX=0,originY=32,width=62,height=31,minValue=20,maxValue=100,c=1,bars=False)       # create a graph for the Intercooler
 #oledBGs[1] = graph2D(originX=0,originY=64,width=62,height=31,minValue=50,maxValue=150,c=1,bars=False)       # create a graph for the Exhaust
 #oledTGs[2] = graph2D(originX=0,originY=32,width=62,height=31,minValue=20,maxValue=120,c=1,bars=globalBars)       # create a graph for the Battery
+<<<<<<< HEAD
+oledBGs[2] = graph2D(originX=0,originY=64,width=128,height=31,minValue=180,maxValue=320,c=1,bars=True)      # create a graph for the Turbo (180-320)
+=======
 oledBGs[2] = graph2D(originX=0,originY=64,width=128,height=31,minValue=150,maxValue=320,c=1,bars=True)      # create a graph for the Turbo (150-320)
+>>>>>>> f42542a79fb2fe60ff1cfa4a8a1a3c6da93cd3cc
 
 # set up PIGPIO
 pi = pigpio.pi()                            # create the necessary PIGPIO objects
@@ -175,14 +185,22 @@ def GetTempDisplay(threadID):
                 for i in range(tempprobeCount):                 # for each temperature probe
                     mux1.select_port(i)                         # select its mux channel
                     tempprobes[i].req_Temp()                    # and request the temperature
+<<<<<<< HEAD
+                time.sleep(0.5)                                # wait a quarter of a second
+=======
                 time.sleep(0.5)                                 # wait half a second
+>>>>>>> f42542a79fb2fe60ff1cfa4a8a1a3c6da93cd3cc
                 for i in range(tempprobeCount):                 # then, for each temperature probe
                     mux1.select_port(i)                         # select its mux channel
                     tempRes[i] = round(tempprobes[i].read_Temp(), 1)    # and read the temperature from its register, and put it in the corresponding tempRes
                 mux1.select_port(7)
                 tempRes[5] = round(IRThermo.get_obj_temp(), 1)  # get IR temp from IR thermometer
                 #tempRes[6] = round(IRThermo.get_amb_temp(), 1) # get ambient temp from IR thermometer
+<<<<<<< HEAD
+                time.sleep(0.5)                                 # inserted here
+=======
                 time.sleep(0.5)                                 # wait half a second
+>>>>>>> f42542a79fb2fe60ff1cfa4a8a1a3c6da93cd3cc
                 #mux1.select_port(4)                            # select 'Outside' temperature sensor channel
                 #tempRes[7] = int(tempprobes[4].read_Humi())    # read humidity from 'Outside' temperature sensor
                 
