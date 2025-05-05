@@ -1,6 +1,6 @@
 import time
 import machine
-from machine import Pin, I2C, SoftI2C
+from machine import Pin, I2C, SoftI2C, SPI
 import random
 import network
 from umodbus.tcp import ModbusTCP
@@ -31,30 +31,74 @@ except OSError:  # open failed
     )
 
 print("PowerTec Enviro Sensor - v202502051439")
-
-print("Network Config: ")
-print(ip_address)
-print(network_mask)
-print(gateway_address)
-print(dns_server)
+print("[I2C] v20250205-1439")
+print("-----")
+print("Network Config from File: (",ip_address,"-",network_mask,"-",gateway_address,"-",dns_server,")")
 
 time.sleep_ms(3000)
 
-nic = network.WIZNET5K()
-nic.active(True)
-nic.ifconfig((ip_address, network_mask, gateway_address, dns_server))
-nic.isconnected()
+try:
+    spi=SPI(0,2_000_000, mosi=Pin(19),miso=Pin(16),sck=Pin(18))
+    try:
+        nic = network.WIZNET5K(spi,Pin(17),Pin(20),Pin(21)) #spi,cs,reset,int
+    except:
+        print("NIC object already exists.")
+        pass
+    nic.active(True)
+    nic.ifconfig((ip_address, network_mask, gateway_address, dns_server))
+    while not nic.isconnected():
+        time.sleep(1)
+        print("Getting IP.....")
+    print('Device Network Address: ', nic.ifconfig())
+except Exception as e:
+    print("Exception during creation of NIC object: {}".format(e))
 
+# set up the blinking LED
 led = machine.Pin(25, machine.Pin.OUT)
 
 def blink():
     led.high()
     time.sleep_ms(100)
     led.low()
-    #time.sleep_ms(100)
 
 def my_reg_get_cb(reg_type, address, val):
     blink()
+
+def resetIPviaModbus():
+    Trigger = int(client.get_hreg(49))
+    if Trigger == 1:
+        time.sleep(2)
+        IP1 = int(client.get_hreg(41))
+        IP2 = int(client.get_hreg(42))
+        IP3 = int(client.get_hreg(43))
+        IP4 = int(client.get_hreg(44))
+        GW1 = int(client.get_hreg(45))
+        GW2 = int(client.get_hreg(46))
+        GW3 = int(client.get_hreg(47))
+        GW4 = int(client.get_hreg(48))
+        newIP = str(IP1) + "." + str(IP2) + "." + str(IP3) + "." + str(IP4)
+        newGW = str(GW1) + "." + str(GW2) + "." + str(GW3) + "." + str(GW4)
+        time.sleep(2)
+        f = open("network_address.txt", "r")
+        ip_address = f.readline().rstrip("\r\n")
+        network_mask = f.readline().rstrip("\r\n")
+        gateway_address = f.readline().rstrip("\r\n")
+        dns_server = f.readline().rstrip("\r\n")
+        f.close()
+        #print("read existing file")
+        newNC = str(newIP) + "\n" + str(network_mask) + "\n" + str(newGW) + "\n" + str(dns_server) + "\n"
+        try:
+            f = open("network_address.txt", "w")
+            f.write(newNC)
+            f.close()
+            time.sleep(2)
+        except OSError:
+                print("Error: couldn't write a thing")
+                time.sleep(1)
+                pass
+        print("Network Config Updated from Modbus")
+        time.sleep(10)
+        machine.reset()
 
 local_ip = nic.ifconfig()[0]
 tcp_port = 502  # port to listen for requests/providing data
@@ -68,145 +112,46 @@ client = ModbusTCP()
 # check whether client has been bound to an IP and a port
 if not client.get_bound_status():
     print("Binding client to ", local_ip, ":", tcp_port)
-    client.bind(local_ip=local_ip, local_port=tcp_port)
+    try:
+        client.bind(local_ip=local_ip, local_port=tcp_port)
+    except OSError as e:
+        print("Error in Modbus binding. System will restart.")
+        time.sleep(2)
+        machine.reset()
 
 time.sleep_ms(500)
 
 register_definitions = {
     "HREGS": {
-        "TEMPERATURE_1": {
-            "register": 10,
-            "len": 1,
-            "val": 0,
-            "on_get_cb": my_reg_get_cb,
-        },
-        "HUMIDITY_1": {
-            "register": 11,
-            "len": 1,
-            "val": 0,
-        },
-        "TEMPERATURE_2": {
-            "register": 12,
-            "len": 1,
-            "val": 0,
-        },
-        "HUMIDITY_2": {
-            "register": 13,
-            "len": 1,
-            "val": 0,
-        },
-        "TEMPERATURE_3": {
-            "register": 14,
-            "len": 1,
-            "val": 0,
-        },
-        "HUMIDITY_3": {
-            "register": 15,
-            "len": 1,
-            "val": 0,
-        },
-        "TEMPERATURE_4": {
-            "register": 16,
-            "len": 1,
-            "val": 0,
-        },
-        "HUMIDITY_4": {
-            "register": 17,
-            "len": 1,
-            "val": 0,
-        },
-        "TEMPERATURE_5": {
-            "register": 18,
-            "len": 1,
-            "val": 0,
-        },
-        "HUMIDITY_5": {
-            "register": 19,
-            "len": 1,
-            "val": 0,
-        },
-        "TEMPERATURE_6": {
-            "register": 20,
-            "len": 1,
-            "val": 0,
-        },
-        "HUMIDITY_6": {
-            "register": 21,
-            "len": 1,
-            "val": 0,
-        },
-        "AQS1_ECO2": {
-            "register": 32,
-            "len": 1,
-            "val": 0,
-        },
-        "AQS1_TVOC": {
-            "register": 33,
-            "len": 1,
-            "val": 0,
-        },
-        "AQS1_AQI": {
-            "register": 34,
-            "len": 1,
-            "val": 0,
-        },
-        "AQS2_ECO2": {
-            "register": 35,
-            "len": 1,
-            "val": 0,
-        },
-        "AQS2_TVOC": {
-            "register": 36,
-            "len": 1,
-            "val": 0,
-        },
-        "AQS2_AQI": {
-            "register": 37,
-            "len": 1,
-            "val": 0,
-        },
+        "TEMPERATURE_1": {"register": 10, "len": 1, "val": 0, "on_get_cb": my_reg_get_cb,},
+        "HUMIDITY_1": { "register": 11, "len": 1, "val": 0,},
+        "TEMPERATURE_2": { "register": 12, "len": 1, "val": 0,},
+        "HUMIDITY_2": { "register": 13, "len": 1, "val": 0,},
+        "TEMPERATURE_3": { "register": 14, "len": 1, "val": 0,},
+        "HUMIDITY_3": { "register": 15, "len": 1, "val": 0,},
+        "TEMPERATURE_4": { "register": 16, "len": 1, "val": 0,},
+        "HUMIDITY_4": { "register": 17, "len": 1, "val": 0,},
+        "TEMPERATURE_5": { "register": 18, "len": 1, "val": 0,},
+        "HUMIDITY_5": { "register": 19, "len": 1, "val": 0,},
+        "TEMPERATURE_6": { "register": 20, "len": 1, "val": 0,},
+        "HUMIDITY_6": { "register": 21, "len": 1, "val": 0,},
+        "AQS1_ECO2": { "register": 32, "len": 1, "val": 0,},
+        "AQS1_TVOC": { "register": 33, "len": 1, "val": 0,},
+        "AQS1_AQI": { "register": 34, "len": 1, "val": 0,},
+        "AQS2_ECO2": { "register": 35, "len": 1, "val": 0,},
+        "AQS2_TVOC": { "register": 36, "len": 1, "val": 0,},
+        "AQS2_AQI": { "register": 37, "len": 1, "val": 0,},
         ## IP Address
-        "IP1": {
-            "register": 41,
-            "len": 1,
-            "val": 0,
-        },
-        "IP2": {
-            "register": 42,
-            "len": 1,
-            "val": 0,
-        },
-        "IP3": {
-            "register": 43,
-            "len": 1,
-            "val": 0,
-        },
-        "IP4": {
-            "register": 44,
-            "len": 1,
-            "val": 0,
-        },
+        "IP1": { "register": 41, "len": 1, "val": 0,},
+        "IP2": { "register": 42, "len": 1, "val": 0,},
+        "IP3": { "register": 43, "len": 1, "val": 0,},
+        "IP4": { "register": 44, "len": 1, "val": 0,},
         ## Default Gateway
-        "GW1": {
-            "register": 45,
-            "len": 1,
-            "val": 0,
-        },
-        "GW2": {
-            "register": 46,
-            "len": 1,
-            "val": 0,
-        },
-        "GW3": {
-            "register": 47,
-            "len": 1,
-            "val": 0,
-        },
-        "GW4": {
-            "register": 48,
-            "len": 1,
-            "val": 0,
-        }
+        "GW1": { "register": 45, "len": 1, "val": 0,},
+        "GW2": { "register": 46, "len": 1, "val": 0,},
+        "GW3": { "register": 47, "len": 1, "val": 0,},
+        "GW4": { "register": 48, "len": 1, "val": 0,},
+        "Trigger": { "register": 49, "len": 1, "val": 0,}
     }
 }
 
@@ -219,11 +164,16 @@ client.setup_registers(registers=register_definitions)
 
 print("Registering sensors....")
 
-time.sleep_ms(3000) # attempt to resolve the device not properly starting up and getting hung up
+time.sleep_ms(2500) # attempt to resolve the device not properly starting up and getting hung up
 
-I2CMulti = DFRobot_I2C_Multiplexer.DFRobot_I2C_Multiplexer(
-    channel, I2CMultiAddr, clock_pin, data_pin
-)
+try:
+    I2CMulti = DFRobot_I2C_Multiplexer.DFRobot_I2C_Multiplexer(channel, I2CMultiAddr, clock_pin, data_pin)
+    time.sleep_ms(500)
+    I2CMulti.selectPort(0)
+except Exception as e:
+    print("Failed to initialise I2C multiplexer", " : {}".format(e))
+    time.sleep(2)
+    machine.reset()
 
 THsensors = []
 AQsensors = []
@@ -235,13 +185,10 @@ AQsensorsFP = 0 # First Port
 AQsensorsCt = 0 # Count
 AQsensorsLP = 0 # Last Port
 
-I2CMulti.selectPort(0)
 for Port in range(0, 8):  # Scan I2C devices on each port
     try:
-        #print("Port:%s" % Port)
         addr = I2CMulti.scan(Port)
         if len(addr):
-            #print("i2c addr:%s" % addr)
             if 64 in addr:
                 THsensors.append(I2C_CHT8305_SEN0546.I2C_CHT8305_SEN0546(channel, clock_pin, data_pin))
                 print("Registered Temp Sensor on Port: ", Port)
@@ -258,9 +205,8 @@ for Port in range(0, 8):  # Scan I2C devices on each port
             THsensors.append(Port)
             AQsensors.append(Port)
             print("No Device Found on Port: ", Port)
-
-    except OSError as ex:
-        print("Failed scanning sensor device on channel ", Port, " : {}".format(ex))
+    except OSError as e:
+        print("Failed scanning sensor device on channel ", Port, " : {}".format(e))
 
 THsensorsFP = THsensorsLP - THsensorsCt
 #print("TH First: ", THsensorsFP, " - TH Ct: ", THsensorsCt, " - TH Last: ", THsensorsLP -1)
@@ -279,9 +225,7 @@ while True:
             for i in range(THsensorsFP, THsensorsLP):
                 try:
                     I2CMulti.selectPort(i)
-                    Temperature, Humidity = THsensors[
-                        i
-                    ].get_CHT8305_TEMPERATURE_HUMIDITY()
+                    Temperature, Humidity = THsensors[i].get_CHT8305_TEMPERATURE_HUMIDITY()
                     client.set_hreg(address=10 + (i * 2), value=int(Temperature * 10))
                     client.set_hreg(address=11 + (i * 2), value=int(Humidity * 10))
                     print("Port: ", i, "Temp: ", Temperature, "Humi: ", Humidity)
@@ -289,9 +233,9 @@ while True:
                     print("Failed reading Temp Sensor on Port ", i, " : {}".format(e))
                     client.set_hreg(address=10 + (i * 2), value=int(0))
                     client.set_hreg(address=11 + (i * 2), value=int(0))
+                    pass
                 #except OSError as ex:
                     #print("Failed reading Temp Sensor on Port ", i, " : {}".format(ex))
-            lastReadTime = now
             if AQsensorsCt != 0:
                 for i in range(AQsensorsFP, AQsensorsLP):
                     try:
@@ -313,10 +257,12 @@ while True:
                         client.set_hreg(address=20 + (i * 2), value=int(0))
                         client.set_hreg(address=21 + (i * 2), value=int(0))
                         client.set_hreg(address=22 + (i * 2), value=int(0))
+                        pass
                     #except OSError as ex:
                         #print("Failed reading AQ Sensor on Port ", i, " : {}".format(ex))
+        lastReadTime = now
         if AQsensorsCt != 0:
-            if (now - calibrateTime) > 120:
+            if (now - calibrateTime) > 600:
                 try:
                     Temperature = int(client.get_hreg(10) / 10)
                     #print("Calibrating Temperature with: ", Temperature)
@@ -324,6 +270,7 @@ while True:
                     #print("Calibrating Humidity with: ", Humidity)
                 except Exception as e:
                     print("Failed to read modbus registers for AQ calibration "," : {}".format(e))
+                    pass
                 for i in range(AQsensorsFP, AQsensorsLP):
                     try:
                         I2CMulti.selectPort(i)
@@ -331,53 +278,20 @@ while True:
                         AQsensors[i].calibrate_Humidity(Humidity)
                     except Exception as e:
                         print("Failed calibrating AQ Sensor on channel ", i, " : {}".format(e))
+                        pass
                     #except OSError as ex:
                         #print("Failed calibrating AQ Sensor on channel ", i, " : {}".format(ex))
                 calibrateTime = now
-        if (now - resetTime) > 300:
+        if (now - resetTime) > 600:
             resetTime = now
-            GW4 = int(client.get_hreg(48))
-            if GW4 != 0:
-                IP1 = int(client.get_hreg(41))
-                IP2 = int(client.get_hreg(42))
-                IP3 = int(client.get_hreg(43))
-                IP4 = int(client.get_hreg(44))
-                GW1 = int(client.get_hreg(45))
-                GW2 = int(client.get_hreg(46))
-                GW3 = int(client.get_hreg(47))
-                newIP = str(IP1) + "." + str(IP2) + "." + str(IP3) + "." + str(IP4)
-                newGW = str(GW1) + "." + str(GW2) + "." + str(GW3) + "." + str(GW4)
-                #print("New IP: ", newIP)
-                #print("New GW: ", newGW)
-                #time.sleep_ms(5000)
-                f = open("network_address.txt", "r")
-                ip_address = f.readline().rstrip("\r\n")
-                network_mask = f.readline().rstrip("\r\n")
-                gateway_address = f.readline().rstrip("\r\n")
-                dns_server = f.readline().rstrip("\r\n")
-                f.close()
-                #print("read existing file")
-                newNC = str(newIP) + "\n" + str(network_mask) + "\n" + str(newGW) + "\n" + str(dns_server) + "\n"
-                try:
-                    f = open("network_address.txt", "w")
-                    f.write(newNC)
-                    #print("wrote a thing")
-                    f.close()
-                except OSError:
-                    print("Error: couldn't write a thing") 
-                print("Network Config Updated from Modbus")
-                time.sleep_ms(5000)
-                machine.reset()
-            Temperature = int(client.get_hreg(10) / 10)
-            if Temperature == 0:
-                machine.reset()        
+            resetIPviaModbus()        
         time.sleep_ms(500)
 
     except KeyboardInterrupt:
         print("KeyboardInterrupt, stopping TCP client...")
         break
     except Exception as e:
-        print("BIG Exception during execution of main loop: {}".format(e))
+        print("Big exception during execution of main loop: {}".format(e))
         machine.reset()
 
 machine.reset()

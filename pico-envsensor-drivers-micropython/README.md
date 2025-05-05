@@ -22,8 +22,8 @@ The modbus configuration of this device is as follows:
 | 15 | Humidity 3 (%) | 25 |  | 35 | AQS2 C02 (ppm) | 45 | Gateway Oct #1 |
 | 16 | Temperature 4 (°C) | 26 |  | 36 | AQS2 TVOC (ppb) | 46 | Gateway Oct #2 |
 | 17 | Humidity 4 (%) | 27 |  | 37 | AQS2 Air Quality Index | 47 | Gateway Oct #3 |
-| 18 | Temperature 5 (°C) | 28 |  | 38 |  | 48 | Gateway Oct #4 (Reset Trigger) |
-| 19 | Humidity 5 (%) | 29 |  | 39 |  | 49 |  |
+| 18 | Temperature 5 (°C) | 28 |  | 38 |  | 48 | Gateway Oct #4 |
+| 19 | Humidity 5 (%) | 29 |  | 39 |  | 49 | Reset Trigger |
 
 
 
