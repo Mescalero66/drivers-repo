@@ -8,7 +8,7 @@ import DFRobot_I2C_Multiplexer
 import I2C_CHT8305_SEN0546
 import ENS160
 
-time.sleep_ms(2000)
+time.sleep(2)
 
 I2CMultiAddr = 0x70  # I2C Multiplexer address
 
@@ -16,6 +16,7 @@ ip_address = "192.168.1.237"
 network_mask = "255.255.255.0"
 gateway_address = "192.168.1.1"
 dns_server = "8.8.8.8"
+
 try:
     f = open("network_address.txt", "r")
     ip_address = f.readline().rstrip("\r\n")
@@ -30,12 +31,14 @@ except OSError:  # open failed
         "failed loading network config from network_address.txt file. Using default config"
     )
 
-print("PowerTec Enviro Sensor - v202502051439")
-print("[I2C] v20250205-1439")
+print("PowerTec Enviro Sensor")
+print("[I2C] v20250608-XXXX")
 print("-----")
 print("Network Config from File: (",ip_address,"-",network_mask,"-",gateway_address,"-",dns_server,")")
 
-time.sleep_ms(3000)
+time.sleep(3)
+
+connectingNIC = 0
 
 try:
     spi=SPI(0,2_000_000, mosi=Pin(19),miso=Pin(16),sck=Pin(18))
@@ -47,7 +50,10 @@ try:
     nic.active(True)
     nic.ifconfig((ip_address, network_mask, gateway_address, dns_server))
     while not nic.isconnected():
+        connectingNIC += 1
         time.sleep(1)
+        if connectingNIC > 9:
+            machine.reset()
         print("Getting IP.....")
     print('Device Network Address: ', nic.ifconfig())
 except Exception as e:
@@ -105,7 +111,7 @@ tcp_port = 502  # port to listen for requests/providing data
 
 print("Setting up Modbus")
 
-time.sleep_ms(500)
+time.sleep(1)
 
 client = ModbusTCP()
 
@@ -116,10 +122,10 @@ if not client.get_bound_status():
         client.bind(local_ip=local_ip, local_port=tcp_port)
     except OSError as e:
         print("Error in Modbus binding. System will restart.")
-        time.sleep(2)
+        time.sleep(1)
         machine.reset()
 
-time.sleep_ms(500)
+time.sleep(1)
 
 register_definitions = {
     "HREGS": {
@@ -205,8 +211,9 @@ for Port in range(0, 8):  # Scan I2C devices on each port
             THsensors.append(Port)
             AQsensors.append(Port)
             print("No Device Found on Port: ", Port)
-    except OSError as e:
+    except Exception as e:
         print("Failed scanning sensor device on channel ", Port, " : {}".format(e))
+        pass
 
 THsensorsFP = THsensorsLP - THsensorsCt
 #print("TH First: ", THsensorsFP, " - TH Ct: ", THsensorsCt, " - TH Last: ", THsensorsLP -1)
@@ -217,9 +224,10 @@ print("Starting Main Loop.....")
 lastReadTime = time.time()
 calibrateTime = time.time()
 resetTime = time.time()
+bigExceptions = 0
+
 while True:
     try:
-        result = client.process()
         now = time.time()
         if (now - lastReadTime) > 5:
             for i in range(THsensorsFP, THsensorsLP):
@@ -231,6 +239,7 @@ while True:
                     print("Port: ", i, "Temp: ", Temperature, "Humi: ", Humidity)
                 except Exception as e:
                     print("Failed reading Temp Sensor on Port ", i, " : {}".format(e))
+                    THsensors[i].send_CHT8305_SOFT_RESET()
                     client.set_hreg(address=10 + (i * 2), value=int(0))
                     client.set_hreg(address=11 + (i * 2), value=int(0))
                     pass
@@ -260,6 +269,7 @@ while True:
                         pass
                     #except OSError as ex:
                         #print("Failed reading AQ Sensor on Port ", i, " : {}".format(ex))
+        result = client.process()
         lastReadTime = now
         if AQsensorsCt != 0:
             if (now - calibrateTime) > 600:
@@ -285,13 +295,16 @@ while True:
         if (now - resetTime) > 600:
             resetTime = now
             resetIPviaModbus()        
-        time.sleep_ms(500)
-
+        time.sleep(1)
     except KeyboardInterrupt:
         print("KeyboardInterrupt, stopping TCP client...")
         break
     except Exception as e:
         print("Big exception during execution of main loop: {}".format(e))
-        machine.reset()
+        bigExceptions += 1
+        time.sleep(1)
+        if bigExceptions > 9:
+            machine.reset()
+        pass
 
 machine.reset()
