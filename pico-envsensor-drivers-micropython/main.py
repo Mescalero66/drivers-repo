@@ -32,7 +32,7 @@ except OSError:  # open failed
     )
 
 print("PowerTec Enviro Sensor")
-print("[I2C] v20250608-XXXX")
+print("[I2C] v20250610-0938")
 print("-----")
 print("Network Config from File: (",ip_address,"-",network_mask,"-",gateway_address,"-",dns_server,")")
 
@@ -243,6 +243,7 @@ while True:
                     client.set_hreg(address=10 + (i * 2), value=int(0))
                     client.set_hreg(address=11 + (i * 2), value=int(0))
                     pass
+                lastReadTime = now
                 #except OSError as ex:
                     #print("Failed reading Temp Sensor on Port ", i, " : {}".format(ex))
             if AQsensorsCt != 0:
@@ -270,7 +271,6 @@ while True:
                     #except OSError as ex:
                         #print("Failed reading AQ Sensor on Port ", i, " : {}".format(ex))
         result = client.process()
-        lastReadTime = now
         if AQsensorsCt != 0:
             if (now - calibrateTime) > 600:
                 try:
