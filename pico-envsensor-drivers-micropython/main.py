@@ -35,6 +35,7 @@ print("PowerTec Enviro Sensor")
 print("[I2C] v20250610-0938")
 print("-----")
 print("Network Config from File: (",ip_address,"-",network_mask,"-",gateway_address,"-",dns_server,")")
+print("-----")
 
 time.sleep(3)
 
@@ -109,7 +110,7 @@ def resetIPviaModbus():
 local_ip = nic.ifconfig()[0]
 tcp_port = 502  # port to listen for requests/providing data
 
-print("Setting up Modbus")
+print("Setting up Modbus.....")
 
 time.sleep(1)
 
@@ -157,7 +158,9 @@ register_definitions = {
         "GW2": { "register": 46, "len": 1, "val": 0,},
         "GW3": { "register": 47, "len": 1, "val": 0,},
         "GW4": { "register": 48, "len": 1, "val": 0,},
-        "Trigger": { "register": 49, "len": 1, "val": 0,}
+        "Trigger": { "register": 49, "len": 1, "val": 0,},
+        ## Error Registers
+        "BigExceptionCount": { "register": 58, "len": 1, "val": 0,}
     }
 }
 
@@ -168,9 +171,9 @@ data_pin = 2
 # use the defined values of each register type provided by register_definitions
 client.setup_registers(registers=register_definitions)
 
-print("Registering sensors....")
+print("Registering Sensors.....")
 
-time.sleep_ms(2500) # attempt to resolve the device not properly starting up and getting hung up
+time.sleep(3) # attempt to resolve the device not properly starting up and getting hung up
 
 try:
     I2CMulti = DFRobot_I2C_Multiplexer.DFRobot_I2C_Multiplexer(channel, I2CMultiAddr, clock_pin, data_pin)
@@ -240,6 +243,7 @@ while True:
                 except Exception as e:
                     print("Failed reading Temp Sensor on Port ", i, " : {}".format(e))
                     THsensors[i].send_CHT8305_SOFT_RESET()
+                    print("Sending SOFT RESET to Temp Sensor on Port: ", i)
                     client.set_hreg(address=10 + (i * 2), value=int(0))
                     client.set_hreg(address=11 + (i * 2), value=int(0))
                     pass
@@ -300,9 +304,15 @@ while True:
         print("KeyboardInterrupt, stopping TCP client...")
         break
     except Exception as e:
-        print("Big exception during execution of main loop: {}".format(e))
+        print("Big Exception during execution of main loop: {}".format(e))
         bigExceptions += 1
-        time.sleep(1)
+        try:
+            client.set_hreg(address=58, value=int(bigExceptions))
+            result = client.process()
+        except Exception as e:
+            print("Failed to update Error Register: {}".format(e))
+            pass
+        time.sleep(2)
         if bigExceptions > 9:
             machine.reset()
         pass
