@@ -43,7 +43,7 @@ The Modbus configuration of this device is as follows:
 | :---: | --- | --- |
 | `54` | System Status | **START UP:** <br> **91** = System starting up. <br> **92** = Setting up I2C bus. <br> **94** = Setting up I2C multiplexer device. <br> **95** = Multiplexer device online. <br> **96** = Scanning for temperature sensors. <br> **98** = Temperature sensor(s) online. <br> **99** = Entering the Main Loop. **100** = System Operating in Main Loop. <br> <br> **ERROR CODES:** <br> **111** = Serious exception in main loop. System will continue. <br> **112** = Multiple serious exceptions in main loop.System will restart in 5 seconds. <br> **113** = .... <br> **114** = .... <br> **115** = .... **119** = Main Loop has ended somehow. System will restart. |
 | `55` | Temp & Humidity Sensors Online | **0 < 9** <br> Number of I2C Temperature + Humidity sensors detected at startup. |
-| `56` | Air Quality Sensors Online | **0 < 3** <br> Number of I2C Air Quality sensors detected at startup. |
+| `56` | Air Quality Sensors Online | **0 < 8** <br> Number of I2C Air Quality sensors detected at startup. |
 | `57` | IP Address Reset Status | **991** = IP reset triggered, reading new details. <br> **992** = Writing IP and Gateway to network_address.txt <br> **995** = New details written to network_address.txt. <br> **996** = **ERROR** when writing new IP and Gateway to file. <br> **999** = Network Configuration Updated. System will restart in 10 seconds. |
 | `58` | Main Loop Exceptions | Number of serious exceptions in the main loop. System will restart if ten exceptions occur. |
 | `59` | Temp Sensor Soft Resets | Number of temp sensor soft resets, sent after a failed temp sensor reading. System will not reset. |
