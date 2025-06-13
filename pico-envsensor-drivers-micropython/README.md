@@ -12,7 +12,11 @@ The Modbus configuration of this device is as follows:
  - Network Port: 502
 
  - The Device Heartbeat (Register 52) with a value **>= 0 < 59** indicates that the system is operating normally in the main loop.
+ 
  - Temperature values are in °C x 10 (i.e. 21.5°C will be returned as 215)
+ - eCO2 values are in ppm
+ - TVOC values are in ppb
+ 
  - The data registers start at `10` and are as follows:
 
 | Addr | Description | Addr | Description | Addr | Description | Addr | Description |
