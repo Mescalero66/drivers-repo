@@ -5,7 +5,7 @@
 # 
 # Python Driver for:
 # DFRobot DFR0645-R DFR0645-G <https://wiki.dfrobot.com/4-Digital%20LED%20Segment%20Display%20Module%20%20SKU:%20DFR0645-G_DFR0645-R>
-# THIS IS NOT AN I2C DEVICE - IT WAS FUCKING ANNOYING TO GET IT TO WORK
+# NOTE: THIS IS NOT AN I2C DEVICE 
 #
 # Shout out to CarlWilliamsBristol <https://github.com/CarlWilliamsBristol/pxt-tm1650display>
 
