@@ -38,9 +38,9 @@ characterBytes = [
     0x76,  # H
     0x06,  # I
     0x1E,  # J
-    0x00,  # K (not displayable)
+    0x75,  # K (approx: H + diagonal)
     0x38,  # L
-    0x00,  # M (not displayable)
+    0x37,  # M (approx: N + diagonal)
     0x54,  # N
     0x5C,  # o
     0x73,  # P
@@ -50,14 +50,22 @@ characterBytes = [
     0x78,  # T
     0x3E,  # U
     0x1C,  # V
-    0x00,  # W (not displayable on 7-seg)
-    0x00,  # X (not displayable)
+    0x2A,  # W (approx)
+    0x76,  # X (use H as approx)
     0x6E,  # Y
     0x5B,  # Z
-    0x00,  # space (optional)
-    0x40,  # dash
-    0x63,  # degrees
+    0x00,  # [36] space
+    0x40,  # [37] dash -
+    0x63,  # [38] degrees °
+    0x48,  # [39] equal =
+    0x08,  # [40] underscore _
+    0x00,  # [41] reserved
+    0x00,  # [42] reserved
+    0x00,  # [43] reserved
+    0x00,  # [44] reserved
+    0x00,  # [45] reserved
 ]
+
 
 digitAddress = [
     0x68,       # 104
@@ -271,6 +279,43 @@ class LED4digdisp:
         self.send_idle_state()
 
     def send_byte(self, data=0):
+        bitMask = 0x80  # Start with MSB
+
+        # Send 8 bits
+        while bitMask:
+            if data & bitMask:
+                self.data_pin.on()
+            else:
+                self.data_pin.off()
+
+            time.sleep_us(self.half_pulse_width)
+            self.clock_pin.on()
+            time.sleep_us(self.pulse_width)
+            self.clock_pin.off()
+            time.sleep_us(self.half_pulse_width)
+
+            bitMask >>= 1
+
+        # Prepare to receive ACK from TM1650
+        self.data_pin.init(Pin.IN, Pin.PULL_UP)  # Release DATA pin
+        time.sleep_us(self.half_pulse_width)
+        self.clock_pin.on()
+        time.sleep_us(self.half_pulse_width)
+
+        ackBit = self.data_pin.value()  # TM1650 pulls low to ACK
+        print("ack:", ackBit)
+
+        self.clock_pin.off()
+        time.sleep_us(self.half_pulse_width)
+
+        # Return DATA pin to output mode
+        self.data_pin.init(Pin.OUT)
+        self.data_pin.off()
+        time.sleep_us(self.half_pulse_width)
+
+        return ackBit
+    
+    def send_byte_original(self, data=0):
         bitMask = 128
         while bitMask != 0:
         # for _ in range(8):
@@ -302,7 +347,7 @@ class LED4digdisp:
         self.data_pin.off()
         time.sleep_us(self.half_pulse_width)
 
-    def char_to_index(self, c):
+    def char_to_index_orig(self, c):
         char_code = 30
         if c < 30:
             char_code = c
@@ -330,6 +375,30 @@ class LED4digdisp:
                     else:
                         char_code = 0
         return char_code
+    
+    def char_to_index(self, c):
+        if isinstance(c, str):
+            c = c.upper()
+            c = ord(c)
+    
+        # Digits '0' to '9'
+        if 0x30 <= c <= 0x39:
+            return c - 0x30  # 0–9
+
+        # Letters 'A' to 'Z'
+        if 0x41 <= c <= 0x5A:
+            return 10 + (c - 0x41)  # A=10, B=11, ..., Z=35
+
+        # Special cases
+        if c == 0x20:  # space
+            return 36
+        if c == 0x2D:  # dash
+            return 37
+        if c == 0x2A:  # degrees symbol (custom)
+            return 38
+        
+        # Fallback to blank (space)
+        return 36
 
 
 #  state clockPin & dataPin
@@ -344,20 +413,24 @@ display = LED4digdisp(display_ID, display_clockPin, display_dataPin)
 display.display_on(0)
 #display.display_clear()
 
-display.send_pair(0x68, 0x76)  # H
-display.send_pair(0x6A, 0x77)  # A
-display.send_pair(0x6C, 0x38)  # L
-display.send_pair(0x6E, 0x3F)  # O
-time.sleep(5)
+print("sending pair")
+#display.send_pair(0x48, 0x01)
+time.sleep(2)
 
 # display string
 display.show_string("HALO")
-time.sleep(10)
+time.sleep(2)
+display.show_string("5-52")
+time.sleep(5)
+display.show_string("25.1*")
+time.sleep(5)
+display.show_string("25*c")
+time.sleep(5)
 
 # display integer
 integ = 1
-#while integ < 250:
-#    print(integ)
-#    display.show_integer(integ)
-#    integ += 1
-#    time.sleep(0.1)
+while integ < 250:
+    print(integ)
+    display.show_integer(integ)
+    integ += 1
+    time.sleep(0.01)
