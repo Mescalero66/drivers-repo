@@ -114,7 +114,7 @@ class dfDisp:
             else:
                 if display_chars >= 4:
                     break
-                trunc_ouput += ch
+                trunc_output += ch
                 display_chars += 1
         
         s = trunc_output
