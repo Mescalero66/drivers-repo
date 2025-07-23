@@ -7,7 +7,7 @@
 # DFRobot DFR0645-R DFR0645-G
 
 import time
-from tm1650disp import dfDisp
+from tm1650disp_4digit import dfDisp
 import RPi.GPIO as GPIO
 
 # connect to clockPin & dataPin
