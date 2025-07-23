@@ -1,6 +1,6 @@
 # MIT License
 # Copyright (c) 2025 Mescalero
-# v1.0 - Released 2025xxxx
+# v0.8 - Released 20250724
 # 
 # Micropython Driver for:
 # DFRobot DFR0645-R DFR0645-G <https://wiki.dfrobot.com/4-Digital%20LED%20Segment%20Display%20Module%20%20SKU:%20DFR0645-G_DFR0645-R>
@@ -12,7 +12,7 @@
 from machine import Pin
 import time
 
-DEFAULT_PULSE_WIDTH = 120
+DEFAULT_PULSE_WIDTH = 120                   # microseconds
 DEFAULT_HALF_PULSE_WIDTH = 60
 DEFAULT_SYSTEM_COMMAND = 0x48
 DEFAULT_READ_COMMAND = 0x49
@@ -63,9 +63,8 @@ characterBytes = [
     0x00,  # [42] reserved
     0x00,  # [43] reserved
     0x00,  # [44] reserved
-    0x00,  # [45] reserved
+    0x00   # [45] reserved
 ]
-
 
 digitAddress = [
     0x68,       # 104
@@ -80,17 +79,14 @@ class LED4digdisp:
         self.clock_pin_no = clock
         self.data_pin_no = data
         self.displayDigitsRaw = [0, 0, 0, 0]
-        print("ID: ", self.ID, " - ClockPin: ", self.clock_pin_no, " - DataPin: ", self.data_pin_no)
-        self.pulse_width = DEFAULT_PULSE_WIDTH                               # microseconds
+        self.pulse_width = DEFAULT_PULSE_WIDTH
         self.half_pulse_width = DEFAULT_HALF_PULSE_WIDTH
         self.reconfigure(self.clock_pin_no, self.data_pin_no)
 
     def reconfigure(self, clock_pin_no=1, data_pin_no=0):
         self.clock_pin = Pin(clock_pin_no, Pin.OUT)
         self.clock_pin.off()
-        print("Clock Pin (", clock_pin_no, ") Configured OUT")
         self.data_pin = Pin(data_pin_no, Pin.OUT)
-        print("Data Pin (", data_pin_no, ") Configured OUT")
         self.data_pin.off()
         self.send_idle_state()
 
@@ -98,7 +94,7 @@ class LED4digdisp:
         return Pin(pin_num, mode)
 
     def set_speed(self, baud=8333):
-        clock_length = 120                  # default to 120 microseconds
+        clock_length = 120                                      # default to 120 microseconds
         clock_length = 1000000 / baud
         if clock_length >= 4:
             self.pulse_width = int(clock_length / 2)
@@ -126,7 +122,6 @@ class LED4digdisp:
         brightness &= 7
         brightness <<= 4
         brightness |= 1
-        print("Sending DISPLAY_ON with Brightness:", brightness)
         self.send_pair(DEFAULT_SYSTEM_COMMAND, brightness)
 
     def display_off(self):
@@ -150,7 +145,7 @@ class LED4digdisp:
             self.displayDigitsRaw[pos] |= 128
         else:
             self.displayDigitsRaw[pos] = characterBytes[char_index]
-        print(f"Sending segment byte 0x{self.displayDigitsRaw[pos]:02X} to address 0x{digitAddress[pos]:02X}")
+        #print(f"Sending segment byte 0x{self.displayDigitsRaw[pos]:02X} to address 0x{digitAddress[pos]:02X}")
         self.send_pair(digitAddress[pos], self.displayDigitsRaw[pos])
 
     def show_char_with_point(self, pos=0, c=0):
@@ -158,7 +153,6 @@ class LED4digdisp:
         pos &= 3
         char_index2 = self.char_to_index(c)
         self.displayDigitsRaw[pos] = characterBytes[char_index2] | 128
-        print("Sending char ", {chr(self.displayDigitsRaw[pos])}, ", to address ", {hex(digitAddress[pos])})
         self.send_pair(digitAddress[pos], self.displayDigitsRaw[pos])
 
     def show_string(self, s):
@@ -181,7 +175,6 @@ class LED4digdisp:
                 display_chars += 1
         
         s = trunc_output
-        print("Attempting to Display String: ", trunc_output)
 
         disp_char_count = sum(1 for ch in s if ch != '.')
         if disp_char_count < 4:                         # if the output is less than 4 characters (excluding decimal point)
@@ -216,7 +209,6 @@ class LED4digdisp:
         outc2 = [32, 32, 32, 32]
         i = 3
         absn = 0
-        print("Attempting to Display Integer: ", n)
         if (n > 9999) or (n < -999):
             self.show_string("Err ")
         else:
@@ -275,7 +267,6 @@ class LED4digdisp:
         self.send_Start()
         self.send_byte(d)
         self.send_byte(v)
-        print("Pair Sent")
         self.send_idle_state()
 
     def send_byte(self, data=0):
@@ -303,7 +294,7 @@ class LED4digdisp:
         time.sleep_us(self.half_pulse_width)
 
         ackBit = self.data_pin.value()  # TM1650 pulls low to ACK
-        print("ack:", ackBit)
+        #print("ack:", ackBit)
 
         self.clock_pin.off()
         time.sleep_us(self.half_pulse_width)
@@ -333,14 +324,13 @@ class LED4digdisp:
             self.clock_pin.on()
             time.sleep_us(self.pulse_width)
             self.clock_pin.off()
-            #print("BitMask: ", bitMask)
             bitMask >>= 1
         self.data_pin = self.set_pin_mode(self.data_pin_no, Pin.IN)
         time.sleep_us(self.pulse_width)
         self.clock_pin.on()
         time.sleep_us(self.pulse_width)
         ackBit = self.data_pin.value()
-        print("ack: ", ackBit)
+        #print("ack: ", ackBit)
         self.clock_pin.off()
         time.sleep_us(self.half_pulse_width)
         self.data_pin = self.set_pin_mode(self.data_pin_no, Pin.OUT)
@@ -380,25 +370,25 @@ class LED4digdisp:
         if isinstance(c, str):
             c = c.upper()
             c = ord(c)
-    
-        # Digits '0' to '9'
+
+        # Digits 0–9
         if 0x30 <= c <= 0x39:
             return c - 0x30  # 0–9
 
-        # Letters 'A' to 'Z'
+        # Letters A–Z
         if 0x41 <= c <= 0x5A:
             return 10 + (c - 0x41)  # A=10, B=11, ..., Z=35
 
-        # Special cases
-        if c == 0x20:  # space
-            return 36
-        if c == 0x2D:  # dash
-            return 37
-        if c == 0x2A:  # degrees symbol (custom)
-            return 38
-        
-        # Fallback to blank (space)
-        return 36
+        # Special characters
+        special_map = {
+            0x20: 36,  # space
+            0x2D: 37,  # dash
+            0xB0: 38,  # degree °
+            0x2A: 38,  # * = degree symbol
+            0x3D: 39,  # equal =
+            0x5F: 40,  # underscore _
+        }
+        return special_map.get(c, 36)  # fallback to space
 
 
 #  state clockPin & dataPin
@@ -413,24 +403,12 @@ display = LED4digdisp(display_ID, display_clockPin, display_dataPin)
 display.display_on(0)
 #display.display_clear()
 
-print("sending pair")
-#display.send_pair(0x48, 0x01)
-time.sleep(2)
-
-# display string
-display.show_string("HALO")
-time.sleep(2)
-display.show_string("5-52")
-time.sleep(5)
-display.show_string("25.1*")
-time.sleep(5)
-display.show_string("25*c")
+display.show_string("TEST")
 time.sleep(5)
 
 # display integer
 integ = 1
-while integ < 250:
-    print(integ)
+while integ < 2500:
+    #print(integ)
     display.show_integer(integ)
     integ += 1
-    time.sleep(0.01)

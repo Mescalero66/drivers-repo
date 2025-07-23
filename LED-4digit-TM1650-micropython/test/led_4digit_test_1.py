@@ -1,13 +1,13 @@
 # MIT License
 # Copyright (c) 2025 Mescalero
-# v1.0 - Released 2025xxxx
+# v0.8 - Released 20250724
 
 import time
 from led_4digit_tm1650 import LED4digdisp
 
 #  state clockPin & dataPin
-display_dataPin = 0
-display_clockPin = 1
+display_dataPin = 18
+display_clockPin = 19
 display_ID = 1
 
 # create object
@@ -17,13 +17,16 @@ display = LED4digdisp(display_ID, display_clockPin, display_dataPin)
 display.display_on(0)
 
 # display string
-display.show_string("HALO")
-time.sleep(10)
+display.show_string("TEST")
+time.sleep(5)
 
-# display int
-int = 125
-while int < 250:
-    print(int)
-    display.show_integer(int)
-    int += 1
-    time.sleep(0.1)
+display.display_clear()
+
+# display integer
+integ = 1
+while integ < 2500:
+    #print(integ)
+    display.show_integer(integ)
+    integ += 1
+
+display.display_clear()
