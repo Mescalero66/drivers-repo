@@ -110,7 +110,7 @@ class dfDisp:
 
         for ch in s:                            # Limit to maximum 4 displayable characters (not counting decimal points)
             if ch == '.':
-                trunc_ouput += ch
+                trunc_output += ch
             else:
                 if display_chars >= 4:
                     break
