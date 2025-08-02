@@ -1,6 +1,4 @@
-
-class HT16K33:
-    """
+"""
     A simple, generic driver for the I2C-connected Holtek HT16K33 controller chip.
     This release supports MicroPython and CircuitPython
 
@@ -8,7 +6,10 @@ class HT16K33:
     Author:     Tony Smith (@smittytone)
     License:    MIT
     Copyright:  2025
-    """
+"""
+
+class HT16K33:
+
 
     # *********** CONSTANTS **********
 
@@ -120,8 +121,8 @@ class HT16K33:
         """
         self.i2c.writeto(self.address, bytes([byte]))
 
-class HT16K33LED(HT16K33):
-    """
+
+"""
     Micropython class for a generic 1-8-digit, 7-segment display.
     It assumes each digit has a decimal point, but there are no other
     symbol LEDs included.
@@ -130,29 +131,59 @@ class HT16K33LED(HT16K33):
     Author:     Tony Smith (@smittytone)
     License:    MIT
     Copyright:  2025
-    """
+"""
+
+class HT16K33LED(HT16K33):
 
     # *********** CONSTANTS **********
 
-    HT16K33_SEGMENT_MINUS_CHAR = 0x10
-    HT16K33_SEGMENT_DEGREE_CHAR = 0x11
-    HT16K33_SEGMENT_SPACE_CHAR = 0x12
+    HT16K33_SEGMENT_MINUS_CHAR = 0x40
+    HT16K33_SEGMENT_DEGREE_CHAR = 0x63
+    HT16K33_SEGMENT_SPACE_CHAR = 0x00
 
-    CHARSET = [
-        0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 0x6F,  # 0–9
-        0x77, 0x7C, 0x39, 0x5E, 0x79, 0x71, 0x3D, 0x76, 0x06, 0x1E,  # A–J
-        0x75, 0x38, 0x37, 0x54, 0x5C, 0x73, 0x67, 0x50, 0x6D, 0x78,  # K–T
-        0x3E, 0x1C, 0x2A, 0x76, 0x6E, 0x5B,                          # U–Z
-        0x00, 0x40, 0x63, 0x48, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00   # space, -, °, =, _
-    ]
-
-    CHAR_LOOKUP = {
-        0x20: 36,  # space
-        0x2D: 37,  # dash
-        0xB0: 38,  # degree °
-        0x2A: 38,  # * = degree symbol
-        0x3D: 39,  # equal =
-        0x5F: 40   # underscore
+    CHARSET = {
+        '0': 0x3F,
+        '1': 0x06,
+        '2': 0x5B,
+        '3': 0x4F,
+        '4': 0x66,
+        '5': 0x6D,
+        '6': 0x7D,
+        '7': 0x07,
+        '8': 0x7F,
+        '9': 0x6F,
+        'a': 0x77,
+        'b': 0x7C,
+        'c': 0x39,
+        'd': 0x5E,
+        'e': 0x79,
+        'f': 0x71,
+        'g': 0x3D,
+        'h': 0x76,
+        'i': 0x06,
+        'j': 0x1E,
+        'k': 0x75,
+        'l': 0x38,
+        'm': 0x37,
+        'n': 0x54,
+        'o': 0x5C,
+        'p': 0x73,
+        'q': 0x67,
+        'r': 0x50,
+        's': 0x6D,
+        't': 0x78,
+        'u': 0x3E,
+        'v': 0x1C,
+        'w': 0x2A,
+        'x': 0x76,
+        'y': 0x6E,
+        'z': 0x5B,
+        ' ': 0x00,
+        '-': 0x40,
+        '°': 0x63,
+        '=': 0x48,
+        '_': 0x08,
+        '*': 0x63
     }
 
     # *********** CONSTRUCTOR **********
@@ -234,6 +265,16 @@ class HT16K33LED(HT16K33):
 
         return self.set_character(str(number), digit, has_dot)
 
+    def set_string(self, string, alignment):
+        """
+        Write a string of up to 8 digits to the buffer, by alignment
+        """
+        
+        
+        
+        return self.draw()
+
+
     def set_character(self, char, digit=0, has_dot=False):
         """
         Present single alphanumeric character at the specified digit.
@@ -257,23 +298,12 @@ class HT16K33LED(HT16K33):
         assert 0 <= digit < self.max_digits, "ERROR - Invalid digit set in set_character()"
 
         char = char.lower()
-        char_val = 0xFF
-        if char == "deg":
-            char_val = self.HT16K33_SEGMENT_DEGREE_CHAR
-        elif char == '-':
-            char_val = self.HT16K33_SEGMENT_MINUS_CHAR
-        elif char == ' ':
-            char_val = self.HT16K33_SEGMENT_SPACE_CHAR
-        elif char in 'abcdef':
-            char_val = ord(char) - 87
-        elif char in '0123456789':
-            char_val = ord(char) - 48
-
-        # Bail on incorrect character values
-        assert char_val != 0xFF, "ERROR - Invalid char string set in set_character()"
-
-        self.buffer[digit << 1] = self.CHARSET[char_val]
-        if has_dot is True: self.buffer[digit << 1] |= 0x80
+        char_val = self.CHARSET.get(char, None)
+        assert char_val is not None, f"ERROR - Invalid char '{char}' in set_character()"
+        
+        self.buffer[digit << 1] = char_val
+        if has_dot:
+            self.buffer[digit << 1] |= 0x80
         return self
 
     def draw(self):
