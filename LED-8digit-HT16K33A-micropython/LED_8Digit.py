@@ -19,6 +19,9 @@ if __name__ == '__main__':
         for i in range(0,8):
             disp_obj.set_number(0, i, False)
    
+    display.set_string("12345678", "r")
+    time.sleep(PAUSE * 2)
+    
     display.set_character(" ", 0)
     display.set_character("*", 1)
     display.set_character("-", 2)

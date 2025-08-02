@@ -269,8 +269,21 @@ class HT16K33LED(HT16K33):
         """
         Write a string of up to 8 digits to the buffer, by alignment
         """
+        string = string[:8]         # trim string to max 8
+        str_buffer = []
+        str_length = len(string)
+        pad_length = 8 - str_length
+        i = 0
+        j = 0
+        k = 0
+
+        if alignment == "r":
+            str_buffer = [" "] * pad_length + list(string)
+        elif alignment == "l":
+            str_buffer = list(string) + [" "] * pad_length
         
-        
+        for k in range(8):
+            self.set_character(str_buffer[k], k, False)  
         
         return self.draw()
 
