@@ -19,9 +19,21 @@ if __name__ == '__main__':
         for i in range(0,8):
             disp_obj.set_number(0, i, False)
    
-    display.set_string("12345678", "r")
-    time.sleep(PAUSE * 2)
-    
+    display.set_string("1234567", "r")
+    time.sleep(PAUSE)
+    display.set_string("12345", "r")
+    time.sleep(PAUSE)
+    display.set_string("123", "r")
+    time.sleep(PAUSE)
+    display.set_string("12", "r")
+    time.sleep(PAUSE)
+    display.set_string("123", "l")
+    time.sleep(PAUSE)
+    display.set_string("12345", "l")
+    time.sleep(PAUSE)
+    display.set_string("1234568", "l")
+    time.sleep(PAUSE)
+
     display.set_character(" ", 0)
     display.set_character("*", 1)
     display.set_character("-", 2)
