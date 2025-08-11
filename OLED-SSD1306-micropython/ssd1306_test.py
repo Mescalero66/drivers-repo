@@ -29,13 +29,18 @@ oled.fill(0)
 oled.blit(fb, 96, 0)
 
 # Add some text
-oled.text("Raspberry Pi",5,5)
-oled.text("Pico",5,15)
+# oled.text("Raspberry Pi",5,5)
+# oled.text("Pico",5,15)
 
-oled.contrast(255)
+oled.fill(0)
+oled.text("Tuesday 12/08/2025",0,0)
 oled.show()
+time.sleep(3)
 
-time.sleep(1)
+oled.fill(0)
+oled.banner_text("Wednesday",0,0)
+oled.show()
+time.sleep(3)
 
 oled.invert(True)
 oled.show()
