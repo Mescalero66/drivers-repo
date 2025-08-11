@@ -82,7 +82,6 @@ class SSD1306(framebuf.FrameBuffer):
             self.write_cmd(0x00 | c1)  # lower start column address
             self.write_cmd(0x10 | c2)  # upper start column address
 
-    
 
     def poweroff(self):
         self.write_cmd(SET_DISP | 0x00)
@@ -179,31 +178,88 @@ class SSD1306(framebuf.FrameBuffer):
     def text(self, text, x, y, c=1):
         fontFile = open("font-pet-me-128.dat", "rb")
         font = bytearray(fontFile.read())
-        for text_index in range(0, len(text)):
+        for text_index in range(len(text)):
             for col in range(8):
-                fontDataPixelValues = font[(ord(text[text_index])-32)*8 + col]
-                for i in range(0,7):
+                fontDataPixelValues = font[(ord(text[text_index]) - 32) * 8 + col]
+                for i in range(7):
                     if fontDataPixelValues & 1 << i != 0:
                         x_coordinate = x + col + text_index * 8
-                        y_coordinate = y+i
+                        y_coordinate = y + i
                         if x_coordinate < self.width and y_coordinate < self.height:
                             self.pixel(x_coordinate, y_coordinate, c)
-    
-    def banner_text(self, text, x, y, c=1):
+
+    def text_inverted(self, text, x, y, c=1):
         fontFile = open("font-pet-me-128.dat", "rb")
         font = bytearray(fontFile.read())
-        for text_index in range(0, len(text)):
+        for text_index in range(len(text)):
             for col in range(8):
-                fontDataPixelValues = font[(ord(text[text_index])-32)*8 + col]
-                for i in range(0,8):
+                fontDataPixelValues = font[(ord(text[text_index]) - 32) * 8 + col]
+                for i in range(7):
+                    pixel_on = (fontDataPixelValues & (1 << i)) != 0
+                    x_coordinate = x + col + text_index * 8
+                    y_coordinate = y + i
+                    if 0 <= x_coordinate < self.width and 0 <= y_coordinate < self.height:
+                        self.pixel(x_coordinate, y_coordinate, 0 if pixel_on else c)
+    
+    def banner_text(self, text, c=1):
+        fontFile = open("font-pet-me-128.dat", "rb")
+        font = bytearray(fontFile.read())
+
+        total_width = len(text) * 14  # 14 pixels per char horizontally
+        x_start = (self.width - total_width) // 2  # center
+        y = 1
+
+        for text_index in range(len(text)):
+            for col in range(8):
+                fontDataPixelValues = font[(ord(text[text_index]) - 32) * 8 + col]
+                for i in range(8):
                     if fontDataPixelValues & 1 << i != 0:
-                        x_coord = x + (col*2) + (text_index * 14)
-                        y_coordinate = y+(i*2)
+                        x_coord = x_start + (col * 2) + (text_index * 14)
+                        y_coordinate = y + (i * 2)
                         if x_coord < self.width and y_coordinate < self.height:
-                            for iY in range(0,2):
+                            for iY in range(2):
                                 self.pixel(x_coord, y_coordinate - iY, c)
                                 self.pixel(x_coord - 1, y_coordinate - iY, c)
+    
+    def banner_text_inverted(self, text, c=1):
+        fontFile = open("font-pet-me-128.dat", "rb")
+        font = bytearray(fontFile.read())
 
+        total_width = len(text) * 14  # 14 pixels per char horizontally
+        x_start = (self.width - total_width) // 2  # center
+        y = 1
+
+        for text_index in range(len(text)):
+            for col in range(8):
+                fontDataPixelValues = font[(ord(text[text_index]) - 32) * 8 + col]
+                for i in range(8):
+                    pixel_on = (fontDataPixelValues & (1 << i)) != 0
+                    x_coord = x_start + (col * 2) + (text_index * 14)
+                    y_coordinate = y + (i * 2)
+                    if x_coord < self.width and y_coordinate < self.height:
+                        for iY in range(2):
+                            self.pixel(x_coord, y_coordinate - iY, 0 if pixel_on else c)
+                            self.pixel(x_coord - 1, y_coordinate - iY, 0 if pixel_on else c)
+            
+    def subbanner_text(self, text, x, y, c=1):
+        fontFile = open("font-pet-me-128.dat", "rb")
+        font = bytearray(fontFile.read())
+
+        total_width = len(text) * 8
+        if x is None:
+            x_start = (self.width - total_width) // 2
+        else:
+            x_start = x
+
+        for text_index in range(len(text)):
+            for col in range(8):
+                fontDataPixelValues = font[(ord(text[text_index]) - 32) * 8 + col]
+                for i in range(7):
+                    if fontDataPixelValues & (1 << i) != 0:
+                        x_coordinate = x_start + col + text_index * 8
+                        y_coordinate = y + i
+                        if x_coordinate < self.width and y_coordinate < self.height:
+                            self.pixel(x_coordinate, y_coordinate, c)
 
     def show(self):
         x0 = 0
@@ -238,7 +294,6 @@ class SSD1306_I2C(SSD1306):
         self.write_list[1] = buf
         self.i2c.writevto(self.addr, self.write_list)
 
-# only required for SPI version (not covered in this project)
 class SSD1306_SPI(SSD1306):
     def __init__(self, width, height, spi, dc, res, cs, external_vcc=False):
         self.rate = 10 * 1024 * 1024

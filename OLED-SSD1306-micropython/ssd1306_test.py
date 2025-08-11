@@ -33,12 +33,24 @@ oled.blit(fb, 96, 0)
 # oled.text("Pico",5,15)
 
 oled.fill(0)
-oled.text("Tuesday 12/08/2025",0,0)
+oled.banner_text("Wednesday")
+oled.subbanner_text("12th August 2025",0,17)
+oled.show()
+time.sleep(5)
+
+oled.fill(0)
+oled.banner_text_inverted("Wednesday")
+oled.text_inverted("12th August 2025",0,17)
+oled.show()
+time.sleep(5)
+
+oled.fill(0)
+oled.banner_text("Wed")
 oled.show()
 time.sleep(3)
 
 oled.fill(0)
-oled.banner_text("Wednesday",0,0)
+oled.banner_text("Friday")
 oled.show()
 time.sleep(3)
 
