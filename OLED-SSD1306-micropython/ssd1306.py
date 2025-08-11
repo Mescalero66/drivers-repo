@@ -4,6 +4,7 @@
 # https://github.com/micropython/micropython/blob/master/drivers/display/ssd1306.py
 #
 from micropython import const
+from struct import pack_into
 import framebuf
 
 # register definitions
@@ -74,6 +75,13 @@ class SSD1306(framebuf.FrameBuffer):
         self.fill(0)
         self.show()
 
+    def _set_pos(self, col=0, page=0):
+            self.write_cmd(0xb0 | page)  # page number
+            # take upper and lower value of col * 2
+            c1, c2 = col * 2 & 0x0F, col >> 3
+            self.write_cmd(0x00 | c1)  # lower start column address
+            self.write_cmd(0x10 | c2)  # upper start column address
+
     def poweroff(self):
         self.write_cmd(SET_DISP | 0x00)
 
@@ -86,6 +94,85 @@ class SSD1306(framebuf.FrameBuffer):
 
     def invert(self, invert):
         self.write_cmd(SET_NORM_INV | (invert & 1))
+
+    def pixel(self, x, y, color):
+            x = x & (self.width - 1)
+            y = y & (self.height - 1)
+            page, shift_page = divmod(y, 8)
+            ind = x + page * 128
+            b = self.buffer[ind] | (1 << shift_page) if color else self.buffer[ind] & ~ (1 << shift_page)
+            pack_into(">B", self.buffer, ind, b)
+            self._set_pos(x, page)
+    
+    def circ(self,x,y,r,t=1,c=1):
+        for i in range(x-r,x+r+1):
+            for j in range(y-r,y+r+1):
+                if t==1:
+                    if((i-x)**2 + (j-y)**2 < r**2):
+                        self.pixel(i,j,1)
+                else:
+                    if((i-x)**2 + (j-y)**2 < r**2) and ((i-x)**2 + (j-y)**2 >= (r-r*t-1)**2):
+                        self.pixel(i,j,c)
+    
+    def line(self, x1, y1, x2, y2, c):
+            # bresenham
+            steep = abs(y2-y1) > abs(x2-x1)
+            
+            if steep:
+                # Swap x/y
+                tmp = x1
+                x1 = y1
+                y1 = tmp
+                
+                tmp = y2
+                y2 = x2
+                x2 = tmp
+            
+            if x1 > x2:
+                # Swap start/end
+                tmp = x1
+                x1 = x2
+                x2 = tmp
+                tmp = y1
+                y1 = y2
+                y2 = tmp
+            
+            dx = x2 - x1;
+            dy = abs(y2-y1)
+            
+            err = dx/2
+            
+            if(y1 < y2):
+                ystep = 1
+            else:
+                ystep = -1
+                
+            while x1 <= x2:
+                if steep:
+                    self.pixel(y1, x1, c)
+                else:
+                    self.pixel(x1, y1, c)
+                err -= dy
+                if err < 0:
+                    y1 += ystep
+                    err += dx
+                x1 += 1        
+    
+    def hline(self, x, y, l, c):
+        self.line(x, y, x + l, y, c)
+            
+    def vline(self, x, y, h, c):
+        self.line(x, y, x, y + h, c)
+            
+    def rect(self, x, y, w, h, c):
+        self.hline(x, y, w, c)
+        self.hline(x, y+h, w, c)
+        self.vline(x, y, h, c)
+        self.vline(x+w, y, h, c)
+                    
+    def fill_rect(self, x, y, w, h, c):
+        for i in range(y, y + h):
+            self.hline(x, i, w, c)
 
     def show(self):
         x0 = 0

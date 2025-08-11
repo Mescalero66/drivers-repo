@@ -35,7 +35,7 @@ oled.text("Pico",5,15)
 oled.contrast(255)
 oled.show()
 
-time.sleep(2)
+time.sleep(1)
 
 oled.invert(True)
 oled.show()
@@ -44,6 +44,12 @@ time.sleep(2)
 oled.invert(False)
 oled.show()
 time.sleep(2)
+
+oled.fill(0)
+oled.circ(20,20,20)
+oled.show()
+time.sleep(2)
+
 
 # Finally update the oled display so the image & text is displayed
 oled.show()
