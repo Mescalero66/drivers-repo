@@ -3,6 +3,7 @@
 # library taken from repository at:
 # https://github.com/micropython/micropython/blob/master/drivers/display/ssd1306.py
 #
+
 from micropython import const
 from struct import pack_into
 import framebuf
@@ -28,6 +29,7 @@ SET_CHARGE_PUMP = const(0x8D)
 
 # Subclassing FrameBuffer provides support for graphics primitives
 # http://docs.micropython.org/en/latest/pyboard/library/framebuf.html
+
 class SSD1306(framebuf.FrameBuffer):
     def __init__(self, width, height, external_vcc):
         self.width = width
@@ -291,8 +293,7 @@ class SSD1306_I2C(SSD1306):
         self.i2c.writeto(self.addr, self.temp)
 
     def write_data(self, buf):
-        self.write_list[1] = buf
-        self.i2c.writevto(self.addr, self.write_list)
+        self.i2c.writeto(self.addr, b'\x40' + buf)
 
 class SSD1306_SPI(SSD1306):
     def __init__(self, width, height, spi, dc, res, cs, external_vcc=False):
