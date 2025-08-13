@@ -15,9 +15,6 @@ OLEDs = []
 mux = I2CMultiplex(I2CMultiAddr, I2Cbus=1, scl_pin=15, sda_pin=14)
 # Use mux.i2c as the shared I2C bus for OLEDs
 
-print("mux.i2c =", mux.i2c)
-print("type =", type(mux.i2c))
-
 # define OLEDs
 for i in range(OLEDCount):
     mux.select_port(i)
@@ -27,5 +24,16 @@ for i in range(OLEDCount):
     mux.select_port(i)
     OLEDs[i].fill(0)
     text = f"OLED # {i}"
+    OLEDs[i].banner_text_inverted(text)
+    date = f"2{i}/12"
+    OLEDs[i].date_text(date)
+    OLEDs[i].show()
+
+for i in range(OLEDCount):
+    mux.select_port(i)
+    OLEDs[i].fill(0)
+    text = "Wednesday"
     OLEDs[i].banner_text(text)
+    date = f"1{i}/11"
+    OLEDs[i].date_text(date)
     OLEDs[i].show()
