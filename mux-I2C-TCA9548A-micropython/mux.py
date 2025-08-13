@@ -1,13 +1,13 @@
 from machine import I2C, Pin
 
 class I2CMultiplex:
-    def __init__(self, addr, scl_pin=1, sda_pin=0, freq=400000):
+    def __init__(self, addr, I2Cbus, scl_pin=1, sda_pin=0, freq=400000):
         """
         addr: I2C address of the multiplexer
         scl_pin, sda_pin: Pico pin numbers for I2C
         freq: I2C clock speed (default 400kHz)
         """
-        self.i2c = I2C(0, scl=Pin(scl_pin), sda=Pin(sda_pin), freq=freq)
+        self.i2c = I2C(I2Cbus, scl=Pin(scl_pin), sda=Pin(sda_pin), freq=freq)
         self.addr = addr
 
     def scan(self, port):
