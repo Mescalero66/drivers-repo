@@ -193,6 +193,22 @@ class SSD1306(framebuf.FrameBuffer):
                         y_coordinate = y + i
                         if x_coordinate < self.width and y_coordinate < self.height:
                             self.pixel(x_coordinate, y_coordinate, c)
+    
+    def year_text(self, text):
+        x = 48
+        y = 56
+        c = 1
+        with open("font-pet-me-128.dat", "rb") as f:
+            font = bytearray(f.read())
+        for text_index in range(len(text)):
+            for col in range(8):
+                fontDataPixelValues = font[(ord(text[text_index]) - 32) * 8 + col]
+                for i in range(7):
+                    if fontDataPixelValues & 1 << i != 0:
+                        x_coordinate = x + col + text_index * 8
+                        y_coordinate = y + i
+                        if x_coordinate < self.width and y_coordinate < self.height:
+                            self.pixel(x_coordinate, y_coordinate, c)
 
     def text_inverted(self, text, x, y, c=1):
         with open("font-pet-me-128.dat", "rb") as f:
@@ -276,8 +292,8 @@ class SSD1306(framebuf.FrameBuffer):
         font_width = 8                          # font is 8 pixels wide
         font_height = 8                         # font is 8 pixels tall
         scale_x = 3                             # horizontal scaling
-        scale_y = 5                             # vertical scaling
-        y_offset = 24                           # start under the banner
+        scale_y = 4                             # vertical scaling
+        y_offset = 16                           # start under the banner
         char_width = font_width * scale_x + 2   # 8 * 2 + 2 spacing = 18 (approx)
         char_height = font_height * scale_y     # 16 pixels high
 
@@ -305,7 +321,7 @@ class SSD1306(framebuf.FrameBuffer):
                                 y = y_pos + dy
                                 if y < self.height:
                                     self.pixel(x, y, c)
-
+    
     def show(self):
         x0 = 0
         x1 = self.width - 1
