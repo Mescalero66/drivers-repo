@@ -10,5 +10,5 @@ while True:
     if uart.any():
         # Read the available data
         gps_reading = uart.read().decode('utf-8')
-        
+         
         print(gps_reading)
