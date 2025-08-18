@@ -27,6 +27,8 @@ for i in range(OLEDCount):
     OLEDs[i].banner_text_inverted(text)
     date = f"2{i}/12"
     OLEDs[i].date_text(date)
+    year = "2025"
+    OLEDs[i].year_text(year)
     OLEDs[i].show()
 
 for i in range(OLEDCount):
@@ -36,4 +38,7 @@ for i in range(OLEDCount):
     OLEDs[i].banner_text(text)
     date = f"1{i}/11"
     OLEDs[i].date_text(date)
+    year = "2025"
+    OLEDs[i].year_text(year)
     OLEDs[i].show()
+
