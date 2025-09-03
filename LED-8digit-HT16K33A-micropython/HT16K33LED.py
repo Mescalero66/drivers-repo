@@ -1,15 +1,13 @@
-"""
-    A simple, generic driver for the I2C-connected Holtek HT16K33 controller chip.
-    This release supports MicroPython and CircuitPython
-
-    Bus:        I2C
-    Author:     Tony Smith (@smittytone)
-    License:    MIT
-    Copyright:  2025
-"""
+#####
+#    A simple, generic driver for the I2C-connected HT16K33 controller chip.
+#    Language:                        Micropython
+#    Bus:                             I2C
+#    Based on code originally by:     Tony Smith (@smittytone)
+#    License:                         MIT
+#    Copyright:                       2025
+#####
 
 class HT16K33:
-
 
     # *********** CONSTANTS **********
 
@@ -183,7 +181,8 @@ class HT16K33LED(HT16K33):
         '°': 0x63,
         '=': 0x48,
         '_': 0x08,
-        '*': 0x63
+        '*': 0x63,
+        '.': 0x80
     }
 
     # *********** CONSTRUCTOR **********
@@ -268,22 +267,41 @@ class HT16K33LED(HT16K33):
     def set_string(self, string, alignment):
         """
         Write a string of up to 8 digits to the buffer, by alignment
+        
         """
-        string = string[:8]         # trim string to max 8
-        str_buffer = []
-        str_length = len(string)
-        pad_length = 8 - str_length
+        expanded = []
         i = 0
-        j = 0
-        k = 0
+
+        while i < len(string) and len(expanded) < 8:
+            char = string[i]
+            has_dot = False
+
+            if char == "." and expanded and expanded[-1][0] == " ":
+                # Special case: dot immediately after a space = empty digit with dot
+                expanded.append((" ", True))
+                i += 1
+                continue
+
+            # If next char is '.', attach it as decimal point
+            if i + 1 < len(string) and string[i + 1] == ".":
+                has_dot = True
+                i += 1  # skip the dot
+            
+            expanded.append((char, has_dot))
+            i += 1
+
+        str_length = len(expanded)
+        pad_length = 8 - str_length
 
         if alignment == "r":
-            str_buffer = [" "] * pad_length + list(string)
-        elif alignment == "l":
-            str_buffer = list(string) + [" "] * pad_length
-        
+            expanded = [(" ", False)] * pad_length + expanded
+        else:
+            expanded = expanded + [(" ", False)] * pad_length
+
+        # Now send characters to buffer
         for k in range(8):
-            self.set_character(str_buffer[k], k, False)  
+            char, has_dot = expanded[k]
+            self.set_character(char, k, has_dot)
         
         return self.draw()
 

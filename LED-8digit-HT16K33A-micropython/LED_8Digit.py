@@ -11,7 +11,7 @@ DELAY = 0.01
 PAUSE = 3
 
 if __name__ == '__main__':
-    i2c = I2C(0, scl=Pin(1), sda=Pin(0))
+    i2c = I2C(0, scl=Pin(5), sda=Pin(4))
     display = HT16K33LED(i2c)
     display.set_brightness(15)
 
@@ -19,6 +19,38 @@ if __name__ == '__main__':
         for i in range(0,8):
             disp_obj.set_number(0, i, False)
    
+    display.set_string("HiHoney", "r")
+    time.sleep(PAUSE)
+    display.set_string("Caitlin", "l")
+    time.sleep(PAUSE)
+    display.set_string("Nhung", "r")
+    time.sleep(PAUSE)
+    display.set_string("Charlie", "l")
+    time.sleep(PAUSE)
+    display.set_string("buttcrak", "l")
+    time.sleep(PAUSE)
+
+    i = 0
+    j = 0 
+    while i < 8:
+        while j < 8:
+            display.clear()
+            display.set_character("*", j)
+            j = j + 1
+            display.draw()
+            time.sleep(0.2)
+        j = j - 1
+        while j > 0:
+            display.clear()
+            display.set_character("o", j)
+            j = j - 1
+            display.draw()
+            time.sleep(0.2)
+        j = 0
+        i = i + 1
+        time.sleep(PAUSE)
+       
+    
     display.set_string("1234567", "r")
     time.sleep(PAUSE)
     display.set_string("12345", "r")
@@ -34,22 +66,6 @@ if __name__ == '__main__':
     display.set_string("1234568", "l")
     time.sleep(PAUSE)
 
-    display.set_character(" ", 0)
-    display.set_character("*", 1)
-    display.set_character("-", 2)
-    display.set_character("°", 3)
-    display.draw()
-    time.sleep(PAUSE)
-    
-    i = 0
-    while i < 8:
-        display.clear()
-        display.set_character(" ", i)
-        i = i + 1
-        display.draw()
-        time.sleep(PAUSE / 2)
-       
-    
     display.set_character("B", 0).set_character("E", 1)
     display.set_character("E", 2).set_character("F", 3)
     display.set_character("B", 4).set_character("E", 5)
