@@ -39,7 +39,7 @@ class I2CMultiplex:
                 data = (1 << port) & 0xFF
             self.i2c.writeto(self.addr, bytes([data]))
         except OSError:
-            print("Internal mux port select error.")
+            print("Internal mux port select error!")
 
     def writeto_mem(self, port, addr, reg, buf):
         """

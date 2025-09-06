@@ -8,7 +8,7 @@ pix_res_x  = 128 # SSD1306 horizontal resolution
 pix_res_y = 64   # SSD1306 vertical resolution
 
 OLEDAddr = 0x3C
-OLEDCount = 4
+OLEDCount = 8
 OLEDs = []   
 
 # Create multiplexer object
