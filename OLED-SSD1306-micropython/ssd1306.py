@@ -199,6 +199,7 @@ class SSD1306(framebuf.FrameBuffer):
             self.font = bytearray(f.read())
 
     def text(self, text, x, y, c=1):
+        text = str(text)
         for text_index in range(len(text)):
             for col in range(8):
                 fontDataPixelValues = self.font[(ord(text[text_index]) - 32) * 8 + col]
@@ -210,6 +211,7 @@ class SSD1306(framebuf.FrameBuffer):
                             self.pixel(x_coordinate, y_coordinate, c)
     
     def year_text(self, text):
+        text = str(text)
         x = 48
         y = 56
         c = 1
@@ -224,6 +226,7 @@ class SSD1306(framebuf.FrameBuffer):
                             self.pixel(x_coordinate, y_coordinate, c)
 
     def text_inverted(self, text, x, y, c=1):
+        text = str(text)
         for text_index in range(len(text)):
             for col in range(8):
                 fontDataPixelValues = self.font[(ord(text[text_index]) - 32) * 8 + col]
@@ -235,6 +238,7 @@ class SSD1306(framebuf.FrameBuffer):
                         self.pixel(x_coordinate, y_coordinate, 0 if pixel_on else c)
     
     def banner_text(self, text, c=1):
+        text = str(text)
         total_width = len(text) * 14  # 14 pixels per char horizontally
         x_start = (self.width - total_width) // 2  # center
         y = 1
@@ -252,6 +256,7 @@ class SSD1306(framebuf.FrameBuffer):
                                 self.pixel(x_coord - 1, y_coordinate - iY, c)
     
     def banner_text_inverted(self, text, c=0):
+        text = str(text)
         total_width = len(text) * 14  # 14 pixels per char horizontally
         x_start = (self.width - total_width) // 2  # center
         y = 2
@@ -271,6 +276,7 @@ class SSD1306(framebuf.FrameBuffer):
                                 self.pixel(x_coord - 1, y_coordinate - iY, c)
                 
     def subbanner_text(self, text, x, y, c=1):
+        text = str(text)
         total_width = len(text) * 8
         if x is None:
             x_start = (self.width - total_width) // 2
