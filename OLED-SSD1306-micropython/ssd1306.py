@@ -2,7 +2,6 @@
 #
 # library taken from repository at:
 # https://github.com/micropython/micropython/blob/master/drivers/display/ssd1306.py
-#
 
 from micropython import const
 from struct import pack_into
@@ -42,6 +41,7 @@ class SSD1306(framebuf.FrameBuffer):
         self.pages = self.height // 8
         self.buffer = bytearray(self.pages * self.width)
         super().__init__(self.buffer, self.width, self.height, framebuf.MONO_VLSB)
+        self.load_font()
         self.init_display()
 
     def init_display(self):
@@ -213,11 +213,9 @@ class SSD1306(framebuf.FrameBuffer):
         x = 48
         y = 56
         c = 1
-        with open("font-pet-me-128.dat", "rb") as f:
-            font = bytearray(f.read())
         for text_index in range(len(text)):
             for col in range(8):
-                fontDataPixelValues = font[(ord(text[text_index]) - 32) * 8 + col]
+                fontDataPixelValues = self.font[(ord(text[text_index]) - 32) * 8 + col]
                 for i in range(7):
                     if fontDataPixelValues & 1 << i != 0:
                         x_coordinate = x + col + text_index * 8
@@ -226,11 +224,9 @@ class SSD1306(framebuf.FrameBuffer):
                             self.pixel(x_coordinate, y_coordinate, c)
 
     def text_inverted(self, text, x, y, c=1):
-        with open("font-pet-me-128.dat", "rb") as f:
-            font = bytearray(f.read())
         for text_index in range(len(text)):
             for col in range(8):
-                fontDataPixelValues = font[(ord(text[text_index]) - 32) * 8 + col]
+                fontDataPixelValues = self.font[(ord(text[text_index]) - 32) * 8 + col]
                 for i in range(7):
                     pixel_on = (fontDataPixelValues & (1 << i)) != 0
                     x_coordinate = x + col + text_index * 8
@@ -239,16 +235,13 @@ class SSD1306(framebuf.FrameBuffer):
                         self.pixel(x_coordinate, y_coordinate, 0 if pixel_on else c)
     
     def banner_text(self, text, c=1):
-        with open("font-pet-me-128.dat", "rb") as f:
-            font = bytearray(f.read())
-
         total_width = len(text) * 14  # 14 pixels per char horizontally
         x_start = (self.width - total_width) // 2  # center
         y = 1
 
         for text_index in range(len(text)):
             for col in range(8):
-                fontDataPixelValues = font[(ord(text[text_index]) - 32) * 8 + col]
+                fontDataPixelValues = self.font[(ord(text[text_index]) - 32) * 8 + col]
                 for i in range(8):
                     if fontDataPixelValues & 1 << i != 0:
                         x_coord = x_start + (col * 2) + (text_index * 14)
@@ -259,9 +252,6 @@ class SSD1306(framebuf.FrameBuffer):
                                 self.pixel(x_coord - 1, y_coordinate - iY, c)
     
     def banner_text_inverted(self, text, c=0):
-        with open("font-pet-me-128.dat", "rb") as f:
-            font = bytearray(f.read())
-
         total_width = len(text) * 14  # 14 pixels per char horizontally
         x_start = (self.width - total_width) // 2  # center
         y = 2
@@ -270,7 +260,7 @@ class SSD1306(framebuf.FrameBuffer):
 
         for text_index in range(len(text)):
             for col in range(8):
-                fontDataPixelValues = font[(ord(text[text_index]) - 32) * 8 + col]
+                fontDataPixelValues = self.font[(ord(text[text_index]) - 32) * 8 + col]
                 for i in range(8):
                     if fontDataPixelValues & 1 << i != 0:
                         x_coord = x_start + (col * 2) + (text_index * 14)
@@ -281,9 +271,6 @@ class SSD1306(framebuf.FrameBuffer):
                                 self.pixel(x_coord - 1, y_coordinate - iY, c)
                 
     def subbanner_text(self, text, x, y, c=1):
-        with open("font-pet-me-128.dat", "rb") as f:
-            font = bytearray(f.read())
-
         total_width = len(text) * 8
         if x is None:
             x_start = (self.width - total_width) // 2
@@ -292,7 +279,7 @@ class SSD1306(framebuf.FrameBuffer):
 
         for text_index in range(len(text)):
             for col in range(8):
-                fontDataPixelValues = font[(ord(text[text_index]) - 32) * 8 + col]
+                fontDataPixelValues = self.font[(ord(text[text_index]) - 32) * 8 + col]
                 for i in range(7):
                     if fontDataPixelValues & (1 << i) != 0:
                         x_coordinate = x_start + col + text_index * 8
@@ -301,9 +288,6 @@ class SSD1306(framebuf.FrameBuffer):
                             self.pixel(x_coordinate, y_coordinate, c)
 
     def date_text(self, text, y_start=0, c=1):
-        with open("font-pet-me-128.dat", "rb") as f:
-            font = bytearray(f.read())
-
         text = str(text)
         font_width = 8                          # font is 8 pixels wide
         font_height = 8                         # font is 8 pixels tall
@@ -323,7 +307,7 @@ class SSD1306(framebuf.FrameBuffer):
         # Draw each character
         for text_index, char in enumerate(text):
             for col in range(font_width):
-                font_byte = font[(ord(char) - 32) * font_width + col]
+                font_byte = self.font[(ord(char) - 32) * font_width + col]
                 x_pos = x_start + text_index * char_width + col * scale_x
                 for dx in range(scale_x):                                   # horizontal scaling
                     x = x_pos + dx
@@ -352,7 +336,7 @@ class SSD1306(framebuf.FrameBuffer):
         # self.write_cmd(0)
         # self.write_cmd(self.pages - 1)
         # self.write_data(self.buffer)
-        
+
         x0 = 0
         x1 = self.width - 1
         if self.width == 64:
