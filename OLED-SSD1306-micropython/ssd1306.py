@@ -88,7 +88,6 @@ class SSD1306(framebuf.FrameBuffer):
             self.write_cmd(0x00 | c1)  # lower start column address
             self.write_cmd(0x10 | c2)  # upper start column address
 
-
     def poweroff(self):
         self.write_cmd(SET_DISP | 0x00)
 
@@ -103,23 +102,37 @@ class SSD1306(framebuf.FrameBuffer):
         self.write_cmd(SET_NORM_INV | (invert & 1))
 
     def pixel(self, x, y, color):
-            x = x & (self.width - 1)
-            y = y & (self.height - 1)
+        if 0 <= x < self.width and 0 <= y < self.height:
             page, shift_page = divmod(y, 8)
-            ind = x + page * 128
-            b = self.buffer[ind] | (1 << shift_page) if color else self.buffer[ind] & ~ (1 << shift_page)
-            pack_into(">B", self.buffer, ind, b)
-            self._set_pos(x, page)
+            ind = x + page * self.width
+            if color:
+                self.buffer[ind] |= (1 << shift_page)
+            else:
+                self.buffer[ind] &= ~(1 << shift_page)
+            
+            # x = x & (self.width - 1)
+            # y = y & (self.height - 1)
+            # page, shift_page = divmod(y, 8)
+            # ind = x + page * 128
+            # b = self.buffer[ind] | (1 << shift_page) if color else self.buffer[ind] & ~ (1 << shift_page)
+            # pack_into(">B", self.buffer, ind, b)
+            # self._set_pos(x, page)
     
     def circ(self,x,y,r,t=1,c=1):
-        for i in range(x-r,x+r+1):
-            for j in range(y-r,y+r+1):
-                if t==1:
-                    if((i-x)**2 + (j-y)**2 < r**2):
-                        self.pixel(i,j,1)
+        r2 = r * r
+        if t > 1:
+            rmin2 = (r - r*t - 1) ** 2
+        for i in range(x-r, x+r+1):
+            dx2 = (i-x) * (i-x)
+            for j in range(y-r, y+r+1):
+                dy2 = (j-y) * (j-y)
+                d2 = dx2 + dy2
+                if t == 1:
+                    if d2 < r2:
+                        self.pixel(i, j, c)
                 else:
-                    if((i-x)**2 + (j-y)**2 < r**2) and ((i-x)**2 + (j-y)**2 >= (r-r*t-1)**2):
-                        self.pixel(i,j,c)
+                    if rmin2 <= d2 < r2:
+                       self.pixel(i, j, c)
     
     def line(self, x1, y1, x2, y2, c):
             # bresenham
@@ -181,12 +194,14 @@ class SSD1306(framebuf.FrameBuffer):
         for i in range(y, y + h):
             self.hline(x, i, w, c)
         
+    def load_font(self, filename="font-pet-me-128.dat"):
+        with open(filename, "rb") as f:
+            self.font = bytearray(f.read())
+
     def text(self, text, x, y, c=1):
-        with open("font-pet-me-128.dat", "rb") as f:
-            font = bytearray(f.read())
         for text_index in range(len(text)):
             for col in range(8):
-                fontDataPixelValues = font[(ord(text[text_index]) - 32) * 8 + col]
+                fontDataPixelValues = self.font[(ord(text[text_index]) - 32) * 8 + col]
                 for i in range(7):
                     if fontDataPixelValues & 1 << i != 0:
                         x_coordinate = x + col + text_index * 8
@@ -289,6 +304,7 @@ class SSD1306(framebuf.FrameBuffer):
         with open("font-pet-me-128.dat", "rb") as f:
             font = bytearray(f.read())
 
+        text = str(text)
         font_width = 8                          # font is 8 pixels wide
         font_height = 8                         # font is 8 pixels tall
         scale_x = 3                             # horizontal scaling
@@ -323,19 +339,43 @@ class SSD1306(framebuf.FrameBuffer):
                                     self.pixel(x, y, c)
     
     def show(self):
+        # x0 = 0
+        # x1 = self.width - 1
+        # if self.width == 64:
+        #     # displays with width of 64 pixels are shifted by 32
+        #     x0 += 32
+        #     x1 += 32
+        # self.write_cmd(SET_COL_ADDR)
+        # self.write_cmd(x0)
+        # self.write_cmd(x1)
+        # self.write_cmd(SET_PAGE_ADDR)
+        # self.write_cmd(0)
+        # self.write_cmd(self.pages - 1)
+        # self.write_data(self.buffer)
+        
         x0 = 0
         x1 = self.width - 1
         if self.width == 64:
             # displays with width of 64 pixels are shifted by 32
             x0 += 32
             x1 += 32
-        self.write_cmd(SET_COL_ADDR)
-        self.write_cmd(x0)
-        self.write_cmd(x1)
-        self.write_cmd(SET_PAGE_ADDR)
-        self.write_cmd(0)
-        self.write_cmd(self.pages - 1)
-        self.write_data(self.buffer)
+
+        for page in range(self.pages):
+            # set column address range
+            self.write_cmd(SET_COL_ADDR)
+            self.write_cmd(x0)
+            self.write_cmd(x1)
+
+            # set current page
+            self.write_cmd(SET_PAGE_ADDR)
+            self.write_cmd(page)
+            self.write_cmd(page)
+
+            # send one page of buffer (width bytes)
+            start = page * self.width
+            end = start + self.width
+            self.write_data(self.buffer[start:end])
+
 
 class SSD1306_I2C(SSD1306):
     def __init__(self, width, height, i2c, addr=0x3C, external_vcc=False):
