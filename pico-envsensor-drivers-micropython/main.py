@@ -1,6 +1,6 @@
 import time
 import machine
-from machine import Pin, I2C, SoftI2C, SPI
+from machine import Pin, SPI
 import random
 import network
 from umodbus.tcp import ModbusTCP
@@ -12,7 +12,7 @@ time.sleep(2)
 
 I2CMultiAddr = 0x70  # I2C Multiplexer address
 
-ip_address = "192.168.1.237"
+ip_address = "192.168.1.123"
 network_mask = "255.255.255.0"
 gateway_address = "192.168.1.1"
 dns_server = "8.8.8.8"
