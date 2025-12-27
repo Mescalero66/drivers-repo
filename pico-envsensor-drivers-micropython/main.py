@@ -1,16 +1,17 @@
 import time
 import machine
-from machine import Pin, SPI
 import random
 import network
 from umodbus.tcp import ModbusTCP
+from machine import Pin, SPI
+import network_config
 import DFRobot_I2C_Multiplexer
 import I2C_CHT8305_SEN0546
 import ENS160
 
-time.sleep(2)
+time.sleep(1)
 
-I2CMultiAddr = 0x70  # I2C Multiplexer address
+I2CMultiAddr = 0x70
 
 ip_address = "192.168.1.123"
 network_mask = "255.255.255.0"
@@ -18,23 +19,17 @@ gateway_address = "192.168.1.1"
 dns_server = "8.8.8.8"
 
 try:
-    f = open("network_address.txt", "r")
-    ip_address = f.readline().rstrip("\r\n")
-    network_mask = f.readline().rstrip("\r\n")
-    gateway_address = f.readline().rstrip("\r\n")
-    dns_server = f.readline().rstrip("\r\n")
-    f.close()
-except OSError:  # open failed
-    # handle the file open case
-    f.close()
-    print(
-        "failed loading network config from network_address.txt file. Using default config"
-    )
+    ip_address = network_config.ip_address
+    network_mask = network_config.subnet_mask
+    gateway_address = network_config.default_gateway
+    dns_server = network_config.dns
+except OSError:
+    print("failed loading network config from network_address.txt file. Using default config")
 
 print("PowerTec Enviro Sensor")
 print("[I2C] v20250613-1047")
 print("-----")
-print("Network Config from File: (",ip_address,"-",network_mask,"-",gateway_address,"-",dns_server,")")
+print("Network Config: (",ip_address,"-",network_mask,"-",gateway_address,"-",dns_server,")")
 print("-----")
 
 time.sleep(3)
@@ -64,10 +59,6 @@ except Exception as e:
 # set up the blinking LED
 led = machine.Pin(25, machine.Pin.OUT)
 
-# pico temp sensor pin
-adcpin = 4
-internal_sensor = machine.ADC(adcpin)
-
 # start the beat
 heartbeat = 0
 
@@ -78,65 +69,6 @@ def blink():
 
 def my_reg_get_cb(reg_type, address, val):
     blink()
-
-def getPicoInternalTemp():
-    try:
-        adc_value = internal_sensor.read_u16()
-        volt = (3.3/65535) * adc_value
-        temperature = 27 - (volt - 0.706)/0.001721
-        return int(round(temperature, 1) * 10)
-    except Exception as e:
-        print("Failed to get Pico internal temp", " : {}".format(e))
-        pass
-
-def resetIPviaModbus():
-    Trigger = int(client.get_hreg(69))
-    if Trigger == 1:
-        setDiagRegister(57, 991)
-        time.sleep(2)
-        IP1 = int(client.get_hreg(61))
-        IP2 = int(client.get_hreg(62))
-        IP3 = int(client.get_hreg(63))
-        IP4 = int(client.get_hreg(64))
-        GW1 = int(client.get_hreg(65))
-        GW2 = int(client.get_hreg(66))
-        GW3 = int(client.get_hreg(67))
-        GW4 = int(client.get_hreg(68))
-        newIP = str(IP1) + "." + str(IP2) + "." + str(IP3) + "." + str(IP4)
-        newGW = str(GW1) + "." + str(GW2) + "." + str(GW3) + "." + str(GW4)
-        setDiagRegister(57, 992)
-        time.sleep(2)
-        f = open("network_address.txt", "r")
-        ip_address = f.readline().rstrip("\r\n")
-        network_mask = f.readline().rstrip("\r\n")
-        gateway_address = f.readline().rstrip("\r\n")
-        dns_server = f.readline().rstrip("\r\n")
-        f.close()
-        #print("read existing file")
-        newNC = str(newIP) + "\n" + str(network_mask) + "\n" + str(newGW) + "\n" + str(dns_server) + "\n"
-        try:
-            f = open("network_address.txt", "w")
-            f.write(newNC)
-            f.close()
-            setDiagRegister(57, 995)
-            time.sleep(2)
-        except OSError:
-                print("Error: couldn't write a thing - device could be bricked now")
-                setDiagRegister(57, 996)
-                time.sleep(5)
-        print("Network Config Updated from Modbus")
-        setDiagRegister(57, 999)
-        time.sleep(10)
-        machine.reset()
-
-def resetNoTemps():
-    Reg11 = int(client.get_hreg(11))
-    Reg12 = int(client.get_hreg(12))
-    Reg13 = int(client.get_hreg(13))
-    if (Reg11 + Reg12 + Reg13) == 0:
-        client.set_hreg(address=10, value=int(666))   # register blank after ten minutes? that's a reset
-        time.sleep(5)
-        machine.reset()
 
 def setHeartbeatRegister(heartbeat):
     try:
