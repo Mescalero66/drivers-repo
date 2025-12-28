@@ -2,7 +2,7 @@ import time
 import machine
 import random
 import network
-from umodbus.tcp import ModbusTCP
+from umodbus.asynchronous.tcp import AsyncModbusTCP as ModbusTCP
 from machine import Pin, SPI
 import network_config
 import DFRobot_I2C_Multiplexer
@@ -49,7 +49,8 @@ try:
     while not nic.isconnected():
         connectingNIC += 1
         time.sleep(2)
-        if connectingNIC > 9:
+        if connectingNIC > 5:
+            print("Failed to configure network. Device will reboot.")
             machine.reset()
         print("Getting IP.....")
     print('Device Network Address: ', nic.ifconfig())
@@ -73,8 +74,8 @@ def my_reg_get_cb(reg_type, address, val):
 def setHeartbeatRegister(heartbeat):
     try:
         heartbeat = heartbeat + random.randint(1,9)
-        client.set_hreg(address=52, value=int(heartbeat))
-        client.process()
+        modbus_client.set_hreg(address=52, value=int(heartbeat))
+        modbus_client.process()
         if heartbeat > 50:
             heartbeat = 0
         blink()
@@ -85,8 +86,8 @@ def setHeartbeatRegister(heartbeat):
 
 def setDiagRegister(diagnostic_reg, status_code):
     try:
-        client.set_hreg(address=int(diagnostic_reg), value=int(status_code))
-        client.process()
+        modbus_client.set_hreg(address=int(diagnostic_reg), value=int(status_code))
+        modbus_client.process()
     except Exception as e:
         print("Failed to update Diagnostic Register", " : {}".format(e))
         pass
@@ -98,13 +99,13 @@ print("Setting up Modbus.....")
 
 time.sleep(1)
 
-client = ModbusTCP()
+modbus_client = ModbusTCP()
 
 # check whether client has been bound to an IP and a port
-if not client.get_bound_status():
+if not modbus_client.get_bound_status():
     print("Binding client to ", local_ip, ":", tcp_port)
     try:
-        client.bind(local_ip=local_ip, local_port=tcp_port)
+        modbus_client.bind(local_ip=local_ip, local_port=tcp_port)
     except OSError as e:
         print("Error in Modbus binding. System will restart.")
         time.sleep(1)
@@ -175,7 +176,7 @@ register_definitions = {
 }
 
 # use the defined values of each register type provided by register_definitions
-client.setup_registers(registers=register_definitions)
+modbus_client.setup_registers(registers=register_definitions)
 
 setDiagRegister(54, 92)
 
@@ -261,8 +262,8 @@ while True:
                 try:
                     I2CMulti.selectPort(i)
                     Temperature, Humidity = THsensors[i].get_CHT8305_TEMPERATURE_HUMIDITY()
-                    client.set_hreg(address=10 + (i * 2), value=int(Temperature * 10))
-                    client.set_hreg(address=11 + (i * 2), value=int(Humidity * 10))
+                    modbus_client.set_hreg(address=10 + (i * 2), value=int(Temperature * 10))
+                    modbus_client.set_hreg(address=11 + (i * 2), value=int(Humidity * 10))
                     print("Port: ", i, "Temp: ", Temperature, "Humi: ", Humidity)
                 except Exception as e:
                     print("Failed reading Temp Sensor on Port ", i, " : {}".format(e))
@@ -272,8 +273,8 @@ while True:
                     except Exception as e:
                         print("Failed failed to soft reset Temp Sensor on Port ", i, " : {}".format(e))
                         pass
-                    client.set_hreg(address=10 + (i * 2), value=int(0))
-                    client.set_hreg(address=11 + (i * 2), value=int(0))
+                    modbus_client.set_hreg(address=10 + (i * 2), value=int(0))
+                    modbus_client.set_hreg(address=11 + (i * 2), value=int(0))
                     softSensorResets += 1
                     setDiagRegister(59, softSensorResets)
                     pass
@@ -291,14 +292,14 @@ while True:
                         #print(f"Humidity (ENS160): {rh} %")
                         #print(f"eCO2 Rating: {eco2_rating}")
                         AQsensor_regindex = i - AQsensorsFP
-                        client.set_hreg(address=30 + (AQsensor_regindex * 2), value=int(eco2))
-                        client.set_hreg(address=31 + (AQsensor_regindex * 2), value=int(tvoc))
+                        modbus_client.set_hreg(address=30 + (AQsensor_regindex * 2), value=int(eco2))
+                        modbus_client.set_hreg(address=31 + (AQsensor_regindex * 2), value=int(tvoc))
                         print("Port: ", i, "eCO2: ", eco2, "TVOC: ", tvoc, "AQI: ", aqi)
                         AQI_rating += int(aqi)
                     except Exception as e:
                         print("Failed reading AQ Sensor on Port ", i, " : {}".format(e))
-                        client.set_hreg(address=30 + (AQsensor_regindex * 2), value=int(0))
-                        client.set_hreg(address=31 + (AQsensor_regindex * 2), value=int(0))
+                        modbus_client.set_hreg(address=30 + (AQsensor_regindex * 2), value=int(0))
+                        modbus_client.set_hreg(address=31 + (AQsensor_regindex * 2), value=int(0))
                         pass
                 # calculate average of all AQI index ratings
                 try:
@@ -310,12 +311,12 @@ while True:
                     pass
             
             # get Pico internal temp
-            client.set_hreg(address=53, value=(getPicoInternalTemp()))
+            modbus_client.set_hreg(address=53, value=(getPicoInternalTemp()))
             
             #result = client.process()                      # disabled here to stop double processing in a loop - it's now only processed on heartbeat update or diag reg update
             
             # Heartbeat
-            client.set_hreg(address=54, value=100)          # confirm we're in the main loop
+            modbus_client.set_hreg(address=54, value=100)          # confirm we're in the main loop
             heartbeat = setHeartbeatRegister(heartbeat)     # Update Heartbeat & process client
         
         # calibrate AQ sensors to temperature every 15 mins
@@ -323,9 +324,9 @@ while True:
             calibrateTime = now
             if AQsensorsCt != 0:
                 try:
-                    Temperature = int(client.get_hreg(10) / 10)
+                    Temperature = int(modbus_client.get_hreg(10) / 10)
                     #print("Calibrating Temperature with: ", Temperature)
-                    Humidity = int(client.get_hreg(11) / 10)
+                    Humidity = int(modbus_client.get_hreg(11) / 10)
                     #print("Calibrating Humidity with: ", Humidity)
                 except Exception as e:
                     print("Failed to read modbus registers for AQ calibration "," : {}".format(e))
@@ -338,11 +339,6 @@ while True:
                     except Exception as e:
                         print("Failed calibrating AQ Sensor on channel ", i, " : {}".format(e))
                         pass
-        # check for IP address reset trigger every 10 mins
-        if (now - resetTime) > 600:
-            resetTime = now
-            resetIPviaModbus()
-
         # take a breath before starting the loop again    
         time.sleep_ms(500)
     except KeyboardInterrupt:
