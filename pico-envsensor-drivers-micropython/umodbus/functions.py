@@ -7,7 +7,6 @@
 # see the Pycom Licence v1.0 document supplied with this file, or
 # available at https://www.pycom.io/opensource/licensing
 #
-
 # system packages
 import struct
 
@@ -351,6 +350,8 @@ def response(function_code: int,
                            function_code,
                            request_register_addr,
                            request_register_qty)
+
+    return b''
 
 
 def exception_response(function_code: int, exception_code: int) -> bytes:
