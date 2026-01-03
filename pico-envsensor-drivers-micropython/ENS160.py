@@ -101,6 +101,11 @@ class ENS160:
         tvoc_rating = self.interpret_tvoc_level(tvoc)
         return aqi, tvoc, eco2, temp, rh, eco2_rating, tvoc_rating
     
+    def get_air_quality(self):
+        eco2 = self.get_eco2()
+        tvoc = self.get_tvoc()
+        return eco2, tvoc
+    
     def calibrate_Temperature(self,Temp):
         self._write_register(0x13, bytes([Temp]))
 

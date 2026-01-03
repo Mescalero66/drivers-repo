@@ -138,7 +138,7 @@ class I2C_CHT8305_SEN0546:
     def req_CHT8305_TEMPERATURE_HUMIDITY(self):
         try:
             self.i2c.writeto(self.CHT8305_Address, bytes([self.REG_TEMPERATURE]))
-            sleep_ms(self.I2C_Delay_time)
+            #sleep_ms(self.I2C_Delay_time)
         except Exception as e:
             print("Error in req_CHT8305_TEMPERATURE_HUMIDITY function", " : {}".format(e))
             pass

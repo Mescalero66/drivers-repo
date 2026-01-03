@@ -1,7 +1,7 @@
 import time
 import machine
-import random
 import network
+import asyncio
 from umodbus.asynchronous.tcp import AsyncModbusTCP as ModbusTCP
 from machine import Pin, SPI
 import network_config
@@ -9,14 +9,23 @@ import DFRobot_I2C_Multiplexer
 import I2C_CHT8305_SEN0546
 import ENS160
 
-time.sleep(1)
+I2CMux_addr = 0x70
+I2CMux_channel = 1
+I2CMux_clock = 3
+I2CMux_data = 2
+led = machine.Pin(25, machine.Pin.OUT)
 
-I2CMultiAddr = 0x70
+def blink():
+    led.high()
+    time.sleep_ms(100)
+    led.low()
 
-ip_address = "192.168.1.123"
-network_mask = "255.255.255.0"
-gateway_address = "192.168.1.1"
-dns_server = "8.8.8.8"
+def load_default_network_config():
+    global ip_address, network_mask, gateway_address, dns_server
+    ip_address = "192.168.1.123"
+    network_mask = "255.255.255.0"
+    gateway_address = "192.168.1.1"
+    dns_server = "8.8.8.8"
 
 try:
     ip_address = network_config.ip_address
@@ -25,19 +34,17 @@ try:
     dns_server = network_config.dns
 except OSError:
     print("failed loading network config from network_address.txt file. Using default config")
+    load_default_network_config()
 
 print("PowerTec Enviro Sensor")
-print("[I2C] v20250613-1047")
+print("[I2C] v20260103-2029")
 print("-----")
 print("Network Config: (",ip_address,"-",network_mask,"-",gateway_address,"-",dns_server,")")
 print("-----")
 
-time.sleep(3)
-
-connectingNIC = 0
-
 # set up the Ethernet Hardware
 try:
+    connectingNIC = 0
     spi=SPI(0,2_000_000, mosi=Pin(19),miso=Pin(16),sck=Pin(18))
     try:
         nic = network.WIZNET5K(spi,Pin(17),Pin(20),Pin(21)) #spi,cs,reset,int
@@ -57,66 +64,14 @@ try:
 except Exception as e:
     print("Exception during creation of NIC object: {}".format(e))
 
-# set up the blinking LED
-led = machine.Pin(25, machine.Pin.OUT)
-
-# start the beat
-heartbeat = 0
-
-def blink():
-    led.high()
-    time.sleep_ms(100)
-    led.low()
-
-def my_reg_get_cb(reg_type, address, val):
-    blink()
-
-def setHeartbeatRegister(heartbeat):
-    try:
-        heartbeat = heartbeat + random.randint(1,9)
-        modbus_client.set_hreg(address=52, value=int(heartbeat))
-        modbus_client.process()
-        if heartbeat > 50:
-            heartbeat = 0
-        blink()
-        return heartbeat
-    except Exception as e:
-        print("Failed to update Heartbeat Register", " : {}".format(e))
-        pass
-
-def setDiagRegister(diagnostic_reg, status_code):
-    try:
-        modbus_client.set_hreg(address=int(diagnostic_reg), value=int(status_code))
-        modbus_client.process()
-    except Exception as e:
-        print("Failed to update Diagnostic Register", " : {}".format(e))
-        pass
-
-local_ip = nic.ifconfig()[0]
-tcp_port = 502  # port to listen for requests/providing data
-
+# set up modbus
 print("Setting up Modbus.....")
-
-time.sleep(1)
-
-modbus_client = ModbusTCP()
-
-# check whether client has been bound to an IP and a port
-if not modbus_client.get_bound_status():
-    print("Binding client to ", local_ip, ":", tcp_port)
-    try:
-        modbus_client.bind(local_ip=local_ip, local_port=tcp_port)
-    except OSError as e:
-        print("Error in Modbus binding. System will restart.")
-        time.sleep(1)
-        machine.reset()
-
-time.sleep(1)
-
+local_ip = nic.ifconfig()[0]
+tcp_port = 502  # port to listen for requests/providing modbus data
 register_definitions = {
     "HREGS": {
         ## Temp Sensor Values
-        "TEMPERATURE_1": {"register": 10, "len": 1, "val": 0, "on_get_cb": my_reg_get_cb,},
+        "TEMPERATURE_1": {"register": 10, "len": 1, "val": 0, "on_get_cb": blink,},
         "HUMIDITY_1": { "register": 11, "len": 1, "val": 0,},
         "TEMPERATURE_2": { "register": 12, "len": 1, "val": 0,},
         "HUMIDITY_2": { "register": 13, "len": 1, "val": 0,},
@@ -133,8 +88,7 @@ register_definitions = {
         "TEMPERATURE_8": { "register": 24, "len": 1, "val": 0,},
         "HUMIDITY_8": { "register": 25, "len": 1, "val": 0,},
         ## Air Quality Sensor Values
-        "AVERAGE_AQI": { "register": 29, "len": 1, "val": 0,},
-        "AQS1_ECO2": { "register": 30, "len": 1, "val": 0,},
+        "AQS1_ECO2": { "register": 30, "len": 1, "val": 0, "on_get_cb": blink,},
         "AQS1_TVOC": { "register": 31, "len": 1, "val": 0,},
         "AQS2_ECO2": { "register": 32, "len": 1, "val": 0,},
         "AQS2_TVOC": { "register": 33, "len": 1, "val": 0,},
@@ -150,55 +104,20 @@ register_definitions = {
         "AQS7_TVOC": { "register": 43, "len": 1, "val": 0,},
         "AQS8_ECO2": { "register": 44, "len": 1, "val": 0,},
         "AQS8_TVOC": { "register": 45, "len": 1, "val": 0,},
-        ## Meta
-        "HEARTBEAT": {"register": 52, "len": 1, "val": 0,},
-        "TEMP_PICO": {"register": 53, "len": 1, "val": 0,},
-        ## Diagnostics
-        "SYS_STATUS": {"register": 54, "len": 1, "val": 91,},
-        "SENSORS_ONLINE_TH": {"register": 55, "len": 1, "val": 0,},
-        "SENSORS_ONLINE_AQ": {"register": 56, "len": 1, "val": 0,},
-        "IP_RESET_STATUS": {"register": 57, "len": 1, "val": 0,},
-        "BIG_EXCEPTIONS": {"register": 58, "len": 1, "val": 0,},
-        "TEMP_PROBE_RESETS": {"register": 59, "len": 1, "val": 0,},
-        ## IP Address
-        "IP1": {"register": 61, "len": 1, "val": 0, "range": "[0, 256]"},
-        "IP2": {"register": 62, "len": 1, "val": 0, "range": "[0, 256]"},
-        "IP3": {"register": 63, "len": 1, "val": 0, "range": "[0, 256]"},
-        "IP4": {"register": 64, "len": 1, "val": 0, "range": "[0, 256]"},
-        ## Default Gateway
-        "GW1": {"register": 65, "len": 1, "val": 0, "range": "[0, 256]"},
-        "GW2": {"register": 66, "len": 1, "val": 0, "range": "[0, 256]"},
-        "GW3": {"register": 67, "len": 1, "val": 0, "range": "[0, 256]"},
-        "GW4": {"register": 68, "len": 1, "val": 0, "range": "[0, 256]"},
-        ## Reset Trigger
-        "IP_TRIGGER": {"register": 69, "len": 1, "val": 0, "range": "[0, 10]"}
     }
 }
 
-# use the defined values of each register type provided by register_definitions
-modbus_client.setup_registers(registers=register_definitions)
+#time.sleep(2) # attempt to resolve the device not properly starting up and getting hung up
 
-setDiagRegister(54, 92)
-
-# define I2C pins
-channel = 1
-clock_pin = 3
-data_pin = 2
-
+# set up i2c mux
 print("Registering Sensors.....")
-
-time.sleep(3) # attempt to resolve the device not properly starting up and getting hung up
-
-setDiagRegister(54, 94)
-
 try:
-    I2CMulti = DFRobot_I2C_Multiplexer.DFRobot_I2C_Multiplexer(channel, I2CMultiAddr, clock_pin, data_pin)
+    I2CMulti = DFRobot_I2C_Multiplexer.DFRobot_I2C_Multiplexer(I2CMux_channel, I2CMux_addr, I2CMux_clock, I2CMux_data)
     time.sleep_ms(500)
     I2CMulti.selectPort(0)
-    setDiagRegister(54, 95)
 except Exception as e:
     print("Failed to initialise I2C multiplexer", " : {}".format(e))
-    time.sleep(2)
+    time.sleep(1)
     machine.reset()
 
 THsensors = []
@@ -211,151 +130,145 @@ AQsensorsFP = 0 # First Port
 AQsensorsCt = 0 # Count
 AQsensorsLP = 0 # Last Port
 
-setDiagRegister(54, 96)
-
+# scan the mux for devices
 for Port in range(0, 8):  # Scan I2C devices on each port
     try:
         addr = I2CMulti.scan(Port)
         if len(addr):
             if 64 in addr:
-                THsensors.append(I2C_CHT8305_SEN0546.I2C_CHT8305_SEN0546(channel, clock_pin, data_pin))
+                THsensors.append(I2C_CHT8305_SEN0546.I2C_CHT8305_SEN0546(I2CMux_channel, I2CMux_clock, I2CMux_data))
                 print("Registered Temp Sensor on Port: ", Port)
                 THsensorsCt += 1
                 THsensorsLP = Port + 1
                 AQsensors.append(Port)
-                setDiagRegister(55, THsensorsCt)
             elif 83 in addr:
-                AQsensors.append(ENS160.ENS160(channel, clock_pin, data_pin))
+                AQsensors.append(ENS160.ENS160(I2CMux_channel, I2CMux_clock, I2CMux_data))
                 print("Registered AQ Sensor on Port: ", Port)
                 AQsensorsCt += 1
                 AQsensorsLP = Port + 1
                 THsensors.append(Port)
-                setDiagRegister(56, AQsensorsCt)
         else:
             THsensors.append(Port)
             AQsensors.append(Port)
             print("No Device Found on Port: ", Port)
-        setDiagRegister(54, 98)
     except Exception as e:
         print("Failed scanning sensor device on channel ", Port, " : {}".format(e))
         pass
 
 THsensorsFP = THsensorsLP - THsensorsCt
-#print("TH First: ", THsensorsFP, " - TH Ct: ", THsensorsCt, " - TH Last: ", THsensorsLP -1)
 AQsensorsFP = AQsensorsLP - AQsensorsCt
-#print("AQ First: ", AQsensorsFP, " - AQ Ct: ", AQsensorsCt, " - AQ Last: ", AQsensorsLP -1)
 
 print("Starting Main Loop.....")
-setDiagRegister(54, 99)
-lastReadTime = time.time()
-calibrateTime = time.time()
-resetTime = time.time()
-bigExceptions = 0
-softSensorResets = 0
-AQI_rating = 1
 
-while True:
-    try:
-        now = time.time()
-        if (now - lastReadTime) > 3:
+async def start_modbus_tcp_server(host_ip, host_port, max_connections, reg_definitions):
+    global modbus_client
+    modbus_client = ModbusTCP()
+    await modbus_client.bind(local_ip=host_ip, local_port=host_port, max_connections=max_connections)
+    modbus_client.setup_registers(registers=reg_definitions)
+    print('Serving as TCP client on {}:{}'.format(local_ip, tcp_port))
+    await modbus_client.serve_forever()
+
+async def poll_temp_sensors():
+    global modbus_client
+    while True:
+        try:
+            await asyncio.sleep(1)
             for i in range(THsensorsFP, THsensorsLP):
                 try:
                     I2CMulti.selectPort(i)
-                    Temperature, Humidity = THsensors[i].get_CHT8305_TEMPERATURE_HUMIDITY()
+                    THsensors[i].req_CHT8305_TEMPERATURE_HUMIDITY()
+                except Exception as e:
+                    print("Failed requesting from Temp Sensor on Port ", i, " : {}".format(e))
+                    pass
+            await asyncio.sleep_ms(200)    
+            for i in range(THsensorsFP, THsensorsLP):
+                try:
+                    I2CMulti.selectPort(i)
+                    Temperature, Humidity = THsensors[i].read_CHT8305_TEMPERATURE_HUMIDITY()
                     modbus_client.set_hreg(address=10 + (i * 2), value=int(Temperature * 10))
                     modbus_client.set_hreg(address=11 + (i * 2), value=int(Humidity * 10))
                     print("Port: ", i, "Temp: ", Temperature, "Humi: ", Humidity)
                 except Exception as e:
-                    print("Failed reading Temp Sensor on Port ", i, " : {}".format(e))
+                    print("Failed reading from Temp Sensor on Port ", i, " : {}".format(e))
                     try:
                         THsensors[i].send_CHT8305_SOFT_RESET()
-                        print("Sending soft reset to Temp Sensor on Port: ", i)
                     except Exception as e:
-                        print("Failed failed to soft reset Temp Sensor on Port ", i, " : {}".format(e))
                         pass
-                    modbus_client.set_hreg(address=10 + (i * 2), value=int(0))
-                    modbus_client.set_hreg(address=11 + (i * 2), value=int(0))
-                    softSensorResets += 1
-                    setDiagRegister(59, softSensorResets)
                     pass
-            lastReadTime = now
-            if AQsensorsCt != 0:
-                for i in range(AQsensorsFP, AQsensorsLP):
-                    try:
-                        I2CMulti.selectPort(i)
-                        aqi, tvoc, eco2, temp, rh, eco2_rating, tvoc_rating = AQsensors[i].read_air_quality()
-                        #print(f"AQI: {aqi}")
-                        #print(f"TVOC: {tvoc} ppb")
-                        #print(f"TVOC Rating: {tvoc_rating}")
-                        #print(f"eCO2: {eco2} ppm")
-                        #print(f"Temperature (ENS160): {temp} °F")
-                        #print(f"Humidity (ENS160): {rh} %")
-                        #print(f"eCO2 Rating: {eco2_rating}")
-                        AQsensor_regindex = i - AQsensorsFP
-                        modbus_client.set_hreg(address=30 + (AQsensor_regindex * 2), value=int(eco2))
-                        modbus_client.set_hreg(address=31 + (AQsensor_regindex * 2), value=int(tvoc))
-                        print("Port: ", i, "eCO2: ", eco2, "TVOC: ", tvoc, "AQI: ", aqi)
-                        AQI_rating += int(aqi)
-                    except Exception as e:
-                        print("Failed reading AQ Sensor on Port ", i, " : {}".format(e))
-                        modbus_client.set_hreg(address=30 + (AQsensor_regindex * 2), value=int(0))
-                        modbus_client.set_hreg(address=31 + (AQsensor_regindex * 2), value=int(0))
-                        pass
-                # calculate average of all AQI index ratings
-                try:
-                    AQI_rating = AQI_rating / AQsensorsCt
-                    setDiagRegister(29, AQI_rating)
-                    AQI_rating = 1
-                except Exception as e:
-                    print("Failed to push average AQI Index rating to register 29 ", " : {}".format(e))
-                    pass
-            
-            # get Pico internal temp
-            modbus_client.set_hreg(address=53, value=(getPicoInternalTemp()))
-            
-            #result = client.process()                      # disabled here to stop double processing in a loop - it's now only processed on heartbeat update or diag reg update
-            
-            # Heartbeat
-            modbus_client.set_hreg(address=54, value=100)          # confirm we're in the main loop
-            heartbeat = setHeartbeatRegister(heartbeat)     # Update Heartbeat & process client
-        
-        # calibrate AQ sensors to temperature every 15 mins
-        if (now - calibrateTime) > 900:
-            calibrateTime = now
-            if AQsensorsCt != 0:
-                try:
-                    Temperature = int(modbus_client.get_hreg(10) / 10)
-                    #print("Calibrating Temperature with: ", Temperature)
-                    Humidity = int(modbus_client.get_hreg(11) / 10)
-                    #print("Calibrating Humidity with: ", Humidity)
-                except Exception as e:
-                    print("Failed to read modbus registers for AQ calibration "," : {}".format(e))
-                    pass
-                for i in range(AQsensorsFP, AQsensorsLP):
-                    try:
-                        I2CMulti.selectPort(i)
-                        AQsensors[i].calibrate_Temperature(Temperature)
-                        AQsensors[i].calibrate_Humidity(Humidity)
-                    except Exception as e:
-                        print("Failed calibrating AQ Sensor on channel ", i, " : {}".format(e))
-                        pass
-        # take a breath before starting the loop again    
-        time.sleep_ms(500)
-    except KeyboardInterrupt:
-        print("KeyboardInterrupt, stopping TCP client...")
-        break
-    except Exception as e:
-        print("Big Exception during execution of main loop: {}".format(e))
-        bigExceptions += 1
-        setDiagRegister(54, 111)
-        setDiagRegister(58, bigExceptions)
-        time.sleep(2)
-        if bigExceptions > 9:
-            setDiagRegister(54, 112)
-            time.sleep(2)
-            machine.reset()
-        pass
+            await asyncio.sleep(4)
+        except Exception as e:
+            print("Big Exception during execution of main loop: {}".format(e))
+            bigExceptions += 1
+            if bigExceptions > 9:
+                time.sleep(2)
+                machine.reset()
+            pass
 
-setDiagRegister(54, 119)
+async def poll_aq_sensors():
+    global modbus_client
+    while True:
+        try:
+            await asyncio.sleep(4)
+            for i in range(AQsensorsFP, AQsensorsLP):
+                try:
+                    I2CMulti.selectPort(i)
+                    eco2, tvoc = AQsensors[i].get_air_quality()
+                    AQsensor_regindex = i - AQsensorsFP
+                    modbus_client.set_hreg(address=30 + (AQsensor_regindex * 2), value=int(eco2))
+                    modbus_client.set_hreg(address=31 + (AQsensor_regindex * 2), value=int(tvoc))
+                    print("Port: ", i, "eCO2: ", eco2, "TVOC: ", tvoc)
+                except Exception as e:
+                    print("Failed reading from AQ Sensor on Port ", i, " : {}".format(e))
+                    pass
+            await asyncio.sleep(1)
+        except Exception as e:
+            print("Big Exception during execution of AQ Sensor loop: {}".format(e))
+            pass
+    
+async def calibrate_aq_sensors():
+    global modbus_client
+    while True:
+        try:
+            await asyncio.sleep((15 * 60))
+            try:
+                Temperature = int(modbus_client.get_hreg(10) / 10)
+                Humidity = int(modbus_client.get_hreg(11) / 10)
+            except Exception as e:
+                print("Failed to read modbus registers for AQ calibration "," : {}".format(e))
+                pass
+            for i in range(AQsensorsFP, AQsensorsLP):
+                try:
+                    I2CMulti.selectPort(i)
+                    AQsensors[i].calibrate_Temperature(Temperature)
+                    AQsensors[i].calibrate_Humidity(Humidity)
+                except Exception as e:
+                    print("Failed calibrating AQ Sensor on channel ", i, " : {}".format(e))
+                    pass
+        except Exception as e:
+            print("Failed to calibrate AQ sensors: {}".format(e))
+            pass
+
+async def main_loop():
+    tasks = []
+    result = None
+    tasks.append(asyncio.run(start_modbus_tcp_server(host_ip=local_ip, host_port=tcp_port, max_connections=10, reg_definitions=register_definitions)))
+    tasks.append(asyncio.create_task(poll_temp_sensors()))
+    if AQsensorsCt > 0:
+        tasks.append(asyncio.create_task(poll_aq_sensors()))
+        tasks.append(asyncio.create_task(calibrate_aq_sensors()))  
+    try:
+        result = await asyncio.gather(*tasks, return_exceptions=True)
+    except asyncio.CancelledError:
+        print("ONGOING TASKS LOOP CANCELLED")
+    print(f"result: {result}")
+
+try:
+    asyncio.run(main_loop())
+except asyncio.CancelledError:
+    print('MAIN LOOP CANCELLED')
+    asyncio.new_event_loop() 
+finally:
+    asyncio.new_event_loop()
+
 time.sleep(3)
 machine.reset()
