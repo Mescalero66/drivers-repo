@@ -70,40 +70,38 @@ local_ip = nic.ifconfig()[0]
 tcp_port = 502  # port to listen for requests/providing modbus data
 register_definitions = {
     "HREGS": {
-        ## Temp Sensor Values
-        "TEMPERATURE_1": {"register": 10, "len": 1, "val": 0, "on_get_cb": blink,},
-        "HUMIDITY_1": { "register": 11, "len": 1, "val": 0,},
-        "TEMPERATURE_2": { "register": 12, "len": 1, "val": 0,},
-        "HUMIDITY_2": { "register": 13, "len": 1, "val": 0,},
-        "TEMPERATURE_3": { "register": 14, "len": 1, "val": 0,},
-        "HUMIDITY_3": { "register": 15, "len": 1, "val": 0,},
-        "TEMPERATURE_4": { "register": 16, "len": 1, "val": 0,},
-        "HUMIDITY_4": { "register": 17, "len": 1, "val": 0,},
-        "TEMPERATURE_5": { "register": 18, "len": 1, "val": 0,},
-        "HUMIDITY_5": { "register": 19, "len": 1, "val": 0,},
-        "TEMPERATURE_6": { "register": 20, "len": 1, "val": 0,},
-        "HUMIDITY_6": { "register": 21, "len": 1, "val": 0,},
-        "TEMPERATURE_7": { "register": 22, "len": 1, "val": 0,},
-        "HUMIDITY_7": { "register": 23, "len": 1, "val": 0,},
-        "TEMPERATURE_8": { "register": 24, "len": 1, "val": 0,},
-        "HUMIDITY_8": { "register": 25, "len": 1, "val": 0,},
-        ## Air Quality Sensor Values
-        "AQS1_ECO2": { "register": 30, "len": 1, "val": 0, "on_get_cb": blink,},
-        "AQS1_TVOC": { "register": 31, "len": 1, "val": 0,},
-        "AQS2_ECO2": { "register": 32, "len": 1, "val": 0,},
-        "AQS2_TVOC": { "register": 33, "len": 1, "val": 0,},
-        "AQS3_ECO2": { "register": 34, "len": 1, "val": 0,},
-        "AQS3_TVOC": { "register": 35, "len": 1, "val": 0,},
-        "AQS4_ECO2": { "register": 36, "len": 1, "val": 0,},
-        "AQS4_TVOC": { "register": 37, "len": 1, "val": 0,},
-        "AQS5_ECO2": { "register": 38, "len": 1, "val": 0,},
-        "AQS5_TVOC": { "register": 39, "len": 1, "val": 0,},
-        "AQS6_ECO2": { "register": 40, "len": 1, "val": 0,},
-        "AQS6_TVOC": { "register": 41, "len": 1, "val": 0,},
-        "AQS7_ECO2": { "register": 42, "len": 1, "val": 0,},
-        "AQS7_TVOC": { "register": 43, "len": 1, "val": 0,},
-        "AQS8_ECO2": { "register": 44, "len": 1, "val": 0,},
-        "AQS8_TVOC": { "register": 45, "len": 1, "val": 0,},
+        "TEMP_1": { "register": 10, "len": 1, "val": 0},
+        "HUMI_1": { "register": 11, "len": 1, "val": 0},
+        "TEMP_2": { "register": 12, "len": 1, "val": 0},
+        "HUMI_2": { "register": 13, "len": 1, "val": 0},
+        "TEMP_3": { "register": 14, "len": 1, "val": 0},
+        "HUMI_3": { "register": 15, "len": 1, "val": 0},
+        "TEMP_4": { "register": 16, "len": 1, "val": 0},
+        "HUMI_4": { "register": 17, "len": 1, "val": 0},
+        "TEMP_5": { "register": 18, "len": 1, "val": 0},
+        "HUMI_5": { "register": 19, "len": 1, "val": 0},
+        "TEMP_6": { "register": 20, "len": 1, "val": 0},
+        "HUMI_6": { "register": 21, "len": 1, "val": 0},
+        "TEMP_7": { "register": 22, "len": 1, "val": 0},
+        "HUMI_7": { "register": 23, "len": 1, "val": 0},
+        "TEMP_8": { "register": 24, "len": 1, "val": 0},
+        "HUMI_8": { "register": 25, "len": 1, "val": 0},
+        "AQS1_ECO2": { "register": 30, "len": 1, "val": 0},
+        "AQS1_TVOC": { "register": 31, "len": 1, "val": 0},
+        "AQS2_ECO2": { "register": 32, "len": 1, "val": 0},
+        "AQS2_TVOC": { "register": 33, "len": 1, "val": 0},
+        "AQS3_ECO2": { "register": 34, "len": 1, "val": 0},
+        "AQS3_TVOC": { "register": 35, "len": 1, "val": 0},
+        "AQS4_ECO2": { "register": 36, "len": 1, "val": 0},
+        "AQS4_TVOC": { "register": 37, "len": 1, "val": 0},
+        "AQS5_ECO2": { "register": 38, "len": 1, "val": 0},
+        "AQS5_TVOC": { "register": 39, "len": 1, "val": 0},
+        "AQS6_ECO2": { "register": 40, "len": 1, "val": 0},
+        "AQS6_TVOC": { "register": 41, "len": 1, "val": 0},
+        "AQS7_ECO2": { "register": 42, "len": 1, "val": 0},
+        "AQS7_TVOC": { "register": 43, "len": 1, "val": 0},
+        "AQS8_ECO2": { "register": 44, "len": 1, "val": 0},
+        "AQS8_TVOC": { "register": 45, "len": 1, "val": 0}
     }
 }
 
@@ -158,14 +156,13 @@ for Port in range(0, 8):  # Scan I2C devices on each port
 THsensorsFP = THsensorsLP - THsensorsCt
 AQsensorsFP = AQsensorsLP - AQsensorsCt
 
-print("Starting Main Loop.....")
-
 async def start_modbus_tcp_server(host_ip, host_port, max_connections, reg_definitions):
     global modbus_client
     modbus_client = ModbusTCP()
-    await modbus_client.bind(local_ip=host_ip, local_port=host_port, max_connections=max_connections)
-    modbus_client.setup_registers(registers=reg_definitions)
-    print('Serving as TCP client on {}:{}'.format(local_ip, tcp_port))
+    if not modbus_client.get_bound_status():
+        await modbus_client.bind(local_ip=host_ip, local_port=host_port, max_connections=max_connections)
+        modbus_client.setup_registers(registers=reg_definitions)
+    print('Serving as Modbus TCP client on {}:{}'.format(local_ip, tcp_port))
     await modbus_client.serve_forever()
 
 async def poll_temp_sensors():
@@ -187,7 +184,7 @@ async def poll_temp_sensors():
                     Temperature, Humidity = THsensors[i].read_CHT8305_TEMPERATURE_HUMIDITY()
                     modbus_client.set_hreg(address=10 + (i * 2), value=int(Temperature * 10))
                     modbus_client.set_hreg(address=11 + (i * 2), value=int(Humidity * 10))
-                    print("Port: ", i, "Temp: ", Temperature, "Humi: ", Humidity)
+                    print(f"#{i}  Temp: {Temperature:.1f}°C   Humi: {Humidity:.1f}%")
                 except Exception as e:
                     print("Failed reading from Temp Sensor on Port ", i, " : {}".format(e))
                     try:
@@ -216,7 +213,7 @@ async def poll_aq_sensors():
                     AQsensor_regindex = i - AQsensorsFP
                     modbus_client.set_hreg(address=30 + (AQsensor_regindex * 2), value=int(eco2))
                     modbus_client.set_hreg(address=31 + (AQsensor_regindex * 2), value=int(tvoc))
-                    print("Port: ", i, "eCO2: ", eco2, "TVOC: ", tvoc)
+                    print(f"#{i}  eC02: {eco2}ppm   TVOC: {tvoc}ppb")
                 except Exception as e:
                     print("Failed reading from AQ Sensor on Port ", i, " : {}".format(e))
                     pass
@@ -230,19 +227,27 @@ async def calibrate_aq_sensors():
     while True:
         try:
             await asyncio.sleep((15 * 60))
+            #await asyncio.sleep((10))
             try:
-                Temperature = int(modbus_client.get_hreg(10) / 10)
-                Humidity = int(modbus_client.get_hreg(11) / 10)
+                temp_celsius = (modbus_client.get_hreg(10) / 10)
+                temp_value = int((temp_celsius + 273.15) * 64)
+                temp_lsb = temp_value & 0xFF
+                temp_msb = (temp_value >> 8) & 0xFF
+                humidity = (modbus_client.get_hreg(11) / 10)
+                humi_value = int((humidity * 512))
+                humi_lsb = humi_value & 0xFF
+                humi_msb = (humi_value >> 8) & 0xFF
             except Exception as e:
                 print("Failed to read modbus registers for AQ calibration "," : {}".format(e))
                 pass
             for i in range(AQsensorsFP, AQsensorsLP):
                 try:
                     I2CMulti.selectPort(i)
-                    AQsensors[i].calibrate_Temperature(Temperature)
-                    AQsensors[i].calibrate_Humidity(Humidity)
+                    AQsensors[i].calibrate_Temperature(temp_lsb, temp_msb)
+                    AQsensors[i].calibrate_Humidity(humi_lsb, humi_msb)
+                    print(f"Calibrated AQ Sensor #{i}: {temp_celsius:.1f}°C (0x{temp_value:04X}), {humidity:.1f}% (0x{humi_value:04X})")
                 except Exception as e:
-                    print("Failed calibrating AQ Sensor on channel ", i, " : {}".format(e))
+                    print("Failed calibrating AQ Sensor on channel", i, ": {}".format(e))
                     pass
         except Exception as e:
             print("Failed to calibrate AQ sensors: {}".format(e))
@@ -251,12 +256,14 @@ async def calibrate_aq_sensors():
 async def main_loop():
     tasks = []
     result = None
-    tasks.append(asyncio.run(start_modbus_tcp_server(host_ip=local_ip, host_port=tcp_port, max_connections=10, reg_definitions=register_definitions)))
+    tasks.append(asyncio.create_task(start_modbus_tcp_server(host_ip=local_ip, host_port=tcp_port, max_connections=10, reg_definitions=register_definitions)))
+    await asyncio.sleep(2)
     tasks.append(asyncio.create_task(poll_temp_sensors()))
     if AQsensorsCt > 0:
         tasks.append(asyncio.create_task(poll_aq_sensors()))
         tasks.append(asyncio.create_task(calibrate_aq_sensors()))  
     try:
+        print("Starting main loop.....")
         result = await asyncio.gather(*tasks, return_exceptions=True)
     except asyncio.CancelledError:
         print("ONGOING TASKS LOOP CANCELLED")

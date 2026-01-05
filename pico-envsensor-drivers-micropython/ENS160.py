@@ -106,8 +106,10 @@ class ENS160:
         tvoc = self.get_tvoc()
         return eco2, tvoc
     
-    def calibrate_Temperature(self,Temp):
-        self._write_register(0x13, bytes([Temp]))
+    def calibrate_Temperature(self, temp_lsb, temp_msb):
+        self._write_register(0x13, bytes([temp_lsb]))
+        self._write_register(0x14, bytes([temp_msb]))
 
-    def calibrate_Humidity(self,Humi):
-        self._write_register(0x15, bytes([Humi]))
+    def calibrate_Humidity(self, humi_lsb, humi_msb):
+        self._write_register(0x15, bytes([humi_lsb]))
+        self._write_register(0x16, bytes([humi_msb]))
