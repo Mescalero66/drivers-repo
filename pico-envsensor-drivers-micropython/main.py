@@ -1,13 +1,10 @@
-import time
-import machine
-import network
-import asyncio
-from umodbus.asynchronous.tcp import AsyncModbusTCP as ModbusTCP
+import time, machine, network, asyncio
 from machine import Pin, SPI
-import network_config
+from umodbus.asynchronous.tcp import AsyncModbusTCP as ModbusTCP
 import DFRobot_I2C_Multiplexer
 import I2C_CHT8305_SEN0546
 import ENS160
+import network_config
 
 I2CMux_addr = 0x70
 I2CMux_channel = 1
@@ -37,7 +34,7 @@ except OSError:
     load_default_network_config()
 
 print("PowerTec Enviro Sensor")
-print("[I2C] v20260103-2029")
+print("[I2C] v20260105-2114")
 print("-----")
 print("Network Config: (",ip_address,"-",network_mask,"-",gateway_address,"-",dns_server,")")
 print("-----")
