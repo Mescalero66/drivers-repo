@@ -1,11 +1,9 @@
-# PowerTec Environment Sensor System [I2C]
-Repository for the PowerTec Environment Sensor System
-
+# Pico Environment Sensor [I2C]
+Originally for the PowerTec Environment Sensor device.
 
 ## Installing on the RaspberryPi pico
 See PTwiki:
 <https://power-tec.com.au/ptwiki/1sdv/field_devices/pt_envsensor>
-
 
 ## Modbus Registers
 The Modbus configuration of this device is as follows:
@@ -30,12 +28,14 @@ The Modbus configuration of this device is as follows:
 | `18` | Temp 05 | 28 |  | `38` | AQS5 eCO2 | 48 |  |
 | `19` | Humi 05 | 28 |  | `39` | AQS5 TVOC | 49 |  |
 
+## Network Configuration
+IP addresses can be set by editing the **network_config.py** file before copying the project to the Pico.
+
+Default network configuration addresses are:
+ - ip_address = '192.168.1.23'
+ - subnet_mask = '255.255.255.0'
+ - default_gateway = '192.168.1.1'
+ - dns = '8.8.8.8'
 
 ## Refer to this repo for async/non-blocking modbus components
-https://github.com/brainelectronics/micropython-modbus/blob/2f4e4eb691847e5242a5c33be6bad77782a4357a/examples/async_tcp_client_example.py
-
-
-
-
-
-
+https://github.com/brainelectronics/micropython-modbus/blob/2f4e4eb691847e5242a5c33be6bad77782a4357a/examples/

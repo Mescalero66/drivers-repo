@@ -2,10 +2,11 @@ import time, machine, network, asyncio
 from machine import Pin, SPI
 from umodbus.asynchronous.tcp import AsyncModbusTCP as ModbusTCP
 import DFRobot_I2C_Multiplexer
-import I2C_CHT8305_SEN0546
+import CHT8305
 import ENS160
 import network_config
 
+VERSION_NO = "20260106.1317"
 I2CMux_addr = 0x70
 I2CMux_channel = 1
 I2CMux_clock = 3
@@ -33,8 +34,8 @@ except OSError:
     print("failed loading network config from network_address.txt file. Using default config")
     load_default_network_config()
 
-print("PowerTec Enviro Sensor")
-print("[I2C] v20260105-2114")
+print("Pico Enviro Sensor")
+print(f"[I2C] v{VERSION_NO}")
 print("-----")
 print("Network Config: (",ip_address,"-",network_mask,"-",gateway_address,"-",dns_server,")")
 print("-----")
@@ -102,7 +103,8 @@ register_definitions = {
     }
 }
 
-#time.sleep(2) # attempt to resolve the device not properly starting up and getting hung up
+# attempt to resolve the device not properly starting up and getting hung up
+#time.sleep(2)
 
 # set up i2c mux
 print("Registering Sensors.....")
@@ -131,7 +133,7 @@ for Port in range(0, 8):  # Scan I2C devices on each port
         addr = I2CMulti.scan(Port)
         if len(addr):
             if 64 in addr:
-                THsensors.append(I2C_CHT8305_SEN0546.I2C_CHT8305_SEN0546(I2CMux_channel, I2CMux_clock, I2CMux_data))
+                THsensors.append(CHT8305.I2C_CHT8305_SEN0546(I2CMux_channel, I2CMux_clock, I2CMux_data))
                 print("Registered Temp Sensor on Port: ", Port)
                 THsensorsCt += 1
                 THsensorsLP = Port + 1
@@ -274,5 +276,6 @@ except asyncio.CancelledError:
 finally:
     asyncio.new_event_loop()
 
+print("if you're reading this, something has gone wrong.")
 time.sleep(3)
 machine.reset()
