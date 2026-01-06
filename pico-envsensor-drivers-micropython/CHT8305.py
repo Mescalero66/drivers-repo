@@ -29,12 +29,6 @@ class I2C_CHT8305_SEN0546:
 
     def __init__(self, ID, SCL, SDA):
         self.i2c = machine.I2C(id=ID, scl=machine.Pin(SCL), sda=machine.Pin(SDA), freq=100000)
-        #print("Scanning i2c bus for Temp Sensors")
-        #devices = self.i2c.scan()
-        #if len(devices) == 0:
-        #    print("No i2c device !")
-        #for device in devices:
-        #    print("Decimal address: ", device, " | Hexa address: ", hex(device))
 
     def get_CHT8305_CONFIG(self):
         ReadBuf_CHT8305_Config_Reg = bytes(self.wLength)
@@ -138,7 +132,7 @@ class I2C_CHT8305_SEN0546:
     def req_CHT8305_TEMPERATURE_HUMIDITY(self):
         try:
             self.i2c.writeto(self.CHT8305_Address, bytes([self.REG_TEMPERATURE]))
-            sleep_ms(self.I2C_Delay_time)
+            #sleep_ms(self.I2C_Delay_time)
         except Exception as e:
             print("Error in req_CHT8305_TEMPERATURE_HUMIDITY function", " : {}".format(e))
             pass
