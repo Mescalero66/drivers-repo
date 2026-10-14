@@ -87,9 +87,8 @@ class I2C_CHT8305_SEN0546:
         )
 
     def get_CHT8305_MANUFACTURE_ID(self):
-        ReadBuf_CHT8305_Manufacture_ID_Reg = bytes(self.wLength)
-        com_CHT8305_Manufacture_ID_Reg = bytearray(2)
-        self.i2c.writeto_mem(self.CHT8305_Address,self.REG_MANUFACTURE_ID,com_CHT8305_Manufacture_ID_Reg,)
+        # set the register pointer only - this register is read-only
+        self.i2c.writeto(self.CHT8305_Address, bytes([self.REG_MANUFACTURE_ID]))
         sleep_ms(self.I2C_Delay_time)
         ReadBuf_CHT8305_Manufacture_ID_Reg = self.i2c.readfrom(self.CHT8305_Address, 2)
         print(
@@ -99,11 +98,8 @@ class I2C_CHT8305_SEN0546:
         )
 
     def get_CHT8305_VERSION_ID(self):
-        ReadBuf_CHT8305_Version_ID_Reg = bytes(self.wLength)
-        com_CHT8305_Version_ID_Reg = bytearray(2)
-        self.i2c.writeto_mem(
-            self.CHT8305_Address, self.REG_VERSION_ID, com_CHT8305_Version_ID_Reg
-        )
+        # set the register pointer only - this register is read-only
+        self.i2c.writeto(self.CHT8305_Address, bytes([self.REG_VERSION_ID]))
         sleep_ms(self.I2C_Delay_time)
         ReadBuf_CHT8305_Version_ID_Reg = self.i2c.readfrom(self.CHT8305_Address, 2)
         print(
@@ -138,6 +134,8 @@ class I2C_CHT8305_SEN0546:
             pass
 
     def read_CHT8305_TEMPERATURE_HUMIDITY(self):
+        Temperature = None
+        Humidity = None
         try:
             data = self.i2c.readfrom(self.CHT8305_Address, 4)
             temp_raw = (data[0] << 8) | data[1]

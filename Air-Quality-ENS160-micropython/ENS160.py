@@ -24,12 +24,20 @@ class ENS160:
         self._write_register(0x10, bytes([mode]))  # Operating Mode
 
     def get_id(self):
-        data = self._read_register(0x00, 2)  # Device Identity
-        return (data[0] << 8) | data[1]
+        data = self._read_register(0x00, 2)  # Device Identity (0x0160)
+        return (data[1] << 8) | data[0]  # LSB first, then MSB
 
     def get_firmware_version(self):
-        data = self._read_register(0x02, 2)  # Firmware Version
-        return (data[0] << 8) | data[1]
+        mode = self._read_register(0x10, 1)[0]  # save current Operating Mode
+        self.set_mode(0x01)  # commands are only accepted in Idle mode
+        self._write_register(0x12, bytes([0x00]))  # NOP
+        self._write_register(0x12, bytes([0xCC]))  # CLRGPR - clear General Purpose Read registers
+        time.sleep_ms(10)
+        self._write_register(0x12, bytes([0x0E]))  # GET_APPVER
+        time.sleep_ms(10)
+        data = self._read_register(0x48, 8)  # General Purpose Read registers
+        self.set_mode(mode)
+        return f"{data[4]}.{data[5]}.{data[6]}"  # major.minor.release
 
     def get_status(self):
         data = self._read_register(0x20, 1)  # Operating Mode
@@ -52,15 +60,15 @@ class ENS160:
 
     def get_temperature(self):
         data = self._read_register(0x30, 2)  # Temperature used in calculations
-        temp_raw = (data[0] << 8) | data[1]
+        temp_raw = (data[1] << 8) | data[0]  # LSB first, then MSB
         temp_kelvin = temp_raw / 64.0
         temp_celsius = temp_kelvin - 273.15
         return temp_celsius
 
     def get_humidity(self):
         data = self._read_register(0x32, 2)  # Relative Humidity used in calculations
-        rh_raw = (data[0] << 8) | data[1]
-        rh = rh_raw / 512.0  # Assuming the format is the same as ENS21x: RH% * 512
+        rh_raw = (data[1] << 8) | data[0]  # LSB first, then MSB
+        rh = rh_raw / 512.0  # RH% * 512
         return rh
 
     def interpret_eco2_level(self, eco2):
