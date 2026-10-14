@@ -8,8 +8,8 @@
 # Display RPM Test
 
 import time
-from hw_drivers.df_digitdisp.tm1650disp import dfDisp
-from hw_drivers.ignitionpulsecounter.read_RPM import reader
+from tm1650disp import dfDisp
+from read_RPM import reader
 import RPi.GPIO as GPIO
 import pigpio
 

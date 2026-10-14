@@ -11,7 +11,7 @@
 import sys
 import os
 import time
-from Mux-I2C-TCA9548A-mpython import i2cmultiplex
+from df_multiplexer import i2cmultiplex
 
 I2CMultiAddr = 0x70       #I2C Multiplexer addr
 
