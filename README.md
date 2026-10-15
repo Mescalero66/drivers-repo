@@ -34,6 +34,9 @@ Each folder holds one driver for one device on one platform, named `<Function>-<
 - **ENS160 + AHT21 air quality and climate board** (ENS160 I2C 0x53 / 0x52, AHT21 I2C 0x38)
   - [Air-Quality-ENS160-AHT21-micropython](Air-Quality-ENS160-AHT21-micropython/)
   - [Air-Quality-ENS160-AHT21-python](Air-Quality-ENS160-AHT21-python/)
+- **BH1750 ambient light sensor** (ROHM BH1750FVI, I2C 0x23 / 0x5C)
+  - [Lux-BH1750-micropython](Lux-BH1750-micropython/)
+  - [Lux-BH1750-python](Lux-BH1750-python/)
 - **DFRobot SEN0546 temperature & humidity probe** (CHT8305C, I2C 0x40)
   - [Temp-Humidity-CHT8305-micropython](Temp-Humidity-CHT8305-micropython/)
   - [Temp-Humidity-CHT8305-python](Temp-Humidity-CHT8305-python/)
@@ -93,6 +96,11 @@ DFRobot DFR0646 8-digit 7-segment display driven by an HT16K33 over I2C.
 - `HT16K33LED.py`: `HT16K33` base class (power, brightness, blink rate, buffer) and `HT16K33LED` (glyphs, numbers, characters, left/right-aligned `set_string`, rotation). Based on code by Tony Smith ([@smittytone](https://github.com/smittytone)).
 - `LED_8Digit.py`: demo of strings, alignment, animation, counting and blinking.
 - `testing/LED_8Digit_orig.py`: original demo.
+
+### [Lux-BH1750-micropython](Lux-BH1750-micropython/)
+ROHM BH1750FVI ambient light sensor (Adafruit 4681, GY-302), for the Pico, ESP32-C3 and ESP32-S3. Written from the datasheet.
+- `bh1750.py`: asynchronous (`asyncio`) `BH1750` class. One-time and continuous measurement in H (1 lx), H2 (0.5 lx) and L (4 lx) resolution, `wait_lux()` for each new sample, MTreg sensitivity adjustment (0.11 lx to ~100000 lx), optical-window correction, power down/reset.
+- `bh1750_test.py`: demo of one-time readings in each resolution, an MTreg sweep, and continuous readings shared between two tasks while a heartbeat task checks the loop never blocks.
 
 ### [mux-I2C-TCA9548A-micropython](mux-I2C-TCA9548A-micropython/)
 DFRobot DFR0576 1-to-8 I2C multiplexer (TCA9548A).
@@ -158,6 +166,11 @@ DFRobot DFR0645-R / DFR0645-G 4-digit display, bit-banged with `RPi.GPIO`. The R
 Seeed Grove LED Bar v2 (MY9221, 10 segments), using `grove.py` GPIO.
 - `grove_ledbar.py`: `GroveLedBar` class. `level()` with brightness, `bits()`, `bytes()`, and reversible direction. Based on [zolgear/grove.py](https://github.com/zolgear/grove.py).
 - `grove_ledbar_test.py`: climbing level and brightness test.
+
+### [Lux-BH1750-python](Lux-BH1750-python/)
+ROHM BH1750FVI ambient light sensor (Adafruit 4681, GY-302), via `smbus2` on bus 1.
+- `bh1750.py`: asynchronous (`asyncio`) `BH1750` class with the same API as the MicroPython version, plus a `measurements()` async generator.
+- `bh1750_test.py`: demo that finds the sensor at either address, takes one-time readings in each resolution, sweeps MTreg, then streams continuous readings shared between two tasks while a heartbeat task checks the loop never blocks.
 
 ### [Mux-I2C-TCA9548A-python](Mux-I2C-TCA9548A-python/)
 DFRobot DFR0576 1-to-8 I2C multiplexer (TCA9548A), via `smbus2` on bus 1.
