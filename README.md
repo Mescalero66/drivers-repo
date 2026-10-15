@@ -4,30 +4,55 @@ Hardware drivers and test scripts for sensors, displays and I/O modules, collect
 
 Each folder holds one driver for one device on one platform, named `<Function>-<Bus>-<Chip>-<platform>`:
 
-- **`-micropython`** folders target the **Raspberry Pi Pico** (MicroPython, using `machine.Pin` / `machine.I2C` / `machine.UART`).
+- **`-micropython`** folders target the **Raspberry Pi Pico**, and some also the ESP32 (MicroPython, using `machine.Pin` / `machine.I2C` / `machine.UART`).
 - **`-python`** folders target a **Raspberry Pi** running Linux (CPython). Most came from the [Saabpi](https://github.com/Mescalero66/saabpi) project and use `smbus2`, `RPi.GPIO`, `pigpio` or Seeed's `grove.py`.
 
 ## Device index
 
-| Device | Chip | Interface | MicroPython (Pico) | Python (Raspberry Pi) |
-|---|---|---|---|---|
-| **Displays** | | | | |
-| DFRobot DFR0645 4-digit 7-segment LED | TM1650 | 2-wire, I2C-like (bit-banged) | [LED-4digit-TM1650-micropython](LED-4digit-TM1650-micropython/) | [LED-4digit-TM1650-python](LED-4digit-TM1650-python/) |
-| DFRobot DFR0646 8-digit 7-segment LED | HT16K33 | I2C (0x70) | [LED-8digit-HT16K33A-micropython](LED-8digit-HT16K33A-micropython/) | |
-| Seeed Grove 4-digit display | TM1637 | 2-wire CLK/DIO | | [LED-4digit-TM1637-python](LED-4digit-TM1637-python/) |
-| Seeed Grove LED Bar (10 segment) | MY9221 | 2-wire DIO/CLK | | [LED-Bar-MY9221-python](LED-Bar-MY9221-python/) |
-| 128x64 OLED | SSD1306 | I2C (0x3C / 0x3D), SPI | [OLED-SSD1306-micropython](OLED-SSD1306-micropython/) | [OLED-SSD1306-python](OLED-SSD1306-python/) |
-| **Sensors** | | | | |
-| Air quality (AQI, TVOC, eCO2) | ENS160 | I2C (0x53) | [Air-Quality-ENS160-micropython](Air-Quality-ENS160-micropython/) | |
-| DFRobot SEN0546 temperature & humidity probe | CHT8305C | I2C (0x40) | [Temp-Humidity-CHT8305-micropython](Temp-Humidity-CHT8305-micropython/) | [Temp-Humidity-CHT8305-python](Temp-Humidity-CHT8305-python/) |
-| DFRobot SEN0206 non-contact IR thermometer | MLX90614 | I2C (0x5A) | | [Temp-Infrared-MLX90614-python](Temp-Infrared-MLX90614-python/) |
-| Seeed Grove 3-axis digital compass v2 | BMM150 | I2C (0x13) | | [Compass-I2C-BMM150-python](Compass-I2C-BMM150-python/) |
-| **GPS** | | | | |
-| NEO-6M GPS module | u-blox NEO-6M | UART (9600 baud) | [GPS-UART-Neo6M-micropython](GPS-UART-Neo6M-micropython/) | |
-| DFRobot TEL0138 USB GPS receiver | u-blox UBX-G7020-KT | USB serial | | [GPS-USB-UBXG7020KT-python](GPS-USB-UBXG7020KT-python/) |
-| **Bus / I/O** | | | | |
-| DFRobot DFR0576 1-to-8 I2C multiplexer | TCA9548A | I2C (0x70–0x77) | [mux-I2C-TCA9548A-micropython](mux-I2C-TCA9548A-micropython/) | [Mux-I2C-TCA9548A-python](Mux-I2C-TCA9548A-python/) |
-| Saab 900 ignition pulse (engine RPM) | | GPIO edge timing | | [Ignition-Pulse-Saab900-python](Ignition-Pulse-Saab900-python/) |
+### Displays
+
+- **DFRobot DFR0645 4-digit 7-segment LED** (TM1650, 2-wire I2C-like, bit-banged)
+  - [LED-4digit-TM1650-micropython](LED-4digit-TM1650-micropython/)
+  - [LED-4digit-TM1650-python](LED-4digit-TM1650-python/)
+- **DFRobot DFR0646 8-digit 7-segment LED** (HT16K33, I2C 0x70)
+  - [LED-8digit-HT16K33A-micropython](LED-8digit-HT16K33A-micropython/)
+- **Seeed Grove 4-digit display** (TM1637, 2-wire CLK/DIO)
+  - [LED-4digit-TM1637-python](LED-4digit-TM1637-python/)
+- **Seeed Grove LED Bar, 10 segment** (MY9221, 2-wire DIO/CLK)
+  - [LED-Bar-MY9221-python](LED-Bar-MY9221-python/)
+- **128x64 OLED** (SSD1306, I2C 0x3C / 0x3D or SPI)
+  - [OLED-SSD1306-micropython](OLED-SSD1306-micropython/)
+  - [OLED-SSD1306-python](OLED-SSD1306-python/)
+
+### Sensors
+
+- **Adafruit SCD-41 CO2, temperature & humidity sensor** (Sensirion SCD41, I2C 0x62)
+  - [CO2-SCD41-micropython](CO2-SCD41-micropython/)
+  - [CO2-SCD41-python](CO2-SCD41-python/)
+- **Air quality: AQI, TVOC, eCO2** (ENS160, I2C 0x53)
+  - [Air-Quality-ENS160-micropython](Air-Quality-ENS160-micropython/)
+- **DFRobot SEN0546 temperature & humidity probe** (CHT8305C, I2C 0x40)
+  - [Temp-Humidity-CHT8305-micropython](Temp-Humidity-CHT8305-micropython/)
+  - [Temp-Humidity-CHT8305-python](Temp-Humidity-CHT8305-python/)
+- **DFRobot SEN0206 non-contact IR thermometer** (MLX90614, I2C 0x5A)
+  - [Temp-Infrared-MLX90614-python](Temp-Infrared-MLX90614-python/)
+- **Seeed Grove 3-axis digital compass v2** (BMM150, I2C 0x13)
+  - [Compass-I2C-BMM150-python](Compass-I2C-BMM150-python/)
+
+### GPS
+
+- **NEO-6M GPS module** (u-blox NEO-6M, UART 9600 baud)
+  - [GPS-UART-Neo6M-micropython](GPS-UART-Neo6M-micropython/)
+- **DFRobot TEL0138 USB GPS receiver** (u-blox UBX-G7020-KT, USB serial)
+  - [GPS-USB-UBXG7020KT-python](GPS-USB-UBXG7020KT-python/)
+
+### Bus / I/O
+
+- **DFRobot DFR0576 1-to-8 I2C multiplexer** (TCA9548A, I2C 0x70–0x77)
+  - [mux-I2C-TCA9548A-micropython](mux-I2C-TCA9548A-micropython/)
+  - [Mux-I2C-TCA9548A-python](Mux-I2C-TCA9548A-python/)
+- **Saab 900 ignition pulse, engine RPM** (GPIO edge timing)
+  - [Ignition-Pulse-Saab900-python](Ignition-Pulse-Saab900-python/)
 
 ## MicroPython drivers (Raspberry Pi Pico)
 
@@ -35,6 +60,11 @@ Each folder holds one driver for one device on one platform, named `<Function>-<
 ScioSense ENS160 digital air-quality sensor.
 - `ENS160.py`: `ENS160` class. Reads AQI, TVOC (ppb), eCO2 (ppm), device ID, firmware version and status. Sets temperature/humidity compensation and gives text ratings for eCO2 and TVOC levels. Based on [JustDr00py/ens160-aht21](https://github.com/JustDr00py/ens160-aht21).
 - `main.py`: demo that sets compensation values, then prints readings and validity status in a loop.
+
+### [CO2-SCD41-micropython](CO2-SCD41-micropython/)
+Adafruit SCD-41 CO2, temperature and humidity sensor (Sensirion SCD41), for the Pico, ESP32-C3 and ESP32-S3.
+- `scd41.py`: asynchronous (`asyncio`) `SCD41` class. Periodic, low-power and single-shot measurements, temperature offset, altitude/pressure compensation, forced and automatic self-calibration, serial number, variant, self test, power down/wake up. All replies are CRC-checked.
+- `scd41_test.py`: demo that reads the ID and config, then takes periodic and single-shot readings while a heartbeat task keeps running. It picks Pico or ESP32 pins automatically.
 
 ### [GPS-UART-Neo6M-micropython](GPS-UART-Neo6M-micropython/)
 NEO-6M GPS module over UART.
@@ -73,6 +103,11 @@ DFRobot SEN0546 stainless-steel temperature and humidity probe (Sensylink CHT830
 - `main.py`: demo that scans the bus, reads the IDs, applies the configuration, then reads continuously and soft-resets after errors.
 
 ## Python drivers (Raspberry Pi)
+
+### [CO2-SCD41-python](CO2-SCD41-python/)
+Adafruit SCD-41 CO2, temperature and humidity sensor (Sensirion SCD41), via `smbus2` on bus 1.
+- `scd41.py`: asynchronous (`asyncio`) `SCD41` class with the same API as the MicroPython version, except that it uses a `measurements()` async generator instead of `wait_measurement()`.
+- `scd41_test.py`: demo that reads the ID and config, then takes periodic and single-shot readings while a heartbeat task keeps running.
 
 ### [Compass-I2C-BMM150-python](Compass-I2C-BMM150-python/)
 Seeed Grove 3-Axis Digital Compass v2 (Bosch BMM150). Not used in the final Saabpi build.
