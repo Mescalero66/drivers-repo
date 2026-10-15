@@ -60,6 +60,8 @@ Each folder holds one driver for one device on one platform, named `<Function>-<
 ScioSense ENS160 digital air-quality sensor.
 - `ENS160.py`: `ENS160` class. Reads AQI, TVOC (ppb), eCO2 (ppm), device ID, firmware version and status. Sets temperature/humidity compensation and gives text ratings for eCO2 and TVOC levels. Based on [JustDr00py/ens160-aht21](https://github.com/JustDr00py/ens160-aht21).
 - `main.py`: demo that sets compensation values, then prints readings and validity status in a loop.
+- `ENS160_async.py`: asynchronous (`asyncio`) `ENS160` class with the same features, plus `wait_data()` (waits for each new sample) and decoded status flags. Works on the Pico, ESP32-C3 and ESP32-S3.
+- `test_async.py`: demo where a sampler task and a monitor task share the sensor while a heartbeat task shows the loop never blocks.
 
 ### [CO2-SCD41-micropython](CO2-SCD41-micropython/)
 Adafruit SCD-41 CO2, temperature and humidity sensor (Sensirion SCD41), for the Pico, ESP32-C3 and ESP32-S3.

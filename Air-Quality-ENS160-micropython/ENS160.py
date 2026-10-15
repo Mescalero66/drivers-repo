@@ -6,11 +6,15 @@ import machine
 import time
 
 address = 0x53
+PART_ID = 0x0160
 
 class ENS160:
     def __init__(self, ID, SCL, SDA):
         self.i2c = machine.I2C(id=ID, scl=machine.Pin(SCL), sda=machine.Pin(SDA), freq=100000)
         self.address = address
+        part_id = self.get_id()
+        if part_id != PART_ID:
+            raise OSError(f"Unexpected PART_ID 0x{part_id:04X} (expected 0x{PART_ID:04X})")
         self.set_mode(0x02)
         time.sleep_ms(1000)
 
@@ -86,23 +90,29 @@ class ENS160:
             return "Unknown"
 
     def interpret_tvoc_level(self, tvoc):
-        if tvoc <= 50:
+        # UBA TVOC levels (datasheet Table 6), converted from ppm to ppb
+        if tvoc < 65:
             return "Excellent"
-        elif tvoc <= 100:
+        elif tvoc < 220:
             return "Good"
-        elif tvoc <= 150:
+        elif tvoc < 650:
             return "Moderate"
-        elif tvoc <= 200:
-            return "Unhealthy"
-        elif tvoc <= 300:
-            return "Very Unhealthy"
+        elif tvoc < 2200:
+            return "Poor"
         else:
-            return "Hazardous"
+            return "Unhealthy"
+
+    def get_data(self):
+        # Single 5-byte read of DATA_AQI, DATA_TVOC and DATA_ECO2 so all three
+        # values come from the same measurement cycle
+        data = self._read_register(0x21, 5)
+        aqi = data[0] & 0x07
+        tvoc = (data[2] << 8) | data[1]  # LSB first, then MSB
+        eco2 = (data[4] << 8) | data[3]  # LSB first, then MSB
+        return aqi, tvoc, eco2
 
     def read_air_quality(self):
-        aqi = self.get_aqi()
-        tvoc = self.get_tvoc()
-        eco2 = self.get_eco2()
+        aqi, tvoc, eco2 = self.get_data()
         temp = self.get_temperature()
         rh = self.get_humidity()
         eco2_rating = self.interpret_eco2_level(eco2)
@@ -110,8 +120,7 @@ class ENS160:
         return aqi, tvoc, eco2, temp, rh, eco2_rating, tvoc_rating
     
     def get_air_quality(self):
-        eco2 = self.get_eco2()
-        tvoc = self.get_tvoc()
+        _, tvoc, eco2 = self.get_data()
         return eco2, tvoc
     
     def calibrate_Temperature(self, temp_lsb, temp_msb):

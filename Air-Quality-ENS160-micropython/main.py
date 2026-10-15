@@ -31,8 +31,8 @@ def validity(status):
     return VALIDITY_FLAGS[(status >> 2) & 0x03]
 
 def calibrate(sensor, temp_celsius, humidity):
-    temp_value = int((temp_celsius + 273.15) * 64)
-    humi_value = int(humidity * 512)
+    temp_value = round((temp_celsius + 273.15) * 64)
+    humi_value = round(humidity * 512)
     sensor.calibrate_Temperature(temp_value & 0xFF, (temp_value >> 8) & 0xFF)
     sensor.calibrate_Humidity(humi_value & 0xFF, (humi_value >> 8) & 0xFF)
     print(f"Compensation set: {temp_celsius:.1f}°C (0x{temp_value:04X}), {humidity:.1f}% (0x{humi_value:04X})")
@@ -54,8 +54,7 @@ print("-----")
 while True:
     try:
         status = sensor.get_status()
-        aqi = sensor.get_aqi()
-        eco2, tvoc = sensor.get_air_quality()
+        aqi, tvoc, eco2 = sensor.get_data()
         print(f"AQI: {aqi}   eCO2: {eco2}ppm ({sensor.interpret_eco2_level(eco2)})   TVOC: {tvoc}ppb ({sensor.interpret_tvoc_level(tvoc)})   [{validity(status)}]")
         blink()
     except Exception as e:
