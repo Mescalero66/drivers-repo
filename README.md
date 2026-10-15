@@ -31,6 +31,9 @@ Each folder holds one driver for one device on one platform, named `<Function>-<
   - [CO2-SCD41-python](CO2-SCD41-python/)
 - **Air quality: AQI, TVOC, eCO2** (ENS160, I2C 0x53)
   - [Air-Quality-ENS160-micropython](Air-Quality-ENS160-micropython/)
+- **ENS160 + AHT21 air quality and climate board** (ENS160 I2C 0x53 / 0x52, AHT21 I2C 0x38)
+  - [Air-Quality-ENS160-AHT21-micropython](Air-Quality-ENS160-AHT21-micropython/)
+  - [Air-Quality-ENS160-AHT21-python](Air-Quality-ENS160-AHT21-python/)
 - **DFRobot SEN0546 temperature & humidity probe** (CHT8305C, I2C 0x40)
   - [Temp-Humidity-CHT8305-micropython](Temp-Humidity-CHT8305-micropython/)
   - [Temp-Humidity-CHT8305-python](Temp-Humidity-CHT8305-python/)
@@ -62,6 +65,11 @@ ScioSense ENS160 digital air-quality sensor.
 - `main.py`: demo that sets compensation values, then prints readings and validity status in a loop.
 - `ENS160_async.py`: asynchronous (`asyncio`) `ENS160` class with the same features, plus `wait_data()` (waits for each new sample) and decoded status flags. Works on the Pico, ESP32-C3 and ESP32-S3.
 - `test_async.py`: demo where a sampler task and a monitor task share the sensor while a heartbeat task shows the loop never blocks.
+
+### [Air-Quality-ENS160-AHT21-micropython](Air-Quality-ENS160-AHT21-micropython/)
+ENS160 + AHT21 combo board: a ScioSense ENS160 air-quality sensor and an ASAIR AHT21 temperature/humidity sensor on one I2C bus. Written from the datasheets.
+- `ENS160_AHT21.py`: `AHT21`, `ENS160` and the combined `ENS160_AHT21` classes. Each `read()` measures temperature and humidity with the AHT21, feeds them to the ENS160 as compensation, then reads AQI, TVOC and eCO2. CRC-checked AHT21 reads, blocking and `asyncio` methods.
+- `main.py`: blocking demo. `main_async.py`: `asyncio` demo with an LED heartbeat.
 
 ### [CO2-SCD41-micropython](CO2-SCD41-micropython/)
 Adafruit SCD-41 CO2, temperature and humidity sensor (Sensirion SCD41), for the Pico, ESP32-C3 and ESP32-S3.
@@ -105,6 +113,11 @@ DFRobot SEN0546 stainless-steel temperature and humidity probe (Sensylink CHT830
 - `main.py`: demo that scans the bus, reads the IDs, applies the configuration, then reads continuously and soft-resets after errors.
 
 ## Python drivers (Raspberry Pi)
+
+### [Air-Quality-ENS160-AHT21-python](Air-Quality-ENS160-AHT21-python/)
+ENS160 + AHT21 combo board on I2C bus 1, via `smbus2`. Same classes and methods as the MicroPython driver.
+- `ens160_aht21.py`: an `I2C` wrapper that gives `smbus2` the `machine.I2C` method names (every transfer uses `i2c_rdwr`, since the AHT21 has no registers), plus the `AHT21`, `ENS160` and combined `ENS160_AHT21` classes. Each `read()` measures temperature and humidity with the AHT21, feeds them to the ENS160 as compensation, then reads AQI, TVOC and eCO2. CRC-checked AHT21 reads, blocking and `asyncio` methods.
+- `ens160_aht21_test.py`: blocking demo. `ens160_aht21_test_async.py`: `asyncio` demo with a heartbeat task.
 
 ### [CO2-SCD41-python](CO2-SCD41-python/)
 Adafruit SCD-41 CO2, temperature and humidity sensor (Sensirion SCD41), via `smbus2` on bus 1.
