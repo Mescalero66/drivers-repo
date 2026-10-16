@@ -44,6 +44,9 @@ Each folder holds one driver for one device on one platform, named `<Function>-<
   - [Temp-Infrared-MLX90614-python](Temp-Infrared-MLX90614-python/)
 - **Seeed Grove 3-axis digital compass v2** (BMM150, I2C 0x13)
   - [Compass-I2C-BMM150-python](Compass-I2C-BMM150-python/)
+- **Sensirion SEN62 particulate matter, temperature & humidity sensor** (SEN62-SIN-T, I2C 0x6B)
+  - [Particulates-SEN62-micropython](Particulates-SEN62-micropython/)
+  - [Particulates-SEN62-python](Particulates-SEN62-python/)
 
 ### GPS
 
@@ -115,6 +118,11 @@ DFRobot DFR0576 1-to-8 I2C multiplexer (TCA9548A).
 - `font-pet-me-128.dat`: 8x8 bitmap font loaded by the driver (a copy is also kept in `fonts/`).
 - `ssd1306_test.py`: demo of banners, inverted text, invert and circles.
 
+### [Particulates-SEN62-micropython](Particulates-SEN62-micropython/)
+Sensirion SEN62 particulate matter, temperature and humidity sensor module, for the Pico, ESP32-C3 and ESP32-S3. Written from the SEN6x datasheet.
+- `sen62.py`: asynchronous (`asyncio`) `SEN62` class. PM1.0/2.5/4.0/10 mass and PM0.5–10 number concentrations, compensated and raw RH/T, `wait_measurement()` for each new sample, temperature offset/acceleration parameters, product info, firmware version, decoded device status, reset, fan cleaning and SHT heater. Unknown values come back as `None`. All replies are CRC-checked.
+- `sen62_test.py`: demo that reads the product info and status, then takes readings while a heartbeat task keeps running. It picks Pico or ESP32 pins automatically.
+
 ### [Temp-Humidity-CHT8305-micropython](Temp-Humidity-CHT8305-micropython/)
 DFRobot SEN0546 stainless-steel temperature and humidity probe (Sensylink CHT8305C).
 - `CHT8305.py`: `I2C_CHT8305_SEN0546` class. Blocking read (`get_…`) or split request/read (`req_…` / `read_…`), configuration, heater on, soft reset, and manufacturer/version ID.
@@ -184,6 +192,11 @@ SSD1306 OLED driver based on [Adafruit_Python_SSD1306](https://github.com/adafru
 - `examples/`: Adafruit examples (`animate.py`, which also selects a mux port, plus `buttons.py`, `image.py`, `shapes.py` and `stats.py`).
 - `happycat_oled_32.ppm`, `happycat_oled_64.ppm`: sample images.
 - `setup.py`: package setup for Adafruit_SSD1306.
+
+### [Particulates-SEN62-python](Particulates-SEN62-python/)
+Sensirion SEN62 particulate matter, temperature and humidity sensor module, via `smbus2` on bus 1.
+- `sen62.py`: asynchronous (`asyncio`) `SEN62` class with the same API as the MicroPython version, except that it uses a `measurements()` async generator instead of `wait_measurement()`.
+- `sen62_test.py`: demo that reads the product info and status, then takes readings while a heartbeat task keeps running.
 
 ### [Temp-Humidity-CHT8305-python](Temp-Humidity-CHT8305-python/)
 DFRobot SEN0546 temperature and humidity probe (CHT8305C), via `smbus2`.
