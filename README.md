@@ -144,7 +144,9 @@ Sensirion SEN62 particulate matter, temperature and humidity sensor module, for 
 - `sen62_test.py`: demo that reads the product info and status, then takes readings while a heartbeat task keeps running. It picks Pico or ESP32 pins automatically.
 
 ### [Temp-Humidity-CHT8305-micropython](Temp-Humidity-CHT8305-micropython/)
-DFRobot SEN0546 stainless-steel temperature and humidity probe (Sensylink CHT8305C).
+DFRobot SEN0546 stainless-steel temperature and humidity probe (Sensylink CHT8305C, white SCL wire), for the Pico, ESP32-C3 and ESP32-S3. Checked against the datasheet.
+- `cht8305_async.py`: asynchronous (`asyncio`) `CHT8305` class. T + RH, T-only and RH-only conversions (waits out the conversion by retrying while the sensor NACKs), 14/11/8-bit resolution, heater, supply-low flag, soft reset, temperature/humidity alert limits with trigger mode and status, and IDs.
+- `cht8305_async_test.py`: demo of single, lower-resolution and periodic readings, alert limits and the heater while a heartbeat task keeps running. It picks Pico or ESP32 pins automatically.
 - `CHT8305.py`: `I2C_CHT8305_SEN0546` class. Blocking read (`get_…`) or split request/read (`req_…` / `read_…`), configuration, heater on, soft reset, and manufacturer/version ID.
 - `main.py`: demo that scans the bus, reads the IDs, applies the configuration, then reads continuously and soft-resets after errors.
 
@@ -229,8 +231,10 @@ Sensirion SEN62 particulate matter, temperature and humidity sensor module, via 
 - `sen62_test.py`: demo that reads the product info and status, then takes readings while a heartbeat task keeps running.
 
 ### [Temp-Humidity-CHT8305-python](Temp-Humidity-CHT8305-python/)
-DFRobot SEN0546 temperature and humidity probe (CHT8305C), via `smbus2`.
-- `df_tempprobe.py`: `tempprobe` class. Blocking `get_Temp` / `get_Humi`, or split `req_…` / `read_…`.
+DFRobot SEN0546 temperature and humidity probe (CHT8305C, white SCL wire), via `smbus2` on bus 1. Checked against the datasheet.
+- `cht8305_async.py`: asynchronous (`asyncio`) `CHT8305` class with the same API as the MicroPython version, plus a `measurements()` async generator.
+- `cht8305_async_test.py`: demo of single, lower-resolution and periodic readings, alert limits and the heater while a heartbeat task keeps running.
+- `df_tempprobe.py`: `tempprobe` class. Blocking `get_Temp` / `get_Humi`, or split `req_…` / `read_…`. Now reads both data bytes (it used to read only the high byte).
 - `df_tempprobe_test.py`: prints temperature and humidity every 2 seconds.
 
 ### [Temp-Infrared-MLX90614-python](Temp-Infrared-MLX90614-python/)

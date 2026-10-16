@@ -19,6 +19,7 @@ found = sensor.i2c.scan()
 print("I2C devices found: ", [hex(a) for a in found])
 if sensor.CHT8305_Address not in found:
     print("CHT8305 not found at address", hex(sensor.CHT8305_Address), "- check wiring.")
+    raise SystemExit
 
 # device information
 sensor.get_CHT8305_MANUFACTURE_ID()

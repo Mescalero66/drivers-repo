@@ -16,5 +16,6 @@ while i < 30:
     print("Temp: ", rTCalc)
     print("Humidity: ", rHCalc)
     i += 1                                  
-    time.sleep(2)                           # about 2 seconds is the quickest you can set this before you there's no real change between refreshes
+    time.sleep(2)                           # two conversions per loop: keeps to the datasheet's max of 1 per second (avoids self-heating)
+probe1.close()
 

@@ -62,7 +62,7 @@ Every method is a coroutine named after the datasheet register or feature (`get_
 
 ## Notes
 
-- The API matches the [CPython version](../Temp-MCP9808-python/) except in three places. MicroPython has no async generators, so `measurements()` becomes `wait_measurement()`, which returns one reading per call. `conversion_time()` (seconds) becomes `conversion_ms()`. The constructor also takes an optional `alert_pin`.
+- The API matches the [Python version](../Temp-MCP9808-python/) except in three places. MicroPython has no async generators, so `measurements()` becomes `wait_measurement()`, which returns one reading per call. `conversion_time()` (seconds) becomes `conversion_ms()`. The constructor also takes an optional `alert_pin`.
 - With `alert_pin=Pin(n)`, `wait_alert()` sleeps until the ALT pin interrupt fires (the driver enables the internal pull-up). Without it, `wait_alert()` polls the Alert Stat bit. Either way, enable the alert with `configure_alert()` first. In interrupt mode the interrupt is cleared after each alert.
 - `configure_alert()` selects comparator mode (asserted while a limit is exceeded, for thermostat use) or interrupt mode (asserted at each limit crossing until `clear_interrupt()`), the polarity, and critical-only alerts. Above TCRIT the output always behaves as a comparator. Hysteresis applies only as the temperature falls.
 - The `Measurement` flags compare the temperature with the limit registers whether or not the alert is enabled. All limits are 0 °C at power-up, so at room temperature `above_critical` and `above_upper` read `True` until you set them.

@@ -2,7 +2,9 @@
 # Copyright (c) 2024 Mescalero
 # <https://github.com/Mescalero66/saabpi>
 # Project v1.1 - Released 20240224
-# 
+# v1.2 - checked against the Sensylink CHT8305C datasheet Rev 2.2 (Jul 2020): reads both data bytes,
+#        sends only the register pointer to trigger a conversion, honours the bus number
+#
 # Python Driver for:
 # DFRobot SEN0546 I2C Temperature & Humidity Sensor (Sensylink CHT8305C Chip)
 # <https://wiki.dfrobot.com/SKU_SEN0546_I2C_Temperature_and_Humidity_Sensor_Stainless_Steel_Shell>
@@ -17,23 +19,25 @@ class tempprobe:
     # CHT8305 / SEN0546
     # Decimal address:  64  | Hexa address:  0x40
     #
-    CHT8305_Address = 0x40              # temp sensor's I2C address
-    I2C_Delay_time = 0.1               # wait time between requesting temp and reading temp from sensor
+    CHT8305_Address = 0x40              # temp sensor's 7-bit I2C address (the datasheet's "0x80" is the 8-bit form)
+    I2C_Delay_time = 0.1               # wait time between requesting temp and reading temp from sensor (needs > 20 ms)
 
     # Registers fixed values
 
-    REG_TEMPERATURE = 0x00              
+    REG_TEMPERATURE = 0x00
     REG_HUMIDITY = 0x01
     REG_CONFIG = 0x02
     REG_ALERT_SETUP = 0x03
     REG_MANUFACTURE_ID = 0xFE
     REG_VERSION_ID = 0xFF
 
-    BIT_T_RES = 2
-    BIT_H_RES = 0
-    BIT_BATTERY_OK = 3
-    BIT_ACQ_MODE = 4
+    # Config register bit positions, counted within the MSB (config bits 15-8)
+    BIT_T_RES = 2                       # 1 = 11-bit, 0 = 14-bit temperature
+    BIT_H_RES = 0                       # 2 bits: 00 = 14-bit, 01 = 11-bit, 10 = 8-bit humidity
+    BIT_VCC_LOW = 3                     # VCCS, read-only: 1 = supply below 2.8 V
+    BIT_ACQ_MODE = 4                    # 1 = measure T then RH (default), 0 = T or RH only
     BIT_HEATER = 5
+    BIT_CLKSTR = 6                      # clock stretching while converting (default off)
     BIT_RST = 7
     T_RES_14 = 0
     T_RES_11 = 1
@@ -41,47 +45,46 @@ class tempprobe:
     H_RES_11 = 1
     H_RES_8 = 2
 
-    wLength = 0
-	
     def __init__(self, ID):
-        self.i2c = smbus2.SMBus(1)      # create I2C object for the temp probe
+        self.i2c = smbus2.SMBus(ID)     # create I2C object for the temp probe, on I2C bus ID (1 on a Raspberry Pi)
+
+    def close(self):
+        self.i2c.close()
+
+    def _trigger(self, reg):
+        # writing the register pointer 0x00 / 0x01 starts a conversion (datasheet 1.4.2).
+        # The I2C hardware sends the address byte itself, so only the pointer is written.
+        self.i2c.write_byte(self.CHT8305_Address, reg)
+
+    def _read_word(self):
+        # both data bytes must be read together, MSB first (datasheet 1.1.1). The sensor NACKs until the conversion is done.
+        msg = smbus2.i2c_msg.read(self.CHT8305_Address, 2)
+        self.i2c.i2c_rdwr(msg)
+        msb, lsb = list(msg)
+        return msb << 8 | lsb
 
     def get_Temp(self):                                         # define function get_temp
-        self.i2c.write_byte_data(self.CHT8305_Address,self.REG_TEMPERATURE,0x80)
-            # to I2C device (0x40), at the TEMP Register, write the 7-bit I2C address and WRITE flag (together 1000000, or 0x80))
+        self._trigger(self.REG_TEMPERATURE)                     # start a measurement
         sleep(self.I2C_Delay_time)                              # wait for sensor to measure
-        rTBinary = self.i2c.read_byte(self.CHT8305_Address)     # read the result out of the device (binary byte)
-        rTBitShift = rTBinary << 8                              # bitshift the binary to get a number
-        rTCalc = rTBitShift * 165 / 65535 - 40                  # do the required maths to it
-        return rTCalc                                           # send it back
-    
+        return self.read_Temp()                                 # read and convert it
+
     def req_Temp(self):                                         # define function req_temp
-        self.i2c.write_byte_data(self.CHT8305_Address,self.REG_TEMPERATURE,0x80)
-            # to I2C device (0x40), at the TEMP Register, write the 7-bit I2C address and WRITE flag (together 1000000, or 0x80))
-        #sleep(self.I2C_Delay_time)                              # wait for sensor to measure
+        self._trigger(self.REG_TEMPERATURE)                     # start a measurement, read it later with read_Temp()
 
     def read_Temp(self):
-        rTBinary = self.i2c.read_byte(self.CHT8305_Address)     # read the result out of the device (binary byte)
-        rTBitShift = rTBinary << 8                              # bitshift the binary to get a number
-        rTCalc = rTBitShift * 165 / 65535 - 40                  # do the required maths to it
+        rTRaw = self._read_word()                               # read the 16-bit result out of the device
+        rTCalc = rTRaw * 165 / 65535 - 40                       # datasheet formula (1)
         return rTCalc                                           # send it back
 
     def get_Humi(self):                                         # define function get_humi
-        self.i2c.write_byte_data(self.CHT8305_Address,self.REG_HUMIDITY,0x80)
-            # to I2C device (0x40), at the HUMI Register, write the 7-bit I2C address and WRITE flag (together 1000000, or 0x80))
+        self._trigger(self.REG_HUMIDITY)                        # start a measurement
         sleep(self.I2C_Delay_time)                              # wait for sensor to measure
-        rHBinary = self.i2c.read_byte(self.CHT8305_Address)     # read the result out of the device (binary byte)
-        rHBitShift = rHBinary << 8                              # bitshift the binary to get a number
-        rHCalc = rHBitShift * 100 / 65535                       # do the required maths to it
-        return rHCalc                                           # send it back
-    
+        return self.read_Humi()                                 # read and convert it
+
     def req_Humi(self):                                         # define function req_humi
-        self.i2c.write_byte_data(self.CHT8305_Address,self.REG_HUMIDITY,0x80)
-            # to I2C device (0x40), at the HUMI Register, write the 7-bit I2C address and WRITE flag (together 1000000, or 0x80))
-        #sleep(self.I2C_Delay_time)                              # wait for sensor to measure
-    
+        self._trigger(self.REG_HUMIDITY)                        # start a measurement, read it later with read_Humi()
+
     def read_Humi(self):                                        # define function read_humi
-        rHBinary = self.i2c.read_byte(self.CHT8305_Address)     # read the result out of the device (binary byte)
-        rHBitShift = rHBinary << 8                              # bitshift the binary to get a number
-        rHCalc = rHBitShift * 100 / 65535                       # do the required maths to it
+        rHRaw = self._read_word()                               # read the 16-bit result out of the device
+        rHCalc = rHRaw * 100 / 65535                            # datasheet formula (2)
         return rHCalc                                           # send it back
