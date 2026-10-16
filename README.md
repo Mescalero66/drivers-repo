@@ -26,6 +26,9 @@ Each folder holds one driver for one device on one platform, named `<Function>-<
 
 ### Sensors
 
+- **Generic BMP280 barometric pressure sensor breakout** (Bosch BMP280, I2C 0x76 / 0x77)
+  - [Barometer-BMP280-micropython](Barometer-BMP280-micropython/)
+  - [Barometer-BMP280-python](Barometer-BMP280-python/)
 - **Adafruit SCD-41 CO2, temperature & humidity sensor** (Sensirion SCD41, I2C 0x62)
   - [CO2-SCD41-micropython](CO2-SCD41-micropython/)
   - [CO2-SCD41-python](CO2-SCD41-python/)
@@ -89,6 +92,11 @@ ScioSense ENS160 digital air-quality sensor.
 ENS160 + AHT21 combo board: a ScioSense ENS160 air-quality sensor and an ASAIR AHT21 temperature/humidity sensor on one I2C bus. Written from the datasheets.
 - `ENS160_AHT21.py`: `AHT21`, `ENS160` and the combined `ENS160_AHT21` classes. Each `read()` measures temperature and humidity with the AHT21, feeds them to the ENS160 as compensation, then reads AQI, TVOC and eCO2. CRC-checked AHT21 reads, blocking and `asyncio` methods.
 - `main.py`: blocking demo. `main_async.py`: `asyncio` demo with an LED heartbeat.
+
+### [Barometer-BMP280-micropython](Barometer-BMP280-micropython/)
+Generic BMP280 barometric pressure sensor breakout (Bosch BMP280, 6-pin GY-BMP280 board), for the Pico, ESP32-C3 and ESP32-S3. Written from the datasheet.
+- `bmp280.py`: asynchronous (`asyncio`) `BMP280` class. Pressure (Pa) and temperature using Bosch's exact integer compensation, forced (single-shot) and normal modes, `wait_measurement()` for each new sample, oversampling ×0–×16, IIR filter, standby time, the datasheet's use-case presets, and altitude / sea-level pressure helpers. Chip ID check and soft reset.
+- `bmp280_test.py`: demo that sweeps the oversampling settings in forced mode, takes a temperature-only reading, then streams normal-mode readings with the height change while a heartbeat task keeps running. It picks Pico or ESP32 pins automatically.
 
 ### [CO2-SCD41-micropython](CO2-SCD41-micropython/)
 Adafruit SCD-41 CO2, temperature and humidity sensor (Sensirion SCD41), for the Pico, ESP32-C3 and ESP32-S3.
@@ -161,6 +169,11 @@ DFRobot SEN0435 high accuracy temperature sensor (Microchip MCP9808), for the Pi
 ENS160 + AHT21 combo board on I2C bus 1, via `smbus2`. Same classes and methods as the MicroPython driver.
 - `ens160_aht21.py`: an `I2C` wrapper that gives `smbus2` the `machine.I2C` method names (every transfer uses `i2c_rdwr`, since the AHT21 has no registers), plus the `AHT21`, `ENS160` and combined `ENS160_AHT21` classes. Each `read()` measures temperature and humidity with the AHT21, feeds them to the ENS160 as compensation, then reads AQI, TVOC and eCO2. CRC-checked AHT21 reads, blocking and `asyncio` methods.
 - `ens160_aht21_test.py`: blocking demo. `ens160_aht21_test_async.py`: `asyncio` demo with a heartbeat task.
+
+### [Barometer-BMP280-python](Barometer-BMP280-python/)
+Generic BMP280 barometric pressure sensor breakout (Bosch BMP280, 6-pin GY-BMP280 board), via `smbus2` on bus 1.
+- `bmp280.py`: asynchronous (`asyncio`) `BMP280` class with the same API as the MicroPython version, except that it uses a `measurements()` async generator instead of `wait_measurement()`, and `measurement_time()` (seconds) instead of `measurement_ms()`.
+- `bmp280_test.py`: demo that finds the sensor at either address, sweeps the oversampling settings in forced mode, takes a temperature-only reading, then streams normal-mode readings with the height change while a heartbeat task keeps running.
 
 ### [CO2-SCD41-python](CO2-SCD41-python/)
 Adafruit SCD-41 CO2, temperature and humidity sensor (Sensirion SCD41), via `smbus2` on bus 1.
