@@ -37,6 +37,9 @@ Each folder holds one driver for one device on one platform, named `<Function>-<
 - **BH1750 ambient light sensor** (ROHM BH1750FVI, I2C 0x23 / 0x5C)
   - [Lux-BH1750-micropython](Lux-BH1750-micropython/)
   - [Lux-BH1750-python](Lux-BH1750-python/)
+- **DFRobot SEN0435 high accuracy temperature sensor** (Microchip MCP9808, I2C 0x18–0x1F, board default 0x1F)
+  - [Temp-MCP9808-micropython](Temp-MCP9808-micropython/)
+  - [Temp-MCP9808-python](Temp-MCP9808-python/)
 - **DFRobot SEN0546 temperature & humidity probe** (CHT8305C, I2C 0x40)
   - [Temp-Humidity-CHT8305-micropython](Temp-Humidity-CHT8305-micropython/)
   - [Temp-Humidity-CHT8305-python](Temp-Humidity-CHT8305-python/)
@@ -145,6 +148,11 @@ DFRobot SEN0546 stainless-steel temperature and humidity probe (Sensylink CHT830
 - `CHT8305.py`: `I2C_CHT8305_SEN0546` class. Blocking read (`get_…`) or split request/read (`req_…` / `read_…`), configuration, heater on, soft reset, and manufacturer/version ID.
 - `main.py`: demo that scans the bus, reads the IDs, applies the configuration, then reads continuously and soft-resets after errors.
 
+### [Temp-MCP9808-micropython](Temp-MCP9808-micropython/)
+DFRobot SEN0435 high accuracy temperature sensor (Microchip MCP9808), for the Pico, ESP32-C3 and ESP32-S3. Written from the datasheet.
+- `mcp9808.py`: asynchronous (`asyncio`) `MCP9808` class. Temperature with TA vs limit flags, `wait_measurement()` for each new conversion, 0.5–0.0625 °C resolution, shutdown and single-shot from shutdown, upper/lower/critical limits with hysteresis, comparator or interrupt Alert output with optional ALT pin interrupt, limit locking, and ID registers. Every register write is read back so locked writes raise.
+- `mcp9808_test.py`: demo that reads the IDs and settings, sweeps the resolutions, streams readings, takes a single shot and triggers the alert while a heartbeat task keeps running. It picks Pico or ESP32 pins automatically.
+
 ## Python drivers (Raspberry Pi)
 
 ### [Air-Quality-ENS160-AHT21-python](Air-Quality-ENS160-AHT21-python/)
@@ -229,3 +237,8 @@ DFRobot SEN0546 temperature and humidity probe (CHT8305C), via `smbus2`.
 DFRobot SEN0206 non-contact IR thermometer (MLX90614-DCC), via `smbus2`.
 - `df_temp_ir.py`: `MLX90614` class. Reads ambient and object temperatures, retrying reads after I/O errors.
 - `df_temp_IR_test.py`: prints object and ambient temperature every 2 seconds.
+
+### [Temp-MCP9808-python](Temp-MCP9808-python/)
+DFRobot SEN0435 high accuracy temperature sensor (Microchip MCP9808), via `smbus2` on bus 1.
+- `mcp9808.py`: asynchronous (`asyncio`) `MCP9808` class with the same API as the MicroPython version, except that it uses a `measurements()` async generator instead of `wait_measurement()`, and `wait_alert()` polls the Alert Stat bit.
+- `mcp9808_test.py`: demo that finds the sensor at any address, reads the IDs and settings, sweeps the resolutions, streams readings, takes a single shot and triggers the alert while a heartbeat task keeps running.
