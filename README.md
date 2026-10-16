@@ -59,6 +59,9 @@ Each folder holds one driver for one device on one platform, named `<Function>-<
 
 - **TI ADS1115 16-bit 4-channel ADC** (I2C 0x48–0x4B)
   - [ADC-ADS1115-micropython](ADC-ADS1115-micropython/)
+- **Adafruit MCP4725 12-bit DAC** (Microchip MCP4725, I2C 0x62 / 0x63)
+  - [DAC-MCP4725-micropython](DAC-MCP4725-micropython/)
+  - [DAC-MCP4725-python](DAC-MCP4725-python/)
 - **DFRobot DFR0576 1-to-8 I2C multiplexer** (TCA9548A, I2C 0x70–0x77)
   - [mux-I2C-TCA9548A-micropython](mux-I2C-TCA9548A-micropython/)
   - [Mux-I2C-TCA9548A-python](Mux-I2C-TCA9548A-python/)
@@ -88,6 +91,11 @@ ENS160 + AHT21 combo board: a ScioSense ENS160 air-quality sensor and an ASAIR A
 Adafruit SCD-41 CO2, temperature and humidity sensor (Sensirion SCD41), for the Pico, ESP32-C3 and ESP32-S3.
 - `scd41.py`: asynchronous (`asyncio`) `SCD41` class. Periodic, low-power and single-shot measurements, temperature offset, altitude/pressure compensation, forced and automatic self-calibration, serial number, variant, self test, power down/wake up. All replies are CRC-checked.
 - `scd41_test.py`: demo that reads the ID and config, then takes periodic and single-shot readings while a heartbeat task keeps running. It picks Pico or ESP32 pins automatically.
+
+### [DAC-MCP4725-micropython](DAC-MCP4725-micropython/)
+Adafruit MCP4725 12-bit DAC (Microchip MCP4725), for the Pico, ESP32-C3 and ESP32-S3. Written from the datasheet.
+- `mcp4725.py`: asynchronous (`asyncio`) `MCP4725` class. Set the output by code or volts, with optional EEPROM storage as the power-up value (waits on RDY/BSY), read back the DAC register and EEPROM, power-down modes (1k / 100k / 500k to GND), and general-call reset / wake-up.
+- `mcp4725_test.py`: demo of voltage steps, a sine wave and the power-down modes while a heartbeat task keeps running. It can also measure VOUT through an ADC pin.
 
 ### [GPS-UART-Neo6M-micropython](GPS-UART-Neo6M-micropython/)
 NEO-6M GPS module over UART.
@@ -151,6 +159,11 @@ Adafruit SCD-41 CO2, temperature and humidity sensor (Sensirion SCD41), via `smb
 Seeed Grove 3-Axis Digital Compass v2 (Bosch BMM150). Not used in the final Saabpi build.
 - `grove_compass.py`: full BMM150 driver (`BMM150_I2C`, `BMM150_SPI`). Covers power and preset modes, data rate, self test, trim compensation, interrupts and thresholds, and `get_compass_degree()`. Adapted from [DFRobot_BMM150](https://github.com/DFRobot/DFRobot_BMM150).
 - `grove_compass_test.py`: prints the heading once a second.
+
+### [DAC-MCP4725-python](DAC-MCP4725-python/)
+Adafruit MCP4725 12-bit DAC (Microchip MCP4725), via `smbus2` on bus 1.
+- `mcp4725.py`: asynchronous (`asyncio`) `MCP4725` class with the same API as the MicroPython version.
+- `mcp4725_test.py`: demo of voltage steps, a sine wave and the power-down modes while a heartbeat task keeps running.
 
 ### [GPS-USB-UBXG7020KT-python](GPS-USB-UBXG7020KT-python/)
 DFRobot TEL0138 USB GPS receiver (u-blox UBX-G7020-KT) on `/dev/ttyACM0`. Requires `pyserial` and `pynmeagps`.
