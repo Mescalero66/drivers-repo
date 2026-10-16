@@ -111,6 +111,8 @@ DFRobot DFR0645-R / DFR0645-G 4-digit display. Despite being sold as I2C, the TM
 
 ### [LED-8digit-HT16K33A-micropython](LED-8digit-HT16K33A-micropython/)
 DFRobot DFR0646 8-digit 7-segment display driven by an HT16K33 over I2C.
+- `HT16K33LED_async.py`: asynchronous (`asyncio`) `HT16K33LED` class, checked against the HT16K33A datasheet. Initialises in the datasheet order with display RAM cleared before the display turns on; brightness, blink, standby/wake, aligned strings with decimal points, `scroll()`, rotation, raw glyphs and RAM read-back. Works on the Pico, ESP32-C3 and ESP32-S3.
+- `HT16K33LED_async_test.py`: demo of a segment test with RAM read-back, alignment, brightness, blink, rotation, a counter, scrolling and standby while a heartbeat task keeps running.
 - `HT16K33LED.py`: `HT16K33` base class (power, brightness, blink rate, buffer) and `HT16K33LED` (glyphs, numbers, characters, left/right-aligned `set_string`, rotation). Based on code by Tony Smith ([@smittytone](https://github.com/smittytone)).
 - `LED_8Digit.py`: demo of strings, alignment, animation, counting and blinking.
 - `testing/LED_8Digit_orig.py`: original demo.

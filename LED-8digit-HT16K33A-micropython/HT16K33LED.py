@@ -76,7 +76,7 @@ class HT16K33:
         """
         Alternative for draw() for backwards compatibility
         """
-        self._render()
+        self.draw()
 
     def clear(self):
         """
@@ -91,8 +91,14 @@ class HT16K33:
     def power_on(self):
         """
         Power on the controller and display.
+
+        The display RAM holds random data after power-up, so the buffer is written before
+        the display is turned on (HT16K33A datasheet p.14). The write has to come after the
+        system-on command, because the chip ignores RAM writes in standby (p.10).
         """
         self._write_cmd(self.HT16K33_GENERIC_SYSTEM_ON)
+        if hasattr(self, "buffer"):
+            self.draw()
         self._write_cmd(self.HT16K33_GENERIC_DISPLAY_ON)
 
     def power_off(self):
