@@ -57,6 +57,8 @@ Each folder holds one driver for one device on one platform, named `<Function>-<
 
 ### Bus / I/O
 
+- **TI ADS1115 16-bit 4-channel ADC** (I2C 0x48–0x4B)
+  - [ADC-ADS1115-micropython](ADC-ADS1115-micropython/)
 - **DFRobot DFR0576 1-to-8 I2C multiplexer** (TCA9548A, I2C 0x70–0x77)
   - [mux-I2C-TCA9548A-micropython](mux-I2C-TCA9548A-micropython/)
   - [Mux-I2C-TCA9548A-python](Mux-I2C-TCA9548A-python/)
@@ -64,6 +66,11 @@ Each folder holds one driver for one device on one platform, named `<Function>-<
   - [Ignition-Pulse-Saab900-python](Ignition-Pulse-Saab900-python/)
 
 ## MicroPython drivers (Raspberry Pi Pico)
+
+### [ADC-ADS1115-micropython](ADC-ADS1115-micropython/)
+Texas Instruments ADS1115 16-bit, 4-channel ADC, for the Pico, ESP32-C3 and ESP32-S3. Checked against the TI datasheet; derived from [robert-hh/ads1x15](https://github.com/robert-hh/ads1x15).
+- `adc_ads1115.py`: asynchronous (`asyncio`) `ADS1115` class. Single-shot single-ended and differential reads in raw codes or volts, gain and data rate by value, continuous mode, threshold comparator, and optional ALERT/RDY pin interrupts so tasks wait without polling. Power down and general-call reset.
+- `adc_ads1115_test.py`: demo that reads all channels from concurrent tasks, sweeps gain, times each data rate and runs continuous mode while a heartbeat task keeps running.
 
 ### [Air-Quality-ENS160-micropython](Air-Quality-ENS160-micropython/)
 ScioSense ENS160 digital air-quality sensor.
